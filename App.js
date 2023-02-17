@@ -2,32 +2,36 @@ import * as React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 // Import all screens here
-import Home from "./src/screens/Home";
-import Profile from "./src/screens/Profile";
+import HomeScreen from "./src/screens/HomeScreen";
+import ProfileScreen from "./src/screens/ProfileScreen";
+import SearchScreen from "./src/screens/SearchScreen";
 //
 const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
+function NavBarVisible() {
+    return (
+        <Tab.Navigator headerMode="false">
+            <Tab.Screen name="Home" component={HomeScreen} />
+            <Tab.Screen name="Search" component={SearchScreen} />
+            <Tab.Screen name="Profile" component={ProfileScreen} />
+        </Tab.Navigator>
+    );
+}
 
 const App = () => {
     return (
         <NavigationContainer>
-            <View style={styles.container}>
-                <Home />
-                {/* <Profile /> */}
-                {/* <Stack.Navigator initialRouteName="Profile">
-                    <Stack.Screen
-                        name="Home"
-                        component={Home}
-                        options={{ title: "Welcome" }}
-                    />
-                    <Stack.Screen
-                        name="Profile"
-                        component={Profile}
-                        options={{ title: "Profile" }}
-                    />
-                </Stack.Navigator> */}
-            </View>
+            <Stack.Navigator
+                screenOptions={{
+                    headerShown: false,
+                }}
+            >
+                <Stack.Screen name="Home" component={NavBarVisible} />
+            </Stack.Navigator>
         </NavigationContainer>
     );
 };

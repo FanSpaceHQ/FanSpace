@@ -4,7 +4,7 @@ import { View, StyleSheet, Text } from "react-native";
 /*
   -- DOCUMENTATION --
 */
-const Home = (props) => {
+const HomeScreen = (props) => {
     return (
         <View>
             <Text>Hello! You're Home!</Text>
@@ -14,4 +14,4 @@ const Home = (props) => {
 
 const styles = StyleSheet.create({});
 
-export default Home;
+export default HomeScreen;
