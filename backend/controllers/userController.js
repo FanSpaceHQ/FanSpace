@@ -6,6 +6,8 @@ const { getAuth, signInWithEmailAndPassword }=require ("firebase/auth")
 const createUser = async(req, res)=>{
     let missing=[] //check for empty fields
     form=Object.keys(req.body)
+    console.log(typeof(required_fields))
+    console.log(required_fields)
     missing=required_fields.filter(field=>!form.includes(field))
     if(missing.length>0){
         await res.status(400).json({
