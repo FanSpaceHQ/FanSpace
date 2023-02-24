@@ -1,16 +1,17 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
+
 /*
   -- DOCUMENTATION --
 */
-const HomeScreen = (props) => {
+const LandingScreen = (props) => {
     return (
-        <View>
-            <Text h1>Hello! You're Home!</Text>
+        <View style={{ paddingTop: 90 }}>
+            <Text>YOU'RE IN LANDING SCREEN</Text>
         </View>
     );
 };
 
 const styles = StyleSheet.create({});
 
-export default HomeScreen;
+export default LandingScreen;
