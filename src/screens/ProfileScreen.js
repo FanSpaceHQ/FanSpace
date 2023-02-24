@@ -4,22 +4,17 @@ import { View, StyleSheet, Text, ScrollView, SafeAreaView } from "react-native";
 /*
   -- DOCUMENTATION --
 */
-const Profile = (props) => {
+const ProfileScreen = (props) => {
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <ScrollView>
-                <View style={{ flexDirection: "column", alignItems: "center" }}>
-                    {/* Placeholder until stack navigator works */}
-                    <Text
-                        style={{
-                            padding: 20,
-                            fontSize: 20,
-                            fontWeight: "bold",
-                        }}
-                    >
-                        My Profile
-                    </Text>
-
+                <View
+                    style={{
+                        flexDirection: "column",
+                        alignItems: "center",
+                        paddingTop: 25,
+                    }}
+                >
                     <View
                         style={{
                             alignItems: "center",
@@ -71,4 +66,4 @@ const styles = StyleSheet.create({
     // h1: {color}
 });
 
-export default Profile;
+export default ProfileScreen;
