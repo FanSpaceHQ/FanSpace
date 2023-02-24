@@ -7,6 +7,8 @@ const router = express.Router()
 
 router.get('/login', loginUser)
 router.post('/',createUser)
-
+router.get('/',readUser)
+router.patch('/', updateUser)
+router.delete('/', deleteUser)
 
 module.exports=router
