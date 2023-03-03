@@ -35,13 +35,8 @@ const createUser = async(req, res)=>{
     "tickets_selling":[],
     "tickets_interested":[],
     "friends":[],
-<<<<<<< HEAD
-    "pending_outgoing":[],
-    "pending_inncoming":[]
-=======
     "pendingIncoming":[],
     "pendingOutgoing":[]
->>>>>>> 7ee0f6d046304cb8bb2d823b4b2f6cac2c071eb5
    }).then(()=>{
     res.status(200).json({
       uid: user.uid
@@ -52,15 +47,6 @@ const createUser = async(req, res)=>{
 }
 }
 
-<<<<<<< HEAD
-const readUser = async(req, res)=>{
-  await something.then(()=>{
-
-  }).catch(()=>{
-    
-  })
-}
-=======
 const readUser = async (req, res) => {
     const uid = req.body.uid;
     admin.firestore().collection('users').doc(uid).get().then((userDoc)=>{
@@ -79,7 +65,6 @@ const readUser = async (req, res) => {
     })
 };
 
->>>>>>> 7ee0f6d046304cb8bb2d823b4b2f6cac2c071eb5
 
 const updateUser = async(req, res)=>{
     const uid = req.body.uid;
@@ -226,6 +211,8 @@ const loadFriends =async(req,res)=>{
     }
   })
 }
+
+
 
 module.exports={
     createUser,
