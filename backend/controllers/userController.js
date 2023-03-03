@@ -3,6 +3,7 @@ const {adminAuth, database}=require('../index.js')
 const {FieldValue}=require('@google-cloud/firestore')
 const required_fields=require('./../constants/userConstants')
 const { getAuth, signInWithEmailAndPassword }=require ("firebase/auth")
+const axios=require('axios')
 const createUser = async(req, res)=>{
     let missing=[] //check for empty fields
     form=Object.keys(req.body)
@@ -33,7 +34,9 @@ const createUser = async(req, res)=>{
     "tickets_owned":[],
     "tickets_selling":[],
     "tickets_interested":[],
-    "friends":[]
+    "friends":[],
+    "pending_outgoing":[],
+    "pending_inncoming":[]
    }).then(()=>{
     res.status(200).json({
       uid: user.uid
@@ -45,7 +48,11 @@ const createUser = async(req, res)=>{
 }
 
 const readUser = async(req, res)=>{
+  await something.then(()=>{
 
+  }).catch(()=>{
+    
+  })
 }
 
 const updateUser = async(req, res)=>{
@@ -63,10 +70,38 @@ const loginUser = async(req, res)=>{
 //  )
 }
 
+const loadFriends =async(req,res)=>{
+  const uid=req.body.uid
+  database.collection('users').doc(uid).get().then(async (userDoc)=>{ //get userdoc
+    if(!userDoc.exists){
+      res.status(404).json({
+        error: "user not found"
+      })
+    }
+    else{
+      const friendsRef=userDoc.data().friends.map((friendID)=>database.collection('users').doc(friendID))
+      const friends=await database.getAll(...friendsRef) //query all friends
+      let friendData=[]
+      let missingFriends=[]
+      friends.forEach((friend)=>friend.exists ?friendData.append(friend): missingFriends.append(friend)) //get all the friends that exist
+      res.status(200).json({
+        friends:friendData
+      })
+      if (missingFriends.length>0){ //delete all friends that dont
+        database.collection('users').doc(uid).update({
+          friends: FieldValue.arrayRemove(missingFriends)
+        })
+      }
+    }
+  })
+}
+
 module.exports={
     createUser,
     readUser,
     updateUser,
     deleteUser,
     loginUser,
+    loadFriends
 }
+

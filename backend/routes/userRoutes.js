@@ -8,5 +8,4 @@ const router = express.Router()
 router.get('/login', loginUser)
 router.post('/',createUser)
 
-
 module.exports=router
