@@ -2,18 +2,23 @@ import React from "react";
 import { View, StyleSheet, Text, ScrollView, Alert } from "react-native";
 import { useState } from "react";
 import TextInput from "../components/common/TextInput";
-import { Colors, RegexUsername } from "../Constants";
+import { Colors, RegexEmail} from "../Constants";
 import Button from "../components/common/Button";
 import { RegexPassword, RegexName } from "../Constants";
 import AddProfilePhoto from "../components/common/AddProfilePhoto";
-
+const axios=require('axios').default
+//const got=require('got')
+const FormData = require('form-data');
+//const request=require('http')
+//const fetch=require('node-fetch')
+//const needle=require('needle')
 /*
   -- DOCUMENTATION --
 */
 const SignUpScreen = ({ props, navigation }) => {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
     const [create, setCreate] = useState(true);
@@ -23,7 +28,7 @@ const SignUpScreen = ({ props, navigation }) => {
         lastName: undefined,
         password: undefined,
         confirm: undefined,
-        username: undefined,
+        email: undefined,
     });
 
     // console.log(errors);
@@ -48,29 +53,68 @@ const SignUpScreen = ({ props, navigation }) => {
             password !== confirm && password.length > 0
                 ? "Passwords don't match"
                 : undefined;
-        const usernameError =
-            username.length > 0 && RegexUsername.test(username)
+        const emailError =
+            email.length > 0 && RegexEmail.test(email)
                 ? undefined
-                : "You must enter a username.";
+                : "You must enter a valid email.";
 
         if (
             firstNameError ||
             lastNameError ||
             passwordError ||
             confirmError ||
-            usernameError
+            emailError
         ) {
             setErrors({
                 firstName: firstNameError,
                 lastName: lastNameError,
                 password: passwordError,
                 confirm: confirmError,
-                username: usernameError,
+                email: emailError,
             });
         } else {
             setCreate(true);
         }
     };
+
+    const signUp=async(fname,lname,email,password)=>{
+          //console.log(data)
+        let data = new FormData();
+        data.append('email',email );
+        data.append('password', password), 
+        data.append('firstName', fname);
+        data.append('lastName', lname);
+        // const config = {
+        //     method: 'post',
+        //   maxBodyLength: Infinity,
+        //     url: 'http://localhost:4000/api/users/',
+        //     headers: { 
+        //         'Content-Type': 'multipart/form-data'
+        //     },
+        //     data : data
+        //   }
+        // const test=await axios.post("http://localhost:4000/api/users/")
+        // console.log(test)
+        // axios(config)
+        // request.post('http://localhost:4000/api/users/',data).then( (response)=> {
+        //     console.log(JSON.stringify(response.data));
+        //     console.log(response)
+        //     return true
+        // })
+        //got.get('http://localhost:4000/api/users/', {responseType: 'json'})
+        //fetch('https://localhost:4000/api/users/', {method: 'POST', body: data})
+        //needle('post', 'http://localhost:4000/api/users/' ,data, { multipart: true })
+        await axios.post('http://10.0.2.2:4000/api/users/', data, {
+            'content-type': 'multipart/form-data'
+          }).then(()=>{
+            console.log(JSON.stringify(response.data));
+             console.log(response)
+             return true
+    }).catch(function (error) {
+        console.log(error);
+        console.log(error.data)
+        })
+    }
 
     return (
         <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
@@ -139,23 +183,23 @@ const SignUpScreen = ({ props, navigation }) => {
                     />
 
                     <TextInput
-                        setText={setUsername}
-                        value={username}
-                        placeholder={"Username"}
+                        setText={setEmail}
+                        value={email}
+                        placeholder={"Email"}
                         isPassword={false}
                         autoCorrect={false}
-                        error={errors.username}
-                        errorMessage={"Enter a valid username"}
+                        error={errors.email}
+                        errorMessage={"Enter a valid email"}
                         onEndEditing={() => {
-                            if (!RegexUsername.test(username)) {
+                            if (!RegexEmail.test(email)) {
                                 setErrors({
                                     ...errors,
-                                    username: "Please enter a valid username.",
+                                    email: "Please enter a valid email.",
                                 });
                             } else {
                                 setErrors({
                                     ...errors,
-                                    username: undefined,
+                                    email: undefined,
                                 });
                             }
                         }}
@@ -197,7 +241,12 @@ const SignUpScreen = ({ props, navigation }) => {
                     <Button
                         title="Continue"
                         // onPress={onPressRegister}
-                        onPress={() => navigation.navigate("Create Profile")}
+                        onPress={async() => {
+                            const userToken=await signUp(firstName,lastName,email,password)
+                            if (userToken)
+                                navigation.navigate("Create Profile")
+                        }
+                    }
                         style={styles.button}
                     />
                 </View>
