@@ -22,7 +22,9 @@ app.use((req, res, next) => {
 
 //app routing
 const userRoutes = require ('./routes/userRoutes')
+const eventRoutes = require('./routes/eventRoutes')
 app.use('/api/users', userRoutes)
+app.use('/api/events', eventRoutes)
 
 
 app.listen(process.env.REACT_APP_SERVER_PORT, () => {
