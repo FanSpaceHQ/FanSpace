@@ -75,6 +75,8 @@ const CreateProfileScreen = ({ props, navigation }) => {
         }
     };
 
+const sendProfile =async(location,bio,instagram,discord,twitter)
+
     return (
         <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
             <View

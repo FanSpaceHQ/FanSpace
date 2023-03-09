@@ -68,7 +68,10 @@ const SingInScreen = ({ props, navigation }) => {
 
                 <Button
                     title="Log In"
-                    onPress={() => Alert.alert("Login")}
+                    onPress={() =>{
+                    Alert.alert("Login")
+                    navigation.navigate("Home")
+                }}
                     style={styles.button}
                 />
 

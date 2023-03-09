@@ -21,5 +21,5 @@ const storage = getStorage(app);
 
 module.exports = {
   auth,
-  storage
+  storage,
 }

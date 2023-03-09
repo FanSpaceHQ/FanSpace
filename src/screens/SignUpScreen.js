@@ -84,35 +84,16 @@ const SignUpScreen = ({ props, navigation }) => {
         data.append('password', password), 
         data.append('firstName', fname);
         data.append('lastName', lname);
-        // const config = {
-        //     method: 'post',
-        //   maxBodyLength: Infinity,
-        //     url: 'http://localhost:4000/api/users/',
-        //     headers: { 
-        //         'Content-Type': 'multipart/form-data'
-        //     },
-        //     data : data
-        //   }
-        // const test=await axios.post("http://localhost:4000/api/users/")
-        // console.log(test)
-        // axios(config)
-        // request.post('http://localhost:4000/api/users/',data).then( (response)=> {
-        //     console.log(JSON.stringify(response.data));
-        //     console.log(response)
-        //     return true
-        // })
-        //got.get('http://localhost:4000/api/users/', {responseType: 'json'})
-        //fetch('https://localhost:4000/api/users/', {method: 'POST', body: data})
-        //needle('post', 'http://localhost:4000/api/users/' ,data, { multipart: true })
-        await axios.post('http://10.0.2.2:4000/api/users/', data, {
+        await axios.post('http://localhost:4000/api/users/', data, {
             'content-type': 'multipart/form-data'
-          }).then(()=>{
+          }).then((response)=>{
             console.log(JSON.stringify(response.data));
              console.log(response)
-             return true
+             return response
     }).catch(function (error) {
         console.log(error);
         console.log(error.data)
+        return error
         })
     }
 

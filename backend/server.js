@@ -25,17 +25,20 @@ app.use((req, res, next) => {
 
 const multer =require('multer')
 const upload = multer()
-app.use(upload.array()); 
+//app.use(upload.array()); 
 app.use(express.static('public'));
-
-const userRoutes = require ('./routes/userRoutes')
-app.use('/api/users', userRoutes)
-
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({
   extended: true
 }));
 
+const userRoutes = require ('./routes/userRoutes')
+app.use('/api/users', userRoutes)
+
+
+app.use((error, req, res, next) => {
+  console.log('This is the rejected field ->', error.field);
+});
 
 
 app.listen(process.env.REACT_APP_SERVER_PORT, () => {
