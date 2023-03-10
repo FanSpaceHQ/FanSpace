@@ -1,14 +1,16 @@
 import React from "react";
-import { View, StyleSheet, Text, ScrollView, Alert } from "react-native";
+import { View, StyleSheet, Text, ScrollView, Image } from "react-native";
 import { useState } from "react";
 import TextInput from "../components/common/TextInput";
-import { Colors, RegexEmail} from "../Constants";
+import { Colors, RegexEmail } from "../Constants";
 import Button from "../components/common/Button";
 import { RegexPassword, RegexName } from "../Constants";
 import AddProfilePhoto from "../components/common/AddProfilePhoto";
-const axios=require('axios').default
+import * as ImagePicker from "expo-image-picker";
+
+const axios = require("axios").default;
 //const got=require('got')
-const FormData = require('form-data');
+const FormData = require("form-data");
 //const request=require('http')
 //const fetch=require('node-fetch')
 //const needle=require('needle')
@@ -31,8 +33,27 @@ const SignUpScreen = ({ props, navigation }) => {
         email: undefined,
     });
 
-    // console.log(errors);
-    // console.log(lastName);
+    const [image, setImage] = useState(null);
+    const [imagePicked, setImagePicked] = useState(false);
+
+    console.log(imagePicked);
+    console.log(image);
+
+    const pickImage = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            // allowsEditing: true,
+            // aspect: [4, 3],
+            quality: 1,
+        });
+
+        console.log(result);
+        if (!result.canceled) {
+            setImage(result.assets[0].uri);
+            setImagePicked(true);
+        }
+    };
 
     function success(navigation) {
         {
@@ -77,25 +98,27 @@ const SignUpScreen = ({ props, navigation }) => {
         }
     };
 
-    const signUp=async(fname,lname,email,password)=>{
-          //console.log(data)
+    const signUp = async (fname, lname, email, password) => {
+        //console.log(data)
         let data = new FormData();
-        data.append('email',email );
-        data.append('password', password), 
-        data.append('firstName', fname);
-        data.append('lastName', lname);
-        await axios.post('http://localhost:4000/api/users/', data, {
-            'content-type': 'multipart/form-data'
-          }).then((response)=>{
-            console.log(JSON.stringify(response.data));
-             console.log(response)
-             return response
-    }).catch(function (error) {
-        console.log(error);
-        console.log(error.data)
-        return error
-        })
-    }
+        data.append("email", email);
+        data.append("password", password), data.append("firstName", fname);
+        data.append("lastName", lname);
+        await axios
+            .post("http://localhost:4000/api/users/", data, {
+                "content-type": "multipart/form-data",
+            })
+            .then((response) => {
+                console.log(JSON.stringify(response.data));
+                console.log(response);
+                return response;
+            })
+            .catch(function (error) {
+                console.log(error);
+                console.log(error.data);
+                return error;
+            });
+    };
 
     return (
         <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
@@ -107,14 +130,32 @@ const SignUpScreen = ({ props, navigation }) => {
             >
                 <Text style={styles.title}>Create your account.</Text>
 
-                <View>
-                    <AddProfilePhoto
-                        style={{ margin: 10 }}
-                        onPress={() =>
-                            Alert.alert("Add Profile Photo logic later")
-                        }
-                    />
-                </View>
+                {image ? (
+                    <View>
+                        {image && (
+                            <Image
+                                source={{ uri: image }}
+                                style={{
+                                    width: 104,
+                                    height: 104,
+                                    borderRadius: 1000,
+                                    marginBottom: 20,
+                                }}
+                            />
+                        )}
+                    </View>
+                ) : (
+                    <View>
+                        <AddProfilePhoto
+                            style={{
+                                margin: 10,
+                                backgroundColor: Colors.primaryGreen,
+                            }}
+                            onPress={pickImage}
+                        />
+                    </View>
+                )}
+
                 <View>
                     <TextInput
                         setText={setFirstName}
@@ -222,12 +263,16 @@ const SignUpScreen = ({ props, navigation }) => {
                     <Button
                         title="Continue"
                         // onPress={onPressRegister}
-                        onPress={async() => {
-                            const userToken=await signUp(firstName,lastName,email,password)
+                        onPress={async () => {
+                            const userToken = await signUp(
+                                firstName,
+                                lastName,
+                                email,
+                                password
+                            );
                             if (userToken)
-                                navigation.navigate("Create Profile")
-                        }
-                    }
+                                navigation.navigate("Create Profile");
+                        }}
                         style={styles.button}
                     />
                 </View>
@@ -256,7 +301,7 @@ const styles = StyleSheet.create({
     button: {
         marginTop: 30,
         alignSelf: "center",
-        backgroundColor: Colors.primaryGreen,
+        backgroundColor: Colors.green.primary,
     },
 });
 

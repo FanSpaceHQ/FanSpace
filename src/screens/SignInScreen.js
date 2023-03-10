@@ -8,17 +8,18 @@ import {
     Image,
     Alert,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import TextInput from "../components/common/TextInput";
 import Button from "../components/common/Button";
 import { Colors } from "../Constants";
-import {auth} from '../../backend/firebase.js'
+import { auth } from "../../backend/firebase.js";
 import { signInWithEmailAndPassword } from "@firebase/auth";
-// import axios from "axios";
 
 /*
   -- DOCUMENTATION --
 */
-const SingInScreen = ({ props, navigation }) => {
+const SignInScreen = ({ props, navigation }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -51,7 +52,7 @@ const SingInScreen = ({ props, navigation }) => {
                 <Text style={styles.subtitle}>Expand your orbit</Text>
 
                 <TextInput
-                    setText={setEmail}
+                    onChangeText={setEmail}
                     value={email}
                     title={null}
                     placeholder={"Email"}
@@ -60,7 +61,7 @@ const SingInScreen = ({ props, navigation }) => {
                 />
 
                 <TextInput
-                    setText={setPassword}
+                    onChangeText={setPassword}
                     value={password}
                     title={null}
                     placeholder={"Password"}
@@ -70,25 +71,23 @@ const SingInScreen = ({ props, navigation }) => {
 
                 <Button
                     title="Log In"
-                    onPress={() =>{
-                    signInWithEmailAndPassword(auth,email,password).then((userCred)=>{
-                        const uid=userCred.user.uid
-                        //TODO set local state to userid
-                        Alert.alert("signed in successfully!")
-                        navigation.navigate("Home")
-                    }).catch((error)=>{
-                        Alert.alert(error.code)
-                    })
-                    
-                    
-                }}
+                    onPress={() => {
+                        signInWithEmailAndPassword(auth, email, password)
+                            .then((userCred) => {
+                                const uid = userCred.user.uid;
+                                //TODO set local state to userid
+                                Alert.alert("signed in successfully!");
+                                navigation.navigate("Home");
+                            })
+                            .catch((error) => {
+                                Alert.alert(error.code);
+                            });
+                    }}
                     style={styles.button}
                 />
 
                 <View>
                     <Text
-                        // onPress={() => Alert.alert("Sign Up")}
-
                         onPress={() => navigation.navigate("Sign Up")}
                         style={styles.signUp}
                     >
@@ -119,7 +118,7 @@ const styles = StyleSheet.create({
     },
 });
 
-export default SingInScreen;
+export default SignInScreen;
 
 /*
   -- DOCUMENTATION --
