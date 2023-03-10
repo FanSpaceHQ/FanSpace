@@ -11,6 +11,7 @@ import {
 import TextInput from "../components/common/TextInput";
 import Button from "../components/common/Button";
 import { Colors } from "../Constants";
+import {auth} from '../../backend/firebase.js'
 // import axios from "axios";
 
 /*
@@ -49,7 +50,7 @@ const SingInScreen = ({ props, navigation }) => {
                 <Text style={styles.subtitle}>Expand your orbit</Text>
 
                 <TextInput
-                    onChangeText={setEmail}
+                    setText={setEmail}
                     value={email}
                     title={null}
                     placeholder={"Email"}
@@ -58,7 +59,7 @@ const SingInScreen = ({ props, navigation }) => {
                 />
 
                 <TextInput
-                    onChangeText={setPassword}
+                    setText={setPassword}
                     value={password}
                     title={null}
                     placeholder={"Password"}
