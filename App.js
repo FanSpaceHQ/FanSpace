@@ -5,28 +5,64 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/Feather";
+import { Colors, Dim } from "./src/Constants";
+import { DefaultTheme } from "@react-navigation/native";
 
 // Import all screens here
 import HomeScreen from "./src/screens/HomeScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import SearchScreen from "./src/screens/SearchScreen";
-import SingInScreen from "./src/screens/SignInScreen";
+import SignInScreen from "./src/screens/SignInScreen";
 import LandingScreen from "./src/screens/LandingScreen";
 import SignUpScreen from "./src/screens/SignUpScreen";
 import CreateProfileScreen from "./src/screens/CreateProfileScreen";
+import ConcertScreen from "./src/screens/ConcertScreen";
 //
+
+const MyTheme = {
+    ...DefaultTheme,
+    colors: {
+        ...DefaultTheme.colors,
+        primary: "red",
+    },
+};
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+function HomeScreenStack(route) {
+    return (
+        <Stack.Navigator headerMode="false">
+            <Tab.Screen
+                name="Home Screen"
+                component={HomeScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Concert Screen"
+                component={ConcertScreen}
+                options={{ headerShown: false }}
+            />
+        </Stack.Navigator>
+    );
+}
+
 function NavBarVisible(route) {
     return (
         <Tab.Navigator
-            headerMode="false"
+            headerMode="true"
             screenOptions={({ route }) => ({
-                tabBarShowLabel: false,
-                style: {
+                tabBarShowLabel: true,
+                tabBarActiveTintColor: Colors.green.primary,
+                tabBarStyle: {
+                    padding: 10,
+                    paddingTop: 10,
+                    paddingBottom: 30,
                     height: 90,
+                    // margin: 20,
+                    // width: Dim.width - 40,
+                    // borderRadius: 25,
+                    // backgroundColor: "transparent",
                 },
                 tabBarHideOnKeyboard: true,
                 tabBarIcon: ({ focused, color, size }) => {
@@ -36,8 +72,8 @@ function NavBarVisible(route) {
                         case "Home":
                             iconName = "home";
                             break;
-                        case "Search":
-                            iconName = "search";
+                        case "Friends":
+                            iconName = "smile";
                             break;
                         case "Profile":
                             iconName = "user";
@@ -46,16 +82,17 @@ function NavBarVisible(route) {
                             break;
                     }
                     return <Icon name={iconName} size={24} color={color} />;
+                    f;
                 },
             })}
         >
             <Tab.Screen
                 name="Home"
-                component={HomeScreen}
+                component={HomeScreenStack}
                 options={{ headerShown: false }}
             />
             <Tab.Screen
-                name="Search"
+                name="Friends"
                 component={SearchScreen}
                 options={{ headerShown: false }}
             />
@@ -71,11 +108,11 @@ function NavBarVisible(route) {
 function SignInFlow(route) {
     return (
         <Stack.Navigator headerMode="false">
-            <Stack.Screen
+            {/* <Stack.Screen
                 name="Sign In"
-                component={SingInScreen}
+                component={SignInScreen}
                 options={{ headerShown: false }}
-            />
+            /> */}
             <Stack.Screen
                 name="Sign Up"
                 component={SignUpScreen}
@@ -100,7 +137,7 @@ const App = () => {
     // if not userID, then go to Login stack
 
     return (
-        <NavigationContainer>
+        <NavigationContainer theme={MyTheme}>
             {loading ? (
                 <LandingScreen />
             ) : userID ? (

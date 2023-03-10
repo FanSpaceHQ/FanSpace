@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Colors } from "../../Constants";
 import Icon from "react-native-vector-icons/Feather";
 
@@ -7,12 +7,24 @@ import Icon from "react-native-vector-icons/Feather";
   -- DOCUMENTATION --
 */
 const AddProfilePhoto = (props) => {
-    return (
+    return props.imagePicked ? (
+        <Image
+            source={{
+                uri: props.Image,
+            }}
+            style={{
+                height: 104,
+                width: 104,
+                alignSelf: "center",
+                borderRadius: 1000,
+            }}
+        />
+    ) : (
         <TouchableOpacity onPress={props.onPress}>
             <View
                 style={{
                     ...props.style,
-                    backgroundColor: Colors.primaryGreen,
+                    backgroundColor: Colors.green.primary,
                     height: 104,
                     width: 104,
                     borderRadius: 1000,

@@ -1,11 +1,12 @@
 import React from "react";
-import { View, StyleSheet, Text, ScrollView, Alert } from "react-native";
+import { View, StyleSheet, Text, ScrollView, Image } from "react-native";
 import { useState } from "react";
 import TextInput from "../components/common/TextInput";
 import { Colors, RegexUsername } from "../Constants";
 import Button from "../components/common/Button";
 import { RegexPassword, RegexName } from "../Constants";
 import AddProfilePhoto from "../components/common/AddProfilePhoto";
+import * as ImagePicker from "expo-image-picker";
 
 /*
   -- DOCUMENTATION --
@@ -26,8 +27,27 @@ const SignUpScreen = ({ props, navigation }) => {
         username: undefined,
     });
 
-    // console.log(errors);
-    // console.log(lastName);
+    const [image, setImage] = useState(null);
+    const [imagePicked, setImagePicked] = useState(false);
+
+    console.log(imagePicked);
+    console.log(image);
+
+    const pickImage = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            // allowsEditing: true,
+            // aspect: [4, 3],
+            quality: 1,
+        });
+
+        console.log(result);
+        if (!result.canceled) {
+            setImage(result.assets[0].uri);
+            setImagePicked(true);
+        }
+    };
 
     function success(navigation) {
         {
@@ -82,14 +102,32 @@ const SignUpScreen = ({ props, navigation }) => {
             >
                 <Text style={styles.title}>Create your account.</Text>
 
-                <View>
-                    <AddProfilePhoto
-                        style={{ margin: 10 }}
-                        onPress={() =>
-                            Alert.alert("Add Profile Photo logic later")
-                        }
-                    />
-                </View>
+                {image ? (
+                    <View>
+                        {image && (
+                            <Image
+                                source={{ uri: image }}
+                                style={{
+                                    width: 104,
+                                    height: 104,
+                                    borderRadius: 1000,
+                                    marginBottom: 20,
+                                }}
+                            />
+                        )}
+                    </View>
+                ) : (
+                    <View>
+                        <AddProfilePhoto
+                            style={{
+                                margin: 10,
+                                backgroundColor: Colors.primaryGreen,
+                            }}
+                            onPress={pickImage}
+                        />
+                    </View>
+                )}
+
                 <View>
                     <TextInput
                         setText={setFirstName}

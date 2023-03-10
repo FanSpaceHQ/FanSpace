@@ -74,8 +74,6 @@ const SingInScreen = ({ props, navigation }) => {
 
                 <View>
                     <Text
-                        // onPress={() => Alert.alert("Sign Up")}
-
                         onPress={() => navigation.navigate("Sign Up")}
                         style={styles.signUp}
                     >
