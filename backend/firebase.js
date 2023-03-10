@@ -1,7 +1,7 @@
 const {initializeApp} = require('firebase/app')
 const {getAuth} = require('firebase/auth');
 const {getStorage} = require('firebase/storage');
-const {getRemoteConfig, getRemoteConfig} = require('firebase/remote-config')
+//const {getRemoteConfig} = require('firebase/remote-config')
 
 const firebaseConfig={
     apiKey: "AIzaSyAU5DjER2f0ljEc5cZpq-9iO0XAOx8E7GI",
@@ -14,12 +14,10 @@ const firebaseConfig={
 }
 const app= initializeApp(firebaseConfig)
 
-const getRemoteConfig=getRemoteConfig(app)
-remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
+// const remoteConfig=getRemoteConfig(app)
+// remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
 const auth = getAuth(app);
-const storage = getStorage(app);
 
 module.exports = {
-  auth,
-  storage,
+  auth
 }

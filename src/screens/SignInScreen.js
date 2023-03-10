@@ -12,6 +12,7 @@ import TextInput from "../components/common/TextInput";
 import Button from "../components/common/Button";
 import { Colors } from "../Constants";
 import {auth} from '../../backend/firebase.js'
+import { signInWithEmailAndPassword } from "@firebase/auth";
 // import axios from "axios";
 
 /*
@@ -70,8 +71,16 @@ const SingInScreen = ({ props, navigation }) => {
                 <Button
                     title="Log In"
                     onPress={() =>{
-                    Alert.alert("Login")
-                    navigation.navigate("Home")
+                    signInWithEmailAndPassword(auth,email,password).then((userCred)=>{
+                        const uid=userCred.user.uid
+                        //TODO set local state to userid
+                        Alert.alert("signed in successfully!")
+                        navigation.navigate("Home")
+                    }).catch((error)=>{
+                        Alert.alert(error.code)
+                    })
+                    
+                    
                 }}
                     style={styles.button}
                 />
