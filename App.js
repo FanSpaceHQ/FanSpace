@@ -108,11 +108,11 @@ function NavBarVisible(route) {
 function SignInFlow(route) {
     return (
         <Stack.Navigator headerMode="false">
-            {/* <Stack.Screen
+            <Stack.Screen
                 name="Sign In"
                 component={SignInScreen}
                 options={{ headerShown: false }}
-            /> */}
+            />
             <Stack.Screen
                 name="Sign Up"
                 component={SignUpScreen}

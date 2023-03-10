@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     button: {
         marginTop: 30,
         alignSelf: "center",
-        backgroundColor: Colors.primaryGreen,
+        backgroundColor: Colors.green.primary,
     },
 });
 
