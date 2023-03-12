@@ -8,96 +8,95 @@ const addUserToEvent=async(req,res)=>{ //take in three params, the user we're ch
     const uid=req.params.uid
     const event=req.params.event
     const field=req.params.field
-    if(!event||!uid || field!='interested'||field!='going' || field != 'selling') //check for all parameters
+    
+    if(!event || !uid || (field!='interested' && field!='going' && field != 'selling')) //check for all parameters
       return res.status(400).json({
         error:"one or more parameters are missing from the request"
       }) 
-    const[userdoc, eventdoc]=await promises.all(
-       database.collection('users').doc(uid).get(),
-      database.collection('events').doc(event).get()
-    ) //query the user and the event
-    if(!userdoc.exists)
+    const[userdoc, eventdoc]=await Promise.all([database.collection('users').doc(uid).get(), database.collection('events').doc(event).get()]) //query the user and the event
+    if(!userdoc.exists) {
       return res.status(400).json({
         error: "user not found"
       })
+    }
     else{
         let allUserData = userdoc.data()
-        let allEventData = eventdoc.data()
+        //if the specified field doesn't exist, intialize the specified field to empty for the user
+        if (!allUserData[field]) {
+            allUserData[field] = {}
+        }
 
+         //call ticketmaster api
+         const ticketMasterData = await getEventInfo(event)
+
+        //initialize event fields to empty and time
+        let going={}
+        let interested={}
+        let selling={}
+        let time = ticketMasterData.dateTime
+
+        let userInterested = allUserData.interested || {};
+        let userGoing = allUserData.going || {};
+        let userSelling = allUserData.selling || {};
+
+        //define userData
         let userData = {
             firstName: allUserData.firstName,
             lastName: allUserData.lastName,
             image: allUserData.image,
         }
 
-        let going={}
-        let interested={}
-        let selling={}
-        let time = new Date(0)
-    //call ticketmaster api
-    const ticketMasterData = await getEventInfo(event)
-    //then extract image, title, artist field and set userInterested,userGoing,userSelling respectively
-    let eventData = {
-        artist: ticketMasterData.artist,
-        image: ticketMasterData.image
+        //define eventData
+        let eventData = {
+            artist: ticketMasterData.artist,
+            image: ticketMasterData.image,
+        }
 
-    }
-        
-      //construct json object to be added
-      if(eventdoc.exists){ //if event doc doesn't exist, we create it with the name eventid 
-       //TODO get time from tickemaster api
-        let going={...event.going}||{}
-        let interested={...event.interested}||{}
-        let selling={...event.selling}||{}
-        time = allEventData.dateTime
-      } else{
-      }
-      
+        let allEventData = eventdoc.data()
+        let addUser=true
 
-      database.collection('events').doc(event).set({
-        following: following,
-        going:going,
-        interested:interested,
-        selling:selling,
-        time: time
-    })
-       //then add person to corresponding field
-       switch (field){
-        //add the user to the field they indicated
-        case "interested":
-            interested[uid]=userData;
-            break;
-        case "going":
-            going[uid]=userData;
-            break;
-        case "selling":
-            selling[uid]=userData;
-            break;
-       }
+        if(eventdoc.exists){
+         //first thing, set going, interested, and selling to the existing doc's going, interested, selling
+            going=allEventData.going,
+            interested=allEventData.interested,
+            selling=allEventData.selling
+
+            //if user already added remove user from field
+            const userAlreadyAdded = (allEventData[field]&&Object.keys(allEventData[field]).includes(uid))
+
+            if (userAlreadyAdded) {
+                delete allEventData[field][uid]
+                delete allUserData[field][event]
+                addUser=false
+            }
+        }
+
+        //add user and event data if it has not been added
+        if(addUser){
+         //then add person to corresponding field
+            allEventData[field][uid]=userData
+            allUserData[field][event]=eventData
+        }
+
+        //set the fields
+        await database.collection('events').doc(event).set({
+            going: going,
+            interested: interested,
+            selling: selling,
+            time: time
+        })
 
       //create copy of userdoc.data(), add the new concert to the appropriate field and then set it with .set()
-      let userInterested = userData.interested || {};
-      let userGoing = userData.going || {};
-      let userSelling = userData.selling || {};
-      
-      switch (field) {
-        case "interested":
-          userInterested[event] = eventData;
-          break;
-        case "going":
-          userGoing[event] = eventData;
-          break;
-        case "selling":
-          userSelling[event] = eventData;
-          break;
-      }
-      
-      userData.interested = userInterested;
-      userData.going = userGoing;
-      userData.selling = userSelling;
-      database.collection('users').doc(uid).set(userData,{merge: true});
+        userData.interested = userInterested;
+        userData.going = userGoing;
+        userData.selling = userSelling;
+        await database.collection('users').doc(uid).set(
+            {going:userGoing,
+            interested:userInterested,
+            selling:userSelling},
+            {merge: true});
     }
-   
+    res.status(200).json({message:'success'});
 }
 
 const getEventInfo = async(id) => {
@@ -136,11 +135,6 @@ const getEvent=async (req,res) =>{
     });       
 
 }
-
-//if doc exists
-//check if user is in the specified field
-    //if not add the user
-    //if they are, remove them
 
 module.exports= {
     getEvent,
