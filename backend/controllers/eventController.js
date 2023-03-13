@@ -102,7 +102,7 @@ const addUserToEvent=async(req,res)=>{ //take in three params, the user we're ch
 const getEventInfo = async(id) => {
     const url = 'https://app.ticketmaster.com/discovery/v2/events/';
     try {
-        const event = await axios.get(url + id + '.json?apikey=' + TICKETMASTERKEY);
+        const [event, eventDoc] = await Promise.all([axios.get(url + id + '.json?apikey=' + TICKETMASTERKEY), database.collection('events').doc(id).get()]);
         const eData = event.data;
         return {
             name: eData.name,
@@ -112,6 +112,7 @@ const getEventInfo = async(id) => {
             dateTime: eData.dates.start.dateTime,
             image: eData.images[0].url,
             address: eData._embedded.venues[0].address.line1 + ' ' + eData._embedded.venues[0].city.name + ', ' + eData._embedded.venues[0].state.name,
+            eventDoc: eventDoc.data()
         };
     } catch (error) {
         return {
