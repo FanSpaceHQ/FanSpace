@@ -104,14 +104,25 @@ const getEventInfo = async(id) => {
     try {
         const [event, eventDoc] = await Promise.all([axios.get(url + id + '.json?apikey=' + TICKETMASTERKEY), database.collection('events').doc(id).get()]);
         const eData = event.data;
+
+        let artist = '';
+        if (eData._embedded && eData._embedded.attractions && eData._embedded.attractions[0]) {
+            artist = eData._embedded.attractions[0].name;
+        }
+        
+        let address = '';
+        if (eData._embedded && eData._embedded.venues && eData._embedded.venues[0] && eData._embedded.venues[0].address) {
+            address = eData._embedded.venues[0].address.line1 + ' ' + eData._embedded.venues[0].city.name + ', ' + eData._embedded.venues[0].state.name;
+        }
+        
         return {
             name: eData.name,
-            artist: eData._embedded.attractions[0].name,
+            artist,
             date: eData.dates.start.localDate,
             time: eData.dates.start.localTime,
             dateTime: eData.dates.start.dateTime,
             image: eData.images[0].url,
-            address: eData._embedded.venues[0].address.line1 + ' ' + eData._embedded.venues[0].city.name + ', ' + eData._embedded.venues[0].state.name,
+            address,
             eventDoc: eventDoc.data()
         };
     } catch (error) {
@@ -136,6 +147,8 @@ const getEvent=async (req,res) =>{
     });       
 
 }
+//getEventInfo("vvG1jZ9KbsbPCD")
+getEventInfo("vvG17Z9JEPDzpN")
 
 module.exports= {
     getEvent,
