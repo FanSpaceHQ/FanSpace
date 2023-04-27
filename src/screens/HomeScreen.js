@@ -12,7 +12,6 @@ import { Colors, Dim } from "../Constants";
 import Icon from "react-native-vector-icons/Feather";
 import { SearchBar } from "react-native-elements";
 import ConcertBlock from "../components/common/ConcertBlock";
-import DropDownPicker from 'react-native-dropdown-picker';
 
 
 /*
