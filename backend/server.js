@@ -17,17 +17,15 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use((req, res, next) => {
-    console.log(req.path, req.method);
-    next();
-});
+  console.log(req.path, req.method);
+  next();
+})
 
-const multer = require("multer");
-const upload = multer();
-//app.use(upload.array());
-app.use(express.static("public"));
-
-const userRoutes = require("./routes/userRoutes");
-app.use("/api/users", userRoutes);
+//app routing
+const userRoutes = require ('./routes/userRoutes')
+const eventRoutes = require('./routes/eventRoutes')
+app.use('/api/users', userRoutes)
+app.use('/api/events', eventRoutes)
 
 const bodyParser = require("body-parser");
 app.use(
