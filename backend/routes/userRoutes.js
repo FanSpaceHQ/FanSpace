@@ -1,10 +1,21 @@
-const express=require('express')
+const express = require("express");
+const multer = require("multer");
+const upload = multer();
+const {
+    createUser,
+    readUser,
+    updateUser,
+    deleteUser,
+    loginUser,
+    objectTest,
+} = require("../controllers/userController");
 
-const {createUser, readUser, updateUser, deleteUser
-}= require('../controllers/userController')
+const router = express.Router();
 
-const router = express.Router()
+router.get("/login", loginUser);
+router.post("/", upload.single("File"), createUser);
+router.get("/", readUser);
+router.patch("/", upload.single("File"), updateUser);
+router.delete("/", deleteUser);
 
-router.post('/',createUser)
-
-module.exports=router
+module.exports = router;
