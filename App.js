@@ -128,7 +128,7 @@ function SignInFlow(route) {
 }
 
 const App = () => {
-    const [userID, setUserID] = useState(false);
+    const [userID, setUserID] = useState(true);
     const [loading, setLoading] = useState(false);
 
     // if loading go to LandingScreen
