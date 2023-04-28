@@ -38,10 +38,11 @@
     "react-native": "0.70.8",
     "react-native-date-picker": "^4.2.13",
     "react-native-elements": "^3.4.3",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-tab-view": "^3.5.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9"
+    "@babel/core": "^7.21.4"
   },
   "private": true
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, Text, ScrollView, Image } from "react-native";
+import { View, StyleSheet, Text, ScrollView, Image, Dimensions, TouchableOpacity } from "react-native";
 import { useState } from "react";
 import TextInput from "../components/common/TextInput";
 import { Colors, RegexEmail } from "../Constants";
@@ -7,6 +7,10 @@ import Button from "../components/common/Button";
 import { RegexPassword, RegexName } from "../Constants";
 import AddProfilePhoto from "../components/common/AddProfilePhoto";
 import * as ImagePicker from "expo-image-picker";
+import Icon from "react-native-vector-icons/Feather";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
+const { width, height } = Dimensions.get('window');
 
 const axios = require("axios").default;
 //const got=require('got')
@@ -36,15 +40,16 @@ const SignUpScreen = ({ props, navigation }) => {
     const [image, setImage] = useState(null);
     const [imagePicked, setImagePicked] = useState(false);
 
-    console.log(imagePicked);
-    console.log(image);
+    // console.log(imagePicked);
+    // console.log(image);
 
     const pickImage = async () => {
         // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
-            // allowsEditing: true,
+            allowsEditing: true,
             // aspect: [4, 3],
+            aspect: [1, 1],
             quality: 1,
         });
 
@@ -52,6 +57,8 @@ const SignUpScreen = ({ props, navigation }) => {
         if (!result.canceled) {
             setImage(result.assets[0].uri);
             setImagePicked(true);
+        } else{
+            // TODO upload image to server
         }
     };
 
@@ -128,6 +135,16 @@ const SignUpScreen = ({ props, navigation }) => {
                     alignItems: "center",
                 }}
             >
+                <TouchableOpacity
+                    onPress={() => navigation.navigate("Sign In")}
+                >
+                    <Icon
+                        name={"arrow-left"}
+                        size={30}
+                        color={"#2F6B25"}
+                        style={styles.icon}
+                    />
+                </TouchableOpacity>
                 <Text style={styles.title}>Create your account.</Text>
 
                 {image ? (
@@ -141,6 +158,7 @@ const SignUpScreen = ({ props, navigation }) => {
                                     borderRadius: 1000,
                                     marginBottom: 20,
                                 }}
+                                onPress={pickImage}
                             />
                         )}
                     </View>
@@ -286,7 +304,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         color: Colors.darkGray,
         textAlign: "center",
-        paddingTop: 20,
+        paddingTop: height * 0.075,
         paddingBottom: 30,
     },
     subtitle: {
@@ -299,7 +317,7 @@ const styles = StyleSheet.create({
         paddingBottom: 30,
     },
     button: {
-        marginTop: 30,
+        marginTop: height * 0.0175,
         alignSelf: "center",
         backgroundColor: Colors.green.primary,
     },
