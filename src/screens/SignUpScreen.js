@@ -1,5 +1,16 @@
 import React from "react";
-import { View, StyleSheet, Text, ScrollView, Image, Dimensions, TouchableOpacity } from "react-native";
+import {
+    View,
+    StyleSheet,
+    Text,
+    ScrollView,
+    Image,
+    Dimensions,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Keyboard,
+    ActivityIndicator,    
+} from "react-native";
 import { useState } from "react";
 import TextInput from "../components/common/TextInput";
 import { Colors, RegexEmail } from "../Constants";
@@ -10,7 +21,7 @@ import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/Feather";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 const axios = require("axios").default;
 //const got=require('got')
@@ -28,6 +39,7 @@ const SignUpScreen = ({ props, navigation }) => {
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
     const [create, setCreate] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     const [errors, setErrors] = useState({
         firstName: undefined,
@@ -48,7 +60,6 @@ const SignUpScreen = ({ props, navigation }) => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
-            // aspect: [4, 3],
             aspect: [1, 1],
             quality: 1,
         });
@@ -57,16 +68,10 @@ const SignUpScreen = ({ props, navigation }) => {
         if (!result.canceled) {
             setImage(result.assets[0].uri);
             setImagePicked(true);
-        } else{
+        } else {
             // TODO upload image to server
         }
     };
-
-    function success(navigation) {
-        {
-            navigation.navigate("Create Profile");
-        }
-    }
 
     const onPressRegister = async () => {
         const firstNameError =
@@ -101,7 +106,19 @@ const SignUpScreen = ({ props, navigation }) => {
                 email: emailError,
             });
         } else {
-            setCreate(true);
+            setLoading(true);
+            const response=await signUp(firstName, lastName, email, password);
+            // console.log(response);
+            if(response.error){
+                //todo error handling
+                setLoading(false);
+            }
+            else{
+                AsyncStorage.setItem('uid', response.uid)
+                const data=await AsyncStorage.getItem('uid')
+            }
+            console.log("Here");
+            setLoading(false);
         }
     };
 
@@ -128,198 +145,227 @@ const SignUpScreen = ({ props, navigation }) => {
     };
 
     return (
-        <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
-            <View
-                style={{
-                    flexDirection: "column",
-                    alignItems: "center",
-                }}
-            >
-                <TouchableOpacity
-                    onPress={() => navigation.navigate("Sign In")}
-                >
-                    <Icon
-                        name={"arrow-left"}
-                        size={30}
-                        color={"#2F6B25"}
-                        style={styles.icon}
-                    />
-                </TouchableOpacity>
-                <Text style={styles.title}>Create your account.</Text>
-
-                {image ? (
-                    <View>
-                        {image && (
-                            <Image
-                                source={{ uri: image }}
-                                style={{
-                                    width: 104,
-                                    height: 104,
-                                    borderRadius: 1000,
-                                    marginBottom: 20,
-                                }}
-                                onPress={pickImage}
+        <KeyboardAwareScrollView
+            style={{
+                backgroundColor: "white",
+                flex: Platform.OS === "ios" ? 1 : null,
+                paddingTop: 0,
+            }}
+            contentContainerStyle={{
+                alignItems: "center",
+                justifyContent: "center",
+            }}
+            behavior={Platform.OS == "ios" ? "padding" : "height"}
+            extraScrollHeight={25}
+            keyboardShouldPersistTaps="handled"
+        >
+            <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
+                <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                    <View
+                        style={{
+                            flexDirection: "column",
+                            alignItems: "center",
+                            paddingTop: 25,
+                        }}
+                    >
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate("Sign In")}
+                        >
+                            <Icon
+                                name={"arrow-left"}
+                                size={24}
+                                color={Colors.darkGray}
+                                style={styles.icon}
                             />
+                        </TouchableOpacity>
+                        <Text style={styles.subtitle}>Profile</Text>
+                        <Text style={styles.title}>Create your account</Text>
+
+                        {image ? (
+                            <View>
+                                {image && (
+                                    <Image
+                                        source={{ uri: image }}
+                                        style={{
+                                            width: 104,
+                                            height: 104,
+                                            borderRadius: 1000,
+                                            marginBottom: 20,
+                                        }}
+                                        onPress={pickImage}
+                                    />
+                                )}
+                            </View>
+                        ) : (
+                            <View>
+                                <AddProfilePhoto
+                                    style={{
+                                        margin: 10,
+                                        backgroundColor: Colors.primaryGreen,
+                                    }}
+                                    onPress={pickImage}
+                                />
+                            </View>
                         )}
+
+                        <View>
+                            <TextInput
+                                setText={setFirstName}
+                                value={firstName}
+                                placeholder={"First name"}
+                                isPassword={false}
+                                autoCorrect={false}
+                                error={errors.firstName}
+                                errorMessage={"Enter a valid first name."}
+                                onEndEditing={() => {
+                                    if (!RegexName.test(firstName)) {
+                                        setErrors({
+                                            ...errors,
+                                            firstName:
+                                                "Please enter a valid first name.",
+                                        });
+                                    } else {
+                                        setErrors({
+                                            ...errors,
+                                            firstName: undefined,
+                                        });
+                                    }
+                                }}
+                            />
+
+                            <TextInput
+                                setText={setLastName}
+                                value={lastName}
+                                placeholder={"Last name"}
+                                isPassword={false}
+                                autoCorrect={false}
+                                error={errors.lastName}
+                                errorMessage={"Enter a valid last name."}
+                                onEndEditing={() => {
+                                    if (!RegexName.test(lastName)) {
+                                        setErrors({
+                                            ...errors,
+                                            lastName:
+                                                "Please enter a valid last name.",
+                                        });
+                                    } else {
+                                        setErrors({
+                                            ...errors,
+                                            lastName: undefined,
+                                        });
+                                    }
+                                }}
+                            />
+
+                            <TextInput
+                                setText={setEmail}
+                                value={email}
+                                placeholder={"Email"}
+                                isPassword={false}
+                                autoCorrect={false}
+                                error={errors.email}
+                                errorMessage={"Enter a valid email"}
+                                onEndEditing={() => {
+                                    if (!RegexEmail.test(email)) {
+                                        setErrors({
+                                            ...errors,
+                                            email: "Please enter a valid email.",
+                                        });
+                                    } else {
+                                        setErrors({
+                                            ...errors,
+                                            email: undefined,
+                                        });
+                                    }
+                                }}
+                            />
+                            <TextInput
+                                setText={setPassword}
+                                value={password}
+                                placeholder={"Password"}
+                                isPassword={true}
+                                autoCorrect={false}
+                                error={errors.password}
+                                errorMessage={
+                                    "Your password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and a special character."
+                                }
+                                onEndEditing={() => {
+                                    if (!RegexPassword.test(password)) {
+                                        setErrors({
+                                            ...errors,
+                                            password:
+                                                "Please enter a valid password.",
+                                        });
+                                    } else {
+                                        setErrors({
+                                            ...errors,
+                                            password: undefined,
+                                        });
+                                    }
+                                }}
+                            />
+                            <TextInput
+                                setText={setConfirm}
+                                value={confirm}
+                                placeholder={"Confirm password again"}
+                                isPassword={true}
+                                autoCorrect={false}
+                                error={errors.confirm}
+                                errorMessage={"Your password does not match."}
+                            />
+
+                            {!loading ? (
+                                <Button
+                                    title="Continue"
+                                    onPress={onPressRegister}
+                                    style={styles.button}
+                                />
+                            ) : (
+                                <ActivityIndicator
+                                    size="small"
+                                    color={Colors.green.primary}
+                                    style={{marginTop: 20}}
+                                />
+                            )}
+                        </View>
                     </View>
-                ) : (
-                    <View>
-                        <AddProfilePhoto
-                            style={{
-                                margin: 10,
-                                backgroundColor: Colors.primaryGreen,
-                            }}
-                            onPress={pickImage}
-                        />
-                    </View>
-                )}
-
-                <View>
-                    <TextInput
-                        setText={setFirstName}
-                        value={firstName}
-                        placeholder={"First name"}
-                        isPassword={false}
-                        autoCorrect={false}
-                        error={errors.firstName}
-                        errorMessage={"Enter a valid first name."}
-                        onEndEditing={() => {
-                            if (!RegexName.test(firstName)) {
-                                setErrors({
-                                    ...errors,
-                                    firstName:
-                                        "Please enter a valid first name.",
-                                });
-                            } else {
-                                setErrors({
-                                    ...errors,
-                                    firstName: undefined,
-                                });
-                            }
-                        }}
-                    />
-
-                    <TextInput
-                        setText={setLastName}
-                        value={lastName}
-                        placeholder={"Last name"}
-                        isPassword={false}
-                        autoCorrect={false}
-                        error={errors.lastName}
-                        errorMessage={"Enter a valid last name."}
-                        onEndEditing={() => {
-                            if (!RegexName.test(lastName)) {
-                                setErrors({
-                                    ...errors,
-                                    lastName: "Please enter a valid last name.",
-                                });
-                            } else {
-                                setErrors({
-                                    ...errors,
-                                    lastName: undefined,
-                                });
-                            }
-                        }}
-                    />
-
-                    <TextInput
-                        setText={setEmail}
-                        value={email}
-                        placeholder={"Email"}
-                        isPassword={false}
-                        autoCorrect={false}
-                        error={errors.email}
-                        errorMessage={"Enter a valid email"}
-                        onEndEditing={() => {
-                            if (!RegexEmail.test(email)) {
-                                setErrors({
-                                    ...errors,
-                                    email: "Please enter a valid email.",
-                                });
-                            } else {
-                                setErrors({
-                                    ...errors,
-                                    email: undefined,
-                                });
-                            }
-                        }}
-                    />
-                    <TextInput
-                        setText={setPassword}
-                        value={password}
-                        placeholder={"Password"}
-                        isPassword={false}
-                        autoCorrect={false}
-                        error={errors.password}
-                        errorMessage={
-                            "Your password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and a special character."
-                        }
-                        onEndEditing={() => {
-                            if (!RegexPassword.test(password)) {
-                                setErrors({
-                                    ...errors,
-                                    password: "Please enter a valid password.",
-                                });
-                            } else {
-                                setErrors({
-                                    ...errors,
-                                    password: undefined,
-                                });
-                            }
-                        }}
-                    />
-                    <TextInput
-                        setText={setConfirm}
-                        value={confirm}
-                        placeholder={"Confirm password again"}
-                        isPassword={false}
-                        autoCorrect={false}
-                        error={errors.confirm}
-                        errorMessage={"Your password does not match."}
-                    />
-
-                    <Button
-                        title="Continue"
-                        // onPress={onPressRegister}
-                        onPress={async () => {
-                            const userToken = await signUp(
-                                firstName,
-                                lastName,
-                                email,
-                                password
-                            );
-                            if (userToken)
-                                navigation.navigate("Create Profile");
-                        }}
-                        style={styles.button}
-                    />
-                </View>
-            </View>
-        </ScrollView>
+                </TouchableWithoutFeedback>
+            </ScrollView>
+        </KeyboardAwareScrollView>
     );
 };
 
 const styles = StyleSheet.create({
     title: {
-        fontSize: 24,
+        fontSize: 25,
         color: Colors.darkGray,
         textAlign: "center",
-        paddingTop: height * 0.075,
+        // paddingTop: height * 0.075,
         paddingBottom: 30,
     },
     subtitle: {
-        paddingLeft: 20,
-        marginTop: 20,
+        // paddingLeft: -20,
+        // marginTop: 100,
+        paddingTop: height * 0.075,
         fontSize: 17,
         color: Colors.darkGray,
-        textAlign: "left",
-        fontWeight: "bold",
+        textAlign: "center",
+        // fontWeight: "bold",
         paddingBottom: 30,
+        // position: "absolute",
     },
     button: {
         marginTop: height * 0.0175,
         alignSelf: "center",
         backgroundColor: Colors.green.primary,
+        marginBottom: 30,
+    },
+    icon: {
+        paddingTop: height * 0.075,
+        alignSelf: "flex-start",
+        position: "absolute",
+        // top: 5,
+        left: -150,
     },
 });
 
