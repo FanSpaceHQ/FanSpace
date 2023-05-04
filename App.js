@@ -10,6 +10,8 @@ import LandingScreen from "./src/screens/LandingScreen";
 // Import Stacks
 import { NavbarStack } from "./src/navigation/NavbarStack";
 import { SignInStack } from "./src/navigation/SignInStack";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 const MyTheme = {
     ...DefaultTheme,
@@ -25,6 +27,19 @@ const App = () => {
     LogBox.ignoreAllLogs(); // enable to remove all deprecation warnings
     const [userID, setUser] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        AsyncStorage.getItem("@uid").then((userId) => {
+            console.log(userId);
+            if (userId !== null) {
+                setUser(true);
+                setLoading(false);
+            } else {
+                setUser(false);
+                setLoading(false);
+            }
+        });
+    }, []);
 
     return(
         <NavigationContainer theme={MyTheme}>

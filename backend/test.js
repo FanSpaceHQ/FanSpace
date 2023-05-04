@@ -6,10 +6,11 @@ const test = async() =>{
         params:{
             apikey: TICKETMASTERKEY,
             // sort: 'relevance,desc',
+            keyword: "SZA new york",
             // classificationId: 'KnvZfZ7vAeA',
             // id: 'K8vZ917GJc7',
             // radius: 20
-            attractionId: 'K8vZ917GJc7',
+            // attractionId: 'K8vZ917GJc7',
         }
     });
     const eData = event.data;

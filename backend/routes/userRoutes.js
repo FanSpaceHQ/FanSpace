@@ -8,6 +8,7 @@ const {
     deleteUser,
     loginUser,
     objectTest,
+    uploadImage,
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.post("/", upload.single("File"), createUser);
 router.get("/", readUser);
 router.patch("/", upload.single("File"), updateUser);
 router.delete("/", deleteUser);
+router.post("/uploadImage", upload.single("File"), uploadImage);
 
 module.exports = router;

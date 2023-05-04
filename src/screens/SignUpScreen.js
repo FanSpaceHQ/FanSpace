@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
     View,
     StyleSheet,
@@ -20,15 +20,14 @@ import AddProfilePhoto from "../components/common/AddProfilePhoto";
 import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/Feather";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Buffer } from "buffer";
 
 const { width, height } = Dimensions.get("window");
 
 const axios = require("axios").default;
-//const got=require('got')
 const FormData = require("form-data");
-//const request=require('http')
-//const fetch=require('node-fetch')
-//const needle=require('needle')
+
 /*
   -- DOCUMENTATION --
 */
@@ -38,9 +37,11 @@ const SignUpScreen = ({ props, navigation }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
-    const [create, setCreate] = useState(true);
     const [loading, setLoading] = useState(false);
-
+    const [imagePicked, setUpload] = useState(false);
+    const [pfpUrl, setUrl] = useState("");
+    const [image, setImage] = useState("");
+    const [profileCreated, setCreate] = useState(false);
     const [errors, setErrors] = useState({
         firstName: undefined,
         lastName: undefined,
@@ -49,31 +50,70 @@ const SignUpScreen = ({ props, navigation }) => {
         email: undefined,
     });
 
-    const [image, setImage] = useState(null);
-    const [imagePicked, setImagePicked] = useState(false);
+    const imageUpload = async (uri) => {
+        async function uriToBase64(uri) {
+            let response = await fetch(uri);
+            let blob = await response.blob();
 
-    // console.log(imagePicked);
-    // console.log(image);
+            return new Promise((resolve, reject) => {
+                let reader = new FileReader();
+                reader.onload = () => {
+                    resolve(reader.result);
+                };
+                reader.onerror = reject;
+
+                reader.readAsDataURL(blob);
+            });
+        }
+        let base64String = await uriToBase64(uri);
+        let imageByte = new Buffer(base64String, "base64");
+        var image = {
+            uri: uri,
+            name: "image.jpg",
+            buffer: imageByte,
+        };
+        let data = new FormData();
+        data.append("File", {
+            uri: image.uri,
+            buffer: [image.buffer.data, image.buffer.type],
+            name: image.name,
+            mimetype: "image/jpeg",
+        });
+        await axios
+            .post("http://localhost:4000/api/users/uploadImage", data, {
+                "content-type": "multipart/form-data",
+            })
+            .then((response) => {
+                setUrl(JSON.stringify(response.data).url);
+                return response;
+            })
+            .catch(function (error) {
+                console.log(error);
+                console.log(error.data);
+                return error;
+            });
+    };
 
     const pickImage = async () => {
         // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
+            base64: true,
             allowsEditing: true,
             aspect: [1, 1],
             quality: 1,
         });
-
-        console.log(result);
+        // console.log(result);
         if (!result.canceled) {
-            setImage(result.assets[0].uri);
-            setImagePicked(true);
-        } else {
-            // TODO upload image to server
+            let uri = result.assets[0].uri;
+            setImage(uri);
+            setUpload(true);
         }
     };
 
     const onPressRegister = async () => {
+        if (!imagePicked)
+            return;
         const firstNameError =
             firstName.length > 0 ? undefined : "You must enter a first name.";
         const lastNameError =
@@ -107,41 +147,40 @@ const SignUpScreen = ({ props, navigation }) => {
             });
         } else {
             setLoading(true);
-            const response=await signUp(firstName, lastName, email, password);
-            // console.log(response);
-            if(response.error){
-                //todo error handling
-                setLoading(false);
-            }
-            else{
-                AsyncStorage.setItem('uid', response.uid)
-                const data=await AsyncStorage.getItem('uid')
-            }
-            console.log("Here");
+            await imageUpload(image)
+            await signUp(firstName, lastName, email, password, pfpUrl)
             setLoading(false);
         }
     };
 
-    const signUp = async (fname, lname, email, password) => {
-        //console.log(data)
+    const signUp = async (fname, lname, email, password, imageUrl) => {
         let data = new FormData();
         data.append("email", email);
         data.append("password", password), data.append("firstName", fname);
-        data.append("lastName", lname);
-        await axios
-            .post("http://localhost:4000/api/users/", data, {
-                "content-type": "multipart/form-data",
-            })
-            .then((response) => {
-                console.log(JSON.stringify(response.data));
-                console.log(response);
-                return response;
-            })
-            .catch(function (error) {
-                console.log(error);
-                console.log(error.data);
-                return error;
-            });
+        data.append("lastName", lname), data.append("imageUrl", imageUrl)
+        try{
+            let uid;
+            await axios
+                .post("http://localhost:4000/api/users/", data, {
+                    "content-type": "multipart/form-data",
+                })
+                .then((response) => {
+                    const uid = JSON.stringify(response.data.uid);
+                    console.log(JSON.stringify(response.data.uid))
+                    AsyncStorage.setItem('@uid', response.data.uid);
+                    setLoading(false);
+                    navigation.navigate("Create Profile")
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    console.log(error.data);
+                });
+            return uid;
+        } catch(error) {
+            console.log(error);
+            console.log(error.data);
+            return error;
+        }
     };
 
     return (
@@ -346,7 +385,7 @@ const styles = StyleSheet.create({
     subtitle: {
         // paddingLeft: -20,
         // marginTop: 100,
-        paddingTop: height * 0.075,
+        paddingTop: height * 0.055,
         fontSize: 17,
         color: Colors.darkGray,
         textAlign: "center",
@@ -361,7 +400,7 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     icon: {
-        paddingTop: height * 0.075,
+        paddingTop: height * 0.055,
         alignSelf: "flex-start",
         position: "absolute",
         // top: 5,
