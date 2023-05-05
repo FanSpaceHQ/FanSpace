@@ -1,7 +1,7 @@
-const TICKETMASTERKEY="dony7aCNUbJjKO5nGFADBs9lrG3jXbvC"
-const TICKETMASTERSECRET="peurnG55PUuBlpHk"
+const TICKETMASTERKEY="dony7aCNUbJjKO5nGFADBs9lrG3jXbvC";
+const TICKETMASTERSECRET="peurnG55PUuBlpHk";
 
-module.exports=(
+module.exports={
     TICKETMASTERKEY,
     TICKETMASTERSECRET
-)
+};
