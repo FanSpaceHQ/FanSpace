@@ -59,7 +59,7 @@ const sort_by = (field, reverse, primer) => {
     };
   };
 
-concertData.sort(sort_by("date",false));
+concertData.sort(sort_by("name",false));
 const HomeScreen = ({ navigation, props }) => {
     return (
         <SafeAreaView style={styles.container}>
