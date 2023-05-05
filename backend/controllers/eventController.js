@@ -147,8 +147,49 @@ const getEvent=async (req,res) =>{
     });       
 
 }
+
+const populateEvents=async(req, res) => {
+    console.log("test")
+    const url = 'https://app.ticketmaster.com/discovery/v2/events';
+    const radius = 50;
+    try {
+        console.log("Hi")
+        const events = await Promise.all([axios.get(url + '.json?&apikey=' + TICKETMASTERKEY + '&radius=' + radius)]);
+        const eData = events[0].data._embedded
+        
+        console.log(eData)
+
+        // let artist = '';
+        // if (eData._embedded && eData._embedded.attractions && eData._embedded.attractions[0]) {
+        //     artist = eData._embedded.attractions[0].name;
+        // }
+        
+        // let address = '';
+        // if (eData._embedded && eData._embedded.venues && eData._embedded.venues[0] && eData._embedded.venues[0].address) {
+        //     address = eData._embedded.venues[0].address.line1 + ' ' + eData._embedded.venues[0].city.name + ', ' + eData._embedded.venues[0].state.name;
+        // }
+        
+        return {
+            // events: allEvents,
+            // name: eData.name,
+            // artist,
+            // date: eData.dates.start.localDate,
+            // time: eData.dates.start.localTime,
+            // dateTime: eData.dates.start.dateTime,
+            // image: eData.images[0].url,
+            // address,
+        };
+    } catch (error) {
+        console.log("error")
+        return {
+            error: 'Event not found'
+        };
+    }
+};
+
 //getEventInfo("vvG1jZ9KbsbPCD")
-getEventInfo("vvG17Z9JEPDzpN")
+//getEventInfo("vvG17Z9JEPDzpN")
+populateEvents();
 
 module.exports= {
     getEvent,
