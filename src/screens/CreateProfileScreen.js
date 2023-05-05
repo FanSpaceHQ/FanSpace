@@ -1,5 +1,6 @@
-import React from "react";
-import { View, StyleSheet, Text, ScrollView, Alert, TouchableOpacity, TouchableWithoutFeedback, Keyboard} from "react-native";
+import React, { useEffect } from "react";
+import { View, StyleSheet, Text, ScrollView, Alert, TouchableOpacity, 
+        TouchableWithoutFeedback, Keyboard, ActivityIndicator} from "react-native";
 import { useState } from "react";
 import TextInput from "../components/common/TextInput";
 import {
@@ -15,6 +16,8 @@ import { RegexPassword, RegexName } from "../Constants";
 import AddProfilePhoto from "../components/common/AddProfilePhoto";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Icon from "react-native-vector-icons/Feather";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /*
   -- DOCUMENTATION --
@@ -24,8 +27,8 @@ const CreateProfileScreen = ({ props, navigation }) => {
     const [bio, setBio] = useState("");
     const [instagram, setInstagram] = useState("");
     const [discord, setDiscrod] = useState("");
-    const [twitter, setTwitter] = useState(true);
-
+    const [twitter, setTwitter] = useState("");
+    const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({
         location: undefined,
         bio: undefined,
@@ -34,13 +37,14 @@ const CreateProfileScreen = ({ props, navigation }) => {
         twitter: undefined,
     });
 
-    // console.log(errors);
-    // console.log(lastName);
-
-    function success(navigation) {
-        {
-            navigation.navigate("Create Profile");
-        }
+    const success = async () => {
+        await AsyncStorage.setItem("@discord", discord);
+        await AsyncStorage.setItem("@twitter", twitter);
+        await AsyncStorage.setItem("@bio", bio);
+        await AsyncStorage.setItem("@instagram", instagram);
+        await AsyncStorage.setItem("@location", location);
+        setLoading(false);
+        navigation.navigate("NavbarStack")
     }
 
     const onPressRegister = async () => {
@@ -73,9 +77,28 @@ const CreateProfileScreen = ({ props, navigation }) => {
                 discord: discordError,
                 twitter: twitterError,
             });
-        } else {
-            setCreate(true);
+            return;
         }
+        setLoading(true);
+        let data = new FormData();
+
+        data.append("discord", discord), data.append("instagram", instagram);
+        data.append("bio", bio), data.append("twitter", twitter);
+        data.append("location", location);
+        await AsyncStorage.getItem("@uid").then((uid) => {
+            data.append("uid", uid)
+        });
+        await axios
+            .patch("http://localhost:4000/api/users/", data, {
+                "content-type": "multipart/form-data"
+            })
+            .then((response) => {
+                console.log("Patched Account");
+                success();
+            })
+            .catch((err)=>{
+                console.log(err);
+            })
     };
 
     // const sendProfile = async(location,bio,instagram,discord,twitter)
@@ -212,14 +235,19 @@ const CreateProfileScreen = ({ props, navigation }) => {
                             }}
                         />
 
-                        <Button
-                            title="Continue"
-                            // onPress={onPressRegister}
-                            onPress={() => {
-                                navigation.navigate("NavbarStack");
-                            }}
-                            style={styles.button}
-                        />
+                            {!loading ? (
+                                <Button
+                                    title="Continue"
+                                    onPress={onPressRegister}
+                                    style={styles.button}
+                                />
+                            ) : (
+                                <ActivityIndicator
+                                    size="small"
+                                    color={Colors.green.primary}
+                                    style={{marginTop: 20}}
+                                />
+                            )}
                     </View>
                 </View>
                 </TouchableWithoutFeedback>
