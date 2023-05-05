@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, Text, ScrollView, Alert } from "react-native";
+import { View, StyleSheet, Text, ScrollView, Alert, TouchableOpacity, TouchableWithoutFeedback, Keyboard} from "react-native";
 import { useState } from "react";
 import TextInput from "../components/common/TextInput";
 import {
@@ -8,10 +8,13 @@ import {
     RegexInstagram,
     RegexTwitter,
     RegexUsername,
+    Dim,
 } from "../Constants";
 import Button from "../components/common/Button";
 import { RegexPassword, RegexName } from "../Constants";
 import AddProfilePhoto from "../components/common/AddProfilePhoto";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import Icon from "react-native-vector-icons/Feather";
 
 /*
   -- DOCUMENTATION --
@@ -75,147 +78,153 @@ const CreateProfileScreen = ({ props, navigation }) => {
         }
     };
 
-const sendProfile =async(location,bio,instagram,discord,twitter)
+    // const sendProfile = async(location,bio,instagram,discord,twitter)
 
     return (
-        <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
-            <View
-                style={{
-                    flexDirection: "column",
-                    alignItems: "center",
-                }}
+        <KeyboardAwareScrollView
+            style={{
+                backgroundColor: "white",
+                flex: Platform.OS === "ios" ? 1 : null,
+                paddingTop: 0,
+            }}
+            contentContainerStyle={{
+                alignItems: "center",
+                justifyContent: "center",
+            }}
+            behavior={Platform.OS == "ios" ? "padding" : "height"}
+            extraScrollHeight={25}
+            keyboardShouldPersistTaps="handled"
+        >
+            <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
+            <TouchableWithoutFeedback
+                onPress={() => Keyboard.dismiss()}
             >
-                <Text style={styles.title}>Create your account.</Text>
+                <View
+                    style={{
+                        flexDirection: "column",
+                        alignItems: "center",
+                        paddingTop: 25,
+                    }}
+                >
+                    {/* <TouchableOpacity
+                        onPress={() => navigation.navigate("Sign In")}
+                    >
+                        <Icon
+                            name={"arrow-left"}
+                            size={24}
+                            color={Colors.darkGray}
+                            style={styles.icon}
+                        />
+                    </TouchableOpacity>
+                    <Text style={styles.subtitle}>Profile</Text> */}
+                    <Text style={styles.title}>Create your account</Text>
 
-                <View>
-                    <TextInput
-                        setText={setLocation}
-                        value={location}
-                        placeholder={"Where are you located?"}
-                        isPassword={false}
-                        autoCorrect={false}
-                        error={errors.location}
-                        errorMessage={"Enter a valid location."}
-                        // onEndEditing={() => {
-                        //     if (!RegexName.test(firstName)) {
-                        //         setErrors({
-                        //             ...errors,
-                        //             firstName:
-                        //                 "Please enter a valid first name.",
-                        //         });
-                        //     } else {
-                        //         setErrors({
-                        //             ...errors,
-                        //             firstName: undefined,
-                        //         });
-                        //     }
-                        // }}
-                    />
+                    <View>
+                        <TextInput
+                            setText={setLocation}
+                            value={location}
+                            placeholder={"Where are you located?"}
+                            isPassword={false}
+                            autoCorrect={false}
+                            error={errors.location}
+                            errorMessage={"Enter a valid location."}
+                        />
 
-                    <TextInput
-                        setText={setBio}
-                        value={bio}
-                        placeholder={"Tell us about yourself (optional)"}
-                        isPassword={false}
-                        autoCorrect={false}
-                        error={errors.bio}
-                        errorMessage={"Enter a valid bio."}
-                        // onEndEditing={() => {
-                        //     if (!RegexName.test(bio)) {
-                        //         setErrors({
-                        //             ...errors,
-                        //             lastName: "Please enter a valid last name.",
-                        //         });
-                        //     } else {
-                        //         setErrors({
-                        //             ...errors,
-                        //             lastName: undefined,
-                        //         });
-                        //     }
-                        // }}
-                    />
+                        <TextInput
+                            setText={setBio}
+                            value={bio}
+                            placeholder={"Tell us about yourself (optional)"}
+                            isPassword={false}
+                            autoCorrect={false}
+                            error={errors.bio}
+                            errorMessage={"Enter a valid bio."}
+                        />
 
-                    <Text style={styles.subtitle}>Contact Information</Text>
+                        <Text style={styles.subtitle}>Contact Information</Text>
 
-                    <TextInput
-                        setText={setInstagram}
-                        value={instagram}
-                        placeholder={"@instagram_handle"}
-                        isPassword={false}
-                        autoCorrect={false}
-                        error={errors.instagram}
-                        errorMessage={"Enter a valid Instagram handle"}
-                        onEndEditing={() => {
-                            if (!RegexInstagram.test(instagram)) {
-                                setErrors({
-                                    ...errors,
-                                    instagram:
-                                        "Please enter a valid instagram handle.",
-                                });
-                            } else {
-                                setErrors({
-                                    ...errors,
-                                    instagram: undefined,
-                                });
-                            }
-                        }}
-                    />
-                    <TextInput
-                        setText={setDiscrod}
-                        value={discord}
-                        placeholder={"#discord_tag"}
-                        isPassword={false}
-                        autoCorrect={false}
-                        error={errors.discord}
-                        errorMessage={"Please enter a valid Discord tag."}
-                        onEndEditing={() => {
-                            if (!RegexDiscord.test(discord)) {
-                                setErrors({
-                                    ...errors,
-                                    discord:
-                                        "Please enter a valid Discord tag.",
-                                });
-                            } else {
-                                setErrors({
-                                    ...errors,
-                                    discord: undefined,
-                                });
-                            }
-                        }}
-                    />
-                    <TextInput
-                        setText={setTwitter}
-                        value={twitter}
-                        placeholder={"@twitter_user"}
-                        isPassword={false}
-                        autoCorrect={false}
-                        error={errors.twitter}
-                        errorMessage={"Enter a valid Twitter handle."}
-                        onEndEditing={() => {
-                            if (!RegexTwitter.test(twitter)) {
-                                setErrors({
-                                    ...errors,
-                                    twitter:
-                                        "Please enter a valid Twitter handle.",
-                                });
-                            } else {
-                                setErrors({
-                                    ...errors,
-                                    twitter: undefined,
-                                });
-                            }
-                        }}
-                    />
+                        <TextInput
+                            setText={setInstagram}
+                            value={instagram}
+                            placeholder={"@instagram_handle"}
+                            isPassword={false}
+                            autoCorrect={false}
+                            error={errors.instagram}
+                            errorMessage={"Enter a valid Instagram handle"}
+                            onEndEditing={() => {
+                                if (!RegexInstagram.test(instagram)) {
+                                    setErrors({
+                                        ...errors,
+                                        instagram:
+                                            "Please enter a valid instagram handle.",
+                                    });
+                                } else {
+                                    setErrors({
+                                        ...errors,
+                                        instagram: undefined,
+                                    });
+                                }
+                            }}
+                        />
+                        <TextInput
+                            setText={setDiscrod}
+                            value={discord}
+                            placeholder={"#discord_tag"}
+                            isPassword={false}
+                            autoCorrect={false}
+                            error={errors.discord}
+                            errorMessage={"Please enter a valid Discord tag."}
+                            onEndEditing={() => {
+                                if (!RegexDiscord.test(discord)) {
+                                    setErrors({
+                                        ...errors,
+                                        discord:
+                                            "Please enter a valid Discord tag.",
+                                    });
+                                } else {
+                                    setErrors({
+                                        ...errors,
+                                        discord: undefined,
+                                    });
+                                }
+                            }}
+                        />
+                        <TextInput
+                            setText={setTwitter}
+                            value={twitter}
+                            placeholder={"@twitter_user"}
+                            isPassword={false}
+                            autoCorrect={false}
+                            error={errors.twitter}
+                            errorMessage={"Enter a valid Twitter handle."}
+                            onEndEditing={() => {
+                                if (!RegexTwitter.test(twitter)) {
+                                    setErrors({
+                                        ...errors,
+                                        twitter:
+                                            "Please enter a valid Twitter handle.",
+                                    });
+                                } else {
+                                    setErrors({
+                                        ...errors,
+                                        twitter: undefined,
+                                    });
+                                }
+                            }}
+                        />
 
-                    <Button
-                        title="Continue"
-                        // onPress={onPressRegister}
-                        onPress={() => navigation.navigate("Create Profile")}
-                        style={styles.button}
-                    />
+                        <Button
+                            title="Continue"
+                            // onPress={onPressRegister}
+                            onPress={() => {
+                                navigation.navigate("NavbarStack");
+                            }}
+                            style={styles.button}
+                        />
+                    </View>
                 </View>
-            </View>
-        </ScrollView>
+                </TouchableWithoutFeedback>
+            </ScrollView>
+        </KeyboardAwareScrollView>
     );
 };
 
@@ -226,6 +235,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         paddingTop: 20,
         paddingBottom: 30,
+        paddingTop: Dim.height * 0.075,
     },
     subtitle: {
         paddingLeft: 20,
@@ -238,7 +248,8 @@ const styles = StyleSheet.create({
     button: {
         marginTop: 30,
         alignSelf: "center",
-        backgroundColor: Colors.primaryGreen,
+        backgroundColor: Colors.green.primary,
+        marginBottom: 30,
     },
 });
 

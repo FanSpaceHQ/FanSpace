@@ -17,7 +17,9 @@ const app= initializeApp(firebaseConfig)
 // const remoteConfig=getRemoteConfig(app)
 // remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
 const auth = getAuth(app);
+const storage = getStorage(app);
 
 module.exports = {
-  auth
+  auth,
+  storage,
 }

@@ -7,6 +7,9 @@ import {
     SafeAreaView,
     Image,
     Alert,
+    Dimensions,
+    ActivityIndicator,
+    ScrollView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -15,88 +18,138 @@ import Button from "../components/common/Button";
 import { Colors } from "../Constants";
 import { auth } from "../../backend/firebase.js";
 import { signInWithEmailAndPassword } from "@firebase/auth";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 /*
   -- DOCUMENTATION --
 */
+
+// Size of the screen
+const { width, height } = Dimensions.get("window");
+
 const SignInScreen = ({ props, navigation }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const [errors, setError] = useState(false);
 
     useEffect(() => {
         null;
     });
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-            <View
-                style={{
-                    flexDirection: "column",
-                    alignItems: "center",
-                    paddingTop: 25,
-                }}
-            >
-                <Image
-                    source={require("../assets/FanspaceLogo.png")}
-                    style={{ maxHeight: 170, maxWidth: 170, marginTop: 50 }}
-                />
-                <Text
+        <KeyboardAwareScrollView
+            style={{
+                backgroundColor: "white",
+                flex: Platform.OS === "ios" ? 1 : null,
+                paddingTop: 0,
+            }}
+            contentContainerStyle={{
+                alignItems: "center",
+                justifyContent: "center",
+            }}
+            behavior={Platform.OS == "ios" ? "padding" : "height"}
+            extraScrollHeight={25}
+            keyboardShouldPersistTaps="handled"
+        >
+            <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
+                <View
                     style={{
-                        marginTop: 10,
-                        fontSize: 50,
-                        fontWeight: "bold",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        paddingTop: 25,
                     }}
                 >
-                    FanSpace
-                </Text>
-                <Text style={styles.subtitle}>Expand your orbit</Text>
-
-                <TextInput
-                    onChangeText={setEmail}
-                    value={email}
-                    title={null}
-                    placeholder={"Email"}
-                    isPassword={false}
-                    autoCorrect={false}
-                />
-
-                <TextInput
-                    onChangeText={setPassword}
-                    value={password}
-                    title={null}
-                    placeholder={"Password"}
-                    isPassword={true}
-                    autoCorrect={false}
-                />
-
-                <Button
-                    title="Log In"
-                    onPress={() => {
-                        signInWithEmailAndPassword(auth, email, password)
-                            .then((userCred) => {
-                                const uid = userCred.user.uid;
-                                //TODO set local state to userid
-                                Alert.alert("signed in successfully!");
-                                navigation.navigate("Home");
-                            })
-                            .catch((error) => {
-                                Alert.alert(error.code);
-                            });
-                    }}
-                    style={styles.button}
-                />
-
-                <View>
+                    <Image
+                        source={require("../assets/FanspaceLogo.png")}
+                        style={{ maxHeight: 170, maxWidth: 170, marginTop: 50 }}
+                    />
                     <Text
-                        onPress={() => navigation.navigate("Sign Up")}
-                        style={styles.signUp}
+                        style={{
+                            marginTop: 10,
+                            fontSize: 50,
+                            fontWeight: "bold",
+                        }}
                     >
-                        Don't have an account?
-                        <Text style={{ fontWeight: "bold" }}> Sign Up</Text>
+                        FanSpace
                     </Text>
+                    <Text style={styles.subtitle}>Expand your orbit</Text>
+
+                    <TextInput
+                        onChangeText={setEmail}
+                        value={email}
+                        title={null}
+                        placeholder={"Email"}
+                        isPassword={false}
+                        autoCorrect={false}
+                        error={errors}
+                        errorMessage={"Email or password is invalid"}
+                    />
+
+                    <TextInput
+                        onChangeText={setPassword}
+                        value={password}
+                        title={null}
+                        placeholder={"Password"}
+                        isPassword={true}
+                        autoCorrect={false}
+                        error={errors}
+                        errorMessage={"Email or password is invalid"}
+                    />
+
+                    <View>
+                        {loading ? (
+                            // TODO Layer over the button
+                            <ActivityIndicator
+                                size="large"
+                                color={Colors.primary}
+                                style={styles.activity}
+                            />
+                        ) : (
+                            <Button
+                                title="Log In"
+                                onPress={() => {
+                                    setLoading(true);
+                                    signInWithEmailAndPassword(
+                                        auth,
+                                        email,
+                                        password
+                                    )
+                                        .then((userCred) => {
+                                            // const uid = userCred.user.uid;
+                                            //TODO set local state to userid
+                                            AsyncStorage.setItem[
+                                                ("@uid", userCred.user.uid)
+                                            ];
+                                            Alert.alert(
+                                                "signed in successfully!"
+                                            );
+                                            navigation.navigate("Home");
+                                        })
+                                        .catch((error) => {
+                                            // Alert.alert(error.code);
+                                            setLoading(false);
+                                            setError(true);
+                                        });
+                                }}
+                                style={styles.button}
+                            />
+                        )}
+                    </View>
+
+                    <View>
+                        <Text
+                            onPress={() => navigation.navigate("Sign Up")}
+                            style={styles.signUp}
+                        >
+                            Don't have an account?
+                            <Text style={{ fontWeight: "bold" }}> Sign Up</Text>
+                        </Text>
+                    </View>
                 </View>
-            </View>
-        </SafeAreaView>
+            </ScrollView>
+        </KeyboardAwareScrollView>
     );
 };
 
@@ -109,8 +162,9 @@ const styles = StyleSheet.create({
         paddingBottom: 50,
     },
     button: {
-        marginTop: 20,
-        backgroundColor: Colors.primary,
+        marginTop: height * 0.0175,
+        alignSelf: "center",
+        backgroundColor: Colors.green.primary,
     },
     signUp: {
         fontSize: 16,
