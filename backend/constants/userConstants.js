@@ -7,8 +7,9 @@ const INSTAGRAM='instagram'
 const TWITTER='twitter'
 const BIO='bio'
 const ZIPCODE='zip'
+const IMAGE_URL='imageUrl'
 
-const required_fields=[EMAIL, PASSWORD, FIRST_NAME, LAST_NAME]
+const required_fields=[EMAIL, PASSWORD, FIRST_NAME, LAST_NAME, IMAGE_URL]
 const update_fields=[DISCORD, INSTAGRAM, TWITTER, BIO, ZIPCODE]
 module.exports={
     required_fields, 
