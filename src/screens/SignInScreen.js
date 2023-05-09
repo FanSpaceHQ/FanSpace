@@ -10,6 +10,7 @@ import {
     Dimensions,
     ActivityIndicator,
     ScrollView,
+    TouchableOpacity
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -61,10 +62,17 @@ const SignInScreen = ({ props, navigation }) => {
                         paddingTop: 25,
                     }}
                 >
-                    <Image
-                        source={require("../assets/FanspaceLogo.png")}
-                        style={{ maxHeight: 170, maxWidth: 170, marginTop: 50 }}
-                    />
+                    <TouchableOpacity onPress={() => AsyncStorage.clear()}>
+                        <Image
+                            source={require("../assets/FanspaceLogo.png")}
+                            style={{
+                                maxHeight: 170,
+                                maxWidth: 170,
+                                marginTop: 50,
+                                marginBottom: -10,
+                            }}
+                        />
+                    </TouchableOpacity>
                     <Text
                         style={{
                             marginTop: 10,
