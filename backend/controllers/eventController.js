@@ -9,11 +9,14 @@ const addUserToEvent=async(req,res)=>{ //take in three params, the user we're ch
     const event=req.params.event
     const field=req.params.field
     
-    if(!event || !uid || (field!='interested' && field!='going' && field != 'selling')) //check for all parameters
+    //make sure there is a parameter sepcifying if someone if intersted, going, or selling tickets for an event
+    if(!event || !uid || (field!='interested' && field!='going' && field != 'selling')) 
       return res.status(400).json({
         error:"one or more parameters are missing from the request"
       }) 
     const[userdoc, eventdoc]=await Promise.all([database.collection('users').doc(uid).get(), database.collection('events').doc(event).get()]) //query the user and the event
+    
+    //check if the user already exists, if not make a new field for the user
     if(!userdoc.exists) {
       return res.status(400).json({
         error: "user not found"
@@ -99,12 +102,13 @@ const addUserToEvent=async(req,res)=>{ //take in three params, the user we're ch
     res.status(200).json({message:'success'});
 }
 //get Event details by eventId and only keep desired fields
-//!!!!error might be caused in this function? It seems like when getEventInfo is called some events are not found!!!!
 const getEventInfo = async(id) => {
     const url = 'https://app.ticketmaster.com/discovery/v2/events/';
     try {
         const [event, eventDoc] = await Promise.all([axios.get(url + id + '.json?apikey=' + TICKETMASTERKEY), database.collection('events').doc(id).get()]);
+    
         const eData = event.data;
+        //console.log(eData)
 
         //handle if artist is undefined
         let artist = '';
@@ -176,8 +180,15 @@ const populateEvents=async(req, res) => {
 
     try {
         //fetch events from Ticketmaster API
-        const events = await Promise.all([axios.get(url + '.json?&apikey=' + TICKETMASTERKEY + '&postalCode=' + zipCode + '&radius=' + radius)]);
-        const eData = events[0].data._embedded
+        //const events = await Promise.all([axios.get(url + '.json?&apikey=' + TICKETMASTERKEY + '&postalCode=' + zipCode + '&radius=' + radius)]);
+        const events = await axios.get('https://app.ticketmaster.com/discovery/v2/events',{
+            params:{
+                apikey: TICKETMASTERKEY,
+                postalCode: 90024,
+                radius: 50
+            }
+        });
+        const eData = events.data._embedded
         const eventArr = eData.events
         const processedEvents = [];
 
@@ -195,8 +206,7 @@ const populateEvents=async(req, res) => {
     } catch (error) {
         console.error(error);
         return {
-            //This error message is not printed, so I am guessing the issue is in getEventInfo
-            error: 'Event not found!!!!'
+            error: 'Event not found'
         };
     }
 };
