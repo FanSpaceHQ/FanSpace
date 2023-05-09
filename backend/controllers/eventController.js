@@ -98,35 +98,52 @@ const addUserToEvent=async(req,res)=>{ //take in three params, the user we're ch
     }
     res.status(200).json({message:'success'});
 }
-
+//get Event details by eventId and only keep desired fields
+//!!!!error might be caused in this function? It seems like when getEventInfo is called some events are not found!!!!
 const getEventInfo = async(id) => {
     const url = 'https://app.ticketmaster.com/discovery/v2/events/';
     try {
         const [event, eventDoc] = await Promise.all([axios.get(url + id + '.json?apikey=' + TICKETMASTERKEY), database.collection('events').doc(id).get()]);
         const eData = event.data;
 
+        //handle if artist is undefined
         let artist = '';
         if (eData._embedded && eData._embedded.attractions && eData._embedded.attractions[0]) {
             artist = eData._embedded.attractions[0].name;
         }
         
+        //handle if address is undefined
         let address = '';
         if (eData._embedded && eData._embedded.venues && eData._embedded.venues[0] && eData._embedded.venues[0].address) {
             address = eData._embedded.venues[0].address.line1 + ' ' + eData._embedded.venues[0].city.name + ', ' + eData._embedded.venues[0].state.name;
         }
         
+        //handle if localTime is undefined
+        localTime = '';
+        if (eData.dates && eData.dates.start && eData.dates.start.localTime) {
+            localTime = eData.dates.start.localTime;
+        }
+
+        //handle if dateTime is undefined
+        let dateTime = '';
+        if (eData.dates && eData.dates.start && eData.dates.start.dateTime) {
+            dateTime = eData.dates.start.dateTime;
+        }
+        
+        //return wanted data
         return {
             name: eData.name,
             artist,
             date: eData.dates.start.localDate,
-            time: eData.dates.start.localTime,
-            dateTime: eData.dates.start.dateTime,
+            localTime,
+            dateTime,
             image: eData.images[0].url,
             address,
             eventDoc: eventDoc.data()
         };
     } catch (error) {
         return {
+            //this error message is printed for events not found
             error: 'Event not found'
         };
     }
@@ -135,10 +152,11 @@ const getEventInfo = async(id) => {
 const getEvent=async (req,res) =>{
     console.log("getting event...")
     const id = req.params.id;
+    //handle if needed parameter is missing
     if (!id) {
         return res.status(400).json({ error: 'Event ID is required' });
     }
-
+    //call fetEventInfo and handle errors accordingly
     getEventInfo(id).then((event) => {
         res.status(200).json(event); 
         
@@ -148,48 +166,60 @@ const getEvent=async (req,res) =>{
 
 }
 
+//gets all events within a 50 mile radius of UCLA
 const populateEvents=async(req, res) => {
-    console.log("test")
     const url = 'https://app.ticketmaster.com/discovery/v2/events';
-    const radius = 50;
-    try {
-        console.log("Hi")
-        const events = await Promise.all([axios.get(url + '.json?&apikey=' + TICKETMASTERKEY + '&radius=' + radius)]);
-        const eData = events[0].data._embedded
-        
-        console.log(eData)
 
-        // let artist = '';
-        // if (eData._embedded && eData._embedded.attractions && eData._embedded.attractions[0]) {
-        //     artist = eData._embedded.attractions[0].name;
-        // }
-        
-        // let address = '';
-        // if (eData._embedded && eData._embedded.venues && eData._embedded.venues[0] && eData._embedded.venues[0].address) {
-        //     address = eData._embedded.venues[0].address.line1 + ' ' + eData._embedded.venues[0].city.name + ', ' + eData._embedded.venues[0].state.name;
-        // }
-        
+    //parameters
+    const radius = 50;
+    const zipCode = 90024;
+
+    try {
+        //fetch events from Ticketmaster API
+        const events = await Promise.all([axios.get(url + '.json?&apikey=' + TICKETMASTERKEY + '&postalCode=' + zipCode + '&radius=' + radius)]);
+        const eData = events[0].data._embedded
+        const eventArr = eData.events
+        const processedEvents = [];
+
+        //use the event id of each event found and feed it into getEventInfo to return only the fields we need for each event
+        for (let i = 0; i < eventArr.length; i++) {
+            let eventInfo = await getEventInfo(eventArr[i].id);
+            //console.log(eventInfo);
+            delete eventInfo.eventDoc;
+            processedEvents.push(eventInfo);
+        }
+
         return {
-            // events: allEvents,
-            // name: eData.name,
-            // artist,
-            // date: eData.dates.start.localDate,
-            // time: eData.dates.start.localTime,
-            // dateTime: eData.dates.start.dateTime,
-            // image: eData.images[0].url,
-            // address,
+            processedEvents: processedEvents
         };
     } catch (error) {
-        console.log("error")
+        console.error(error);
         return {
-            error: 'Event not found'
+            //This error message is not printed, so I am guessing the issue is in getEventInfo
+            error: 'Event not found!!!!'
         };
     }
 };
 
 //getEventInfo("vvG1jZ9KbsbPCD")
 //getEventInfo("vvG17Z9JEPDzpN")
-populateEvents();
+
+//function to test populate events
+async function testPopulateEvents() {
+    const result = await populateEvents();
+    if (result.error) {
+      console.error(result.error);
+      return;
+    }
+    const { processedEvents } = result;
+    console.log('Number of events processed:', processedEvents.length);
+    //printing out all processed events
+    for (let i = 0; i < processedEvents.length; i++) {
+        console.log(processedEvents[i])
+    }
+}
+
+  testPopulateEvents();
 
 module.exports= {
     getEvent,
