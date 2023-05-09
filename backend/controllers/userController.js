@@ -83,8 +83,7 @@ const createUser = async (req, res) => {
   }
 
 const readUser = async (req, res) => {
-    const uid = req.body.uid;
-
+    const uid = req.params.uid;
     admin
         .firestore()
         .collection("users")
