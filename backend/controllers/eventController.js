@@ -243,6 +243,7 @@ const populateEvents=async(req, res) => {
             }
             
             let eventInfo = {
+                id: i + 1,
                 name: event.name,
                 artist,
                 image: event.images[0].url,
