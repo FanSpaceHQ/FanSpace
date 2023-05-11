@@ -9,7 +9,8 @@ import {
     TouchableOpacity,
     TouchableWithoutFeedback,
     Keyboard,
-    ActivityIndicator,    
+    ActivityIndicator,
+    TouchableNativeFeedback
 } from "react-native";
 import { useState } from "react";
 import TextInput from "../components/common/TextInput";
@@ -223,16 +224,19 @@ const SignUpScreen = ({ props, navigation }) => {
                         {image ? (
                             <View>
                                 {image && (
-                                    <Image
-                                        source={{ uri: image }}
-                                        style={{
-                                            width: 104,
-                                            height: 104,
-                                            borderRadius: 1000,
-                                            marginBottom: 20,
-                                        }}
+                                    <TouchableOpacity
                                         onPress={pickImage}
-                                    />
+                                    >
+                                        <Image
+                                            source={{ uri: image }}
+                                            style={{
+                                                width: 104,
+                                                height: 104,
+                                                borderRadius: 1000,
+                                                marginBottom: 20,
+                                            }}
+                                        />
+                                    </TouchableOpacity>
                                 )}
                             </View>
                         ) : (

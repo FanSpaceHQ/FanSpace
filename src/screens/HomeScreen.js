@@ -101,7 +101,13 @@ const HomeScreen = ({ navigation, props }) => {
                                 date={concertData.date}
                                 location={concertData.location}
                                 onPress={() =>
-                                    navigation.navigate("Concert Screen")
+                                    navigation.navigate("Concert Screen", {
+                                        image: concertData.image,
+                                        name: concertData.name,
+                                        title: concertData.title,
+                                        date: concertData.date,
+                                        location: concertData.location
+                                    })
                                 }
                             />
                         );

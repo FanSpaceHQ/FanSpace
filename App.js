@@ -24,17 +24,17 @@ const MyTheme = {
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-    const [userID, setUserID] = useState(true);
-    const [loading, setLoading] = useState(false);
+    const [userID, setUserID] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         AsyncStorage.getItem("@uid").then((userId) => {
             console.log(userId);
             if (userId !== null) {
-                setUser(true);
+                setUserID(true);
                 setLoading(false);
             } else {
-                setUser(false);
+                setUserID(false);
                 setLoading(false);
             }
         });

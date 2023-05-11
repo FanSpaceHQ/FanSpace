@@ -28,7 +28,6 @@
     "body-parser": "^1.20.1",
     "buffer": "^6.0.3",
     "cors": "^2.8.5",
-    "crypto": "^1.0.1",
     "dotenv": "^16.0.3",
     "expo": "~47.0.12",
     "expo-image-picker": "~14.0.2",

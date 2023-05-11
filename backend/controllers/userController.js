@@ -83,8 +83,7 @@ const createUser = async (req, res) => {
   }
 
 const readUser = async (req, res) => {
-    const uid = req.body.uid;
-
+    const uid = req.params.uid;
     admin
         .firestore()
         .collection("users")
@@ -114,23 +113,23 @@ const updateUser = async (req, res) => {
     for (const [key, value] of Object.entries(data)) {
         if (update_fields.includes(key)) newData[key] = value;
     }
-    // if(req.file)
-    // {
-    //   const bucket = storage.bucket();
-    //   const fullPath = `UserImages/${v4()}`;
-    //   const bucketFile = bucket.file(fullPath);
+    if(req.file)
+    {
+      const bucket = storage.bucket();
+      const fullPath = `UserImages/${v4()}`;
+      const bucketFile = bucket.file(fullPath);
    
-    //   console.log(req.file)
-    //   await bucketFile.save(req.file.buffer, {
-    //     contentType: req.file.mimetype,
-    //     gzip: true
-    //   });
-    //   const [url] = await bucketFile.getSignedUrl({
-    //     action: 'read',
-    //     expires: '01-01-2030'
-    //   });
-    //   newData['image']=url
-    // }
+      console.log(req.file)
+      await bucketFile.save(req.file.buffer, {
+        contentType: req.file.mimetype,
+        gzip: true
+      });
+      const [url] = await bucketFile.getSignedUrl({
+        action: 'read',
+        expires: '01-01-2030'
+      });
+      newData['image']=url
+    }
     if(newData)
     admin.firestore().collection('users').doc(uid).update(newData).then(()=>{
     res.status(200).json({
