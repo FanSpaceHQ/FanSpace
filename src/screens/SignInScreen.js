@@ -41,8 +41,12 @@ const SignInScreen = ({ props, navigation }) => {
         null;
     });
 
+    const onClick = async(uid) => {
+        await fillAsync(uid)
+    }
+
     const fillAsync = async (uid) => {
-        console.log(uid);
+        // console.log(uid);
         let data;
         await axios
             .get(`http://localhost:4000/api/users/${uid}`)
@@ -53,14 +57,17 @@ const SignInScreen = ({ props, navigation }) => {
             .catch((err) => {
                 console.log(err);
             });
+        // console.log(typeof JSON.stringify(data.bio));
+        // console.log(data.data.bio);
+        await AsyncStorage.setItem["@uid", uid];
+        await AsyncStorage.setItem["@bio", data.data.bio];
+        await AsyncStorage.setItem["@discord", data.data.discord];
+        await AsyncStorage.setItem["@twitter", data.data.twitter];
+        await AsyncStorage.setItem["@firstName", data.data.firstName];
+        await AsyncStorage.setItem["@lastName", data.data.lastName];
+        await AsyncStorage.setItem["@imageUrl", data.data.imageUrl];
+        await AsyncStorage.setItem["@location", data.data.location];
         // console.log(data);
-        await AsyncStorage.setItem["@bio", data.bio];
-        await AsyncStorage.setItem["@discord", data.discord];
-        await AsyncStorage.setItem["@twitter", data.twitter];
-        await AsyncStorage.setItem["@firstName", data.firstName];
-        await AsyncStorage.setItem["@lastName", data.lastName];
-        await AsyncStorage.setItem["@imageUrl", data.imageUrl];
-        await AsyncStorage.setItem["@location", data.location];
         setLoading(false);
         navigation.navigate("NavbarStack");
     };
@@ -160,7 +167,7 @@ const SignInScreen = ({ props, navigation }) => {
                                                 ("@uid", userCred.user.uid)
                                             ];
                                             setID(uid);
-                                            fillAsync(uid);
+                                            onClick(uid);
                                         })
                                         .catch((error) => {
                                             console.log(error)

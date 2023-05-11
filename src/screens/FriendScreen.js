@@ -14,51 +14,61 @@ import Alex from "../assets/Alex.png"
 
 const friends = [
     {
+        id: 1,
         name: "Alex Smith",
         userName: "@username",
         image: Alex,
     },
     {
+        id: 2,
         name: "Alex Smith",
         userName: "@username",
         image: Alex,
     },
     {
+        id: 3,
         name: "Alex Smith",
         userName: "@username",
         image: Alex,
     },
     {
+        id: 4,
         name: "Alex Smith",
         userName: "@username",
         image: Alex,
     },
     {
+        id: 5,
         name: "Alex Smith",
         userName: "@username",
         image: Alex,
     },
     {
+        id: 6,
         name: "Alex Smith",
         userName: "@username",
         image: Alex,
     },
     {
+        id: 7,
         name: "Alex Smith",
         userName: "@username",
         image: Alex,
     },
     {
+        id: 8,
         name: "Alex Smith",
         userName: "@username",
         image: Alex,
     },
     {
+        id: 9,
         name: "Alex Smith",
         userName: "@username",
         image: Alex,
     },
     {
+        id: 10,
         name: "Alex Smith",
         userName: "@username",
         image: Alex,
