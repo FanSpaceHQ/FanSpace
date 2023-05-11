@@ -36,7 +36,7 @@ const FriendRequestData = [
 
     },
 ];
-const InboxScreen = (navigation,props) => {
+const InboxScreen = ({navigation ,props}) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.topRow}>
@@ -52,7 +52,7 @@ const InboxScreen = (navigation,props) => {
             <Text style={styles.header}> Inbox</Text>       
             </View>
             <View style={styles.topRow}>
-            <Text style={styles.subheader}> Friend Requests (3)</Text>      
+            <Text style={styles.subheader}> Friend Requests {"("+FriendRequestData.length+")"}</Text>      
             </View>
             <View
   style={{
