@@ -181,22 +181,78 @@ const populateEvents=async(req, res) => {
     try {
         //fetch events from Ticketmaster API
         //const events = await Promise.all([axios.get(url + '.json?&apikey=' + TICKETMASTERKEY + '&postalCode=' + zipCode + '&radius=' + radius)]);
+    
+        //const events = await axios.get('https://app.ticketmaster.com/discovery/v2/events',{
         const events = await axios.get('https://app.ticketmaster.com/discovery/v2/events',{
             params:{
                 apikey: TICKETMASTERKEY,
                 postalCode: 90024,
-                radius: 50
+                radius: 50,
+                //classificationName: 'music',
             }
         });
         const eData = events.data._embedded
         const eventArr = eData.events
         const processedEvents = [];
 
-        //use the event id of each event found and feed it into getEventInfo to return only the fields we need for each event
+        console.log(eventArr)
         for (let i = 0; i < eventArr.length; i++) {
-            let eventInfo = await getEventInfo(eventArr[i].id);
-            //console.log(eventInfo);
-            delete eventInfo.eventDoc;
+            let event = eventArr[i];
+
+            let artist = '';
+            eventEmbedded = event._embedded;
+            if (eventEmbedded && eventEmbedded.attractions && eventEmbedded.attractions[0]) {
+                artist = eventEmbedded.attractions[0].name;
+            }
+            
+            //handle if address is undefined
+            let address = '';
+            if (eventEmbedded && eventEmbedded.venues && eventEmbedded.venues[0] && eventEmbedded.venues[0].address) {
+                address = eventEmbedded.venues[0].address.line1 + ' ' + eventEmbedded.venues[0].city.name + ', ' + eventEmbedded.venues[0].state.name;
+            }
+
+            //handle if localTime is undefined
+            localTime = '';
+            if (event.dates && event.dates.start && event.dates.start.localTime) {
+                localTime = event.dates.start.localTime;
+            }
+
+            //handle if dateTime is undefined
+            let dateTime = '';
+            if (event.dates && event.dates.start && event.dates.start.dateTime) {
+                dateTime = event.dates.start.dateTime;
+            }
+
+            let venue = '';
+            let city = '';
+            let state = '';
+            //store only the information on each event we need
+            if (eventEmbedded && eventEmbedded.venues && eventEmbedded.venues[0]) {
+                if (eventEmbedded.venues[0].name) {
+                    venue = eventEmbedded.venues[0].name;
+                }
+
+                if (eventEmbedded.venues[0].city.name) {
+                    city = eventEmbedded.venues[0].city.name;
+                }
+
+                if (eventEmbedded.venues[0].state.name) {
+                    state = eventEmbedded.venues[0].state.stateCode;
+                }
+                
+            }
+            
+            let eventInfo = {
+                name: event.name,
+                artist,
+                image: event.images[0].url,
+                localTime,
+                dateTime,
+                venue,
+                address,
+                city,
+                state
+            }
             processedEvents.push(eventInfo);
         }
 
