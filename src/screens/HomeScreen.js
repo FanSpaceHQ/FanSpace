@@ -13,6 +13,7 @@ import Icon from "react-native-vector-icons/Feather";
 import { SearchBar } from "react-native-elements";
 import ConcertBlock from "../components/common/ConcertBlock";
 
+
 /*
   -- DOCUMENTATION --
 */
@@ -40,7 +41,25 @@ const concertData = [
         location: "Kia Forum",
     },
 ];
+//UNiversal sort function for all fields of the table
+const sort_by = (field, reverse, primer) => {
 
+    const key = primer ?
+      function(x) {
+        return primer(x[field]);
+      } :
+      function(x) {
+        return x[field];
+      };
+  
+    reverse = !reverse ? 1 : -1;
+  
+    return function(a, b) {
+      return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
+    };
+  };
+
+concertData.sort(sort_by("name",false));
 const HomeScreen = ({ navigation, props }) => {
     return (
         <SafeAreaView style={styles.container}>
@@ -48,7 +67,7 @@ const HomeScreen = ({ navigation, props }) => {
                 <View style={{ flexDirection: "column" }}>
                     <Text style={styles.header}>Home</Text>
                     <Text style={styles.subheader}>
-                        find concerts near you.
+                        find concerts near you ▼
                     </Text>
                 </View>
                 <TouchableOpacity onPress={() => Alert.alert("fix tmr")}>

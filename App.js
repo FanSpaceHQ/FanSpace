@@ -24,8 +24,7 @@ const MyTheme = {
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-    LogBox.ignoreAllLogs(); // enable to remove all deprecation warnings
-    const [userID, setUser] = useState(false);
+    const [userID, setUserID] = useState(true);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {

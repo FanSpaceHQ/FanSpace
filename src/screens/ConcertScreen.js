@@ -105,7 +105,7 @@ const ConcertScreen = (props) => {
                             fontWeight: "bold",
                         }}
                     >
-                        {"SZA" + " · " + "SOS TOUR"}
+                        {"SZA" + " . " + "SOS TOUR"}
                     </Text>
                     <LinearGradient
                         colors={["rgba(0,0,0,0.8)", "transparent"]}
