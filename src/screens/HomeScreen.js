@@ -70,7 +70,7 @@ const HomeScreen = ({ navigation, props }) => {
                         find concerts near you ▼
                     </Text>
                 </View>
-                <TouchableOpacity onPress={() => Alert.alert("fix tmr")}>
+                <TouchableOpacity onPress={() =>navigation.navigate("Inbox Screen")}>
                     <Icon
                         name={"bell"}
                         size={35}
