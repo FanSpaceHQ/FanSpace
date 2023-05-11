@@ -1,44 +1,68 @@
 import * as React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { StyleSheet, LogBox } from "react-native";
+import { useState, useEffect } from "react";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-// Import all screens here
-import Home from "./src/screens/Home";
-import Profile from "./src/screens/Profile";
-//
+// Import Screens
+import LandingScreen from "./src/screens/LandingScreen";
+
+// Import Stacks
+import { NavbarStack } from "./src/navigation/NavbarStack";
+import { SignInStack } from "./src/navigation/SignInStack";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
+const MyTheme = {
+    ...DefaultTheme,
+    colors: {
+        ...DefaultTheme.colors,
+        primary: "red",
+    },
+};
+
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-    return (
-        <NavigationContainer>
-            <View style={styles.container}>
-                <Home />
-                {/* <Profile /> */}
-                {/* <Stack.Navigator initialRouteName="Profile">
+    const [userID, setUserID] = useState(true);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        AsyncStorage.getItem("@uid").then((userId) => {
+            console.log(userId);
+            if (userId !== null) {
+                setUser(true);
+                setLoading(false);
+            } else {
+                setUser(false);
+                setLoading(false);
+            }
+        });
+    }, []);
+
+    return(
+        <NavigationContainer theme={MyTheme}>
+            {loading ? (
+                <LandingScreen />
+            ) : userID ? (
+                <Stack.Navigator
+                    screenOptions={{
+                        headerShown: false,
+                    }}
+                >
+                    <Stack.Screen name="App" component={NavbarStack} />
+                </Stack.Navigator>
+            ) : (
+                <Stack.Navigator>
                     <Stack.Screen
-                        name="Home"
-                        component={Home}
-                        options={{ title: "Welcome" }}
+                        name="Sign In Flow"
+                        component={SignInStack}
+                        options={{ headerShown: false }}
                     />
-                    <Stack.Screen
-                        name="Profile"
-                        component={Profile}
-                        options={{ title: "Profile" }}
-                    />
-                </Stack.Navigator> */}
-            </View>
+                </Stack.Navigator>
+            )}
         </NavigationContainer>
-    );
-};
+    )
+}
 
 export default App;
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#fff",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-});
