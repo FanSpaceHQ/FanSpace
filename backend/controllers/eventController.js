@@ -169,6 +169,28 @@ const getEvent=async (req,res) =>{
     });       
 
 }
+//getEventInfo("vvG1jZ9KbsbPCD")
+getEventInfo("vvG17Z9JEPDzpN")
+
+const searchEvent = async (req, res) => {
+    console.log('Searching for events...')
+    const key = req.body.keyword
+    try {
+      const response = await axios.get('https://app.ticketmaster.com/discovery/v2/events', {
+        params: {
+          apikey: TICKETMASTERKEY,
+          keyword: key,
+        },
+      });
+      console.log(response)
+      const events = response.data._embedded;
+      console.log(events)
+      res.status(200).json(events);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while searching for events.' });
+    }
+  };
 
 //gets all events within a 50 mile radius of UCLA
 const populateEvents=async(req, res) => {
@@ -290,5 +312,6 @@ async function testPopulateEvents() {
 
 module.exports= {
     getEvent,
-    addUserToEvent
+    addUserToEvent,
+    searchEvent
 }

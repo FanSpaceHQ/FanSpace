@@ -10,6 +10,7 @@ import {
     Dimensions,
     ActivityIndicator,
     ScrollView,
+    TouchableOpacity
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -26,17 +27,50 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 
 // Size of the screen
 const { width, height } = Dimensions.get("window");
+const axios = require("axios").default;
 
 const SignInScreen = ({ props, navigation }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-
+    const [uid, setID] = useState("");
     const [errors, setError] = useState(false);
+    const [login, setLog] = useState(false);
 
     useEffect(() => {
         null;
     });
+
+    const onClick = async(uid) => {
+        await fillAsync(uid)
+    }
+
+    const fillAsync = async (uid) => {
+        // console.log(uid);
+        let data;
+        await axios
+            .get(`http://localhost:4000/api/users/${uid}`)
+            .then((response) => {
+                data = response.data;
+                setLog(true);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        // console.log(typeof JSON.stringify(data.bio));
+        // console.log(data.data.bio);
+        await AsyncStorage.setItem["@uid", uid];
+        await AsyncStorage.setItem["@bio", data.data.bio];
+        await AsyncStorage.setItem["@discord", data.data.discord];
+        await AsyncStorage.setItem["@twitter", data.data.twitter];
+        await AsyncStorage.setItem["@firstName", data.data.firstName];
+        await AsyncStorage.setItem["@lastName", data.data.lastName];
+        await AsyncStorage.setItem["@imageUrl", data.data.imageUrl];
+        await AsyncStorage.setItem["@location", data.data.location];
+        // console.log(data);
+        setLoading(false);
+        navigation.navigate("NavbarStack");
+    };
 
     return (
         <KeyboardAwareScrollView
@@ -61,10 +95,17 @@ const SignInScreen = ({ props, navigation }) => {
                         paddingTop: 25,
                     }}
                 >
-                    <Image
-                        source={require("../assets/FanspaceLogo.png")}
-                        style={{ maxHeight: 170, maxWidth: 170, marginTop: 50 }}
-                    />
+                    <TouchableOpacity onPress={() => AsyncStorage.clear()}>
+                        <Image
+                            source={require("../assets/FanspaceLogo.png")}
+                            style={{
+                                maxHeight: 170,
+                                maxWidth: 170,
+                                marginTop: 50,
+                                marginBottom: -10,
+                            }}
+                        />
+                    </TouchableOpacity>
                     <Text
                         style={{
                             marginTop: 10,
@@ -77,7 +118,7 @@ const SignInScreen = ({ props, navigation }) => {
                     <Text style={styles.subtitle}>Expand your orbit</Text>
 
                     <TextInput
-                        onChangeText={setEmail}
+                        setText={setEmail}
                         value={email}
                         title={null}
                         placeholder={"Email"}
@@ -88,7 +129,7 @@ const SignInScreen = ({ props, navigation }) => {
                     />
 
                     <TextInput
-                        onChangeText={setPassword}
+                        setText={setPassword}
                         value={password}
                         title={null}
                         placeholder={"Password"}
@@ -110,6 +151,9 @@ const SignInScreen = ({ props, navigation }) => {
                             <Button
                                 title="Log In"
                                 onPress={() => {
+                                    // console.log("here");
+                                    // console.log(email);
+                                    // console.log(password)
                                     setLoading(true);
                                     signInWithEmailAndPassword(
                                         auth,
@@ -117,18 +161,16 @@ const SignInScreen = ({ props, navigation }) => {
                                         password
                                     )
                                         .then((userCred) => {
-                                            // const uid = userCred.user.uid;
+                                            const uid = userCred.user.uid;
                                             //TODO set local state to userid
                                             AsyncStorage.setItem[
                                                 ("@uid", userCred.user.uid)
                                             ];
-                                            Alert.alert(
-                                                "signed in successfully!"
-                                            );
-                                            navigation.navigate("Home");
+                                            setID(uid);
+                                            onClick(uid);
                                         })
                                         .catch((error) => {
-                                            // Alert.alert(error.code);
+                                            console.log(error)
                                             setLoading(false);
                                             setError(true);
                                         });

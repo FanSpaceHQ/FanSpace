@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     StyleSheet,
@@ -9,42 +9,151 @@ import {
     Image,
     ImageBackground,
     SafeAreaView,
+    FlatList,
 } from "react-native";
 import { Colors, Dim } from "../Constants";
 import Icon from "react-native-vector-icons/Feather";
+import FontAwesomeIcon from "react-native-vector-icons/FontAwesome"
 import { LinearGradient } from "expo-linear-gradient";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
+
+import Alex from "../assets/Alex.png";
 
 /*
   -- DOCUMENTATION --
 */
 
-const FirstRoute = () => (
-    <View style={{ flex: 1, backgroundColor: "yellow" }}>
-        <Text>GOING</Text>
-    </View>
-);
+const friends = [
+    {
+        name: "Alex Smith",
+        userName: "@username",
+        image: Alex,
+    },
+    {
+        name: "Alex Smith",
+        userName: "@username",
+        image: Alex,
+    },
+    {
+        name: "Alex Smith",
+        userName: "@username",
+        image: Alex,
+    },
+    {
+        name: "Alex Smith",
+        userName: "@username",
+        image: Alex,
+    },
+    {
+        name: "Alex Smith",
+        userName: "@username",
+        image: Alex,
+    },
+]
 
-const SecondRoute = () => (
-    <View style={{ flex: 1, backgroundColor: "orange" }}>
-        <Text>INTERESTED</Text>
-    </View>
-);
+const addToProfile = async() => {
 
-const ThirdRoute = () => (
-    <View style={{ flex: 1, backgroundColor: "red" }}>
-        <Text>SELLING</Text>
-    </View>
-);
+};
+
+const getList = async() => {
+
+};
+
+const FriendBox = (props) => {
+    return(
+        <TouchableOpacity onPress={props.onPress}>
+        <View style={boxStyles.container}>
+            <View style={{flexDirection: "row", paddingBottom: 20,}}>
+                <Image source={props.image} style={boxStyles.image}/>
+                <View style={{justifyContent:"center"}}>
+                    <Text style={boxStyles.name}>{props.name}</Text>
+                    <Text style={boxStyles.username}> {props.userName}</Text>
+                </View>
+            </View>
+        </View>
+        </TouchableOpacity>
+    )
+};
+
+const boxStyles = StyleSheet.create({
+    container:{
+        flex: 1,
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "left",
+        // alignContent: "center",
+        marginBottom: 10,
+        width: Dim.width * 0.8,
+        marginLeft: Dim.width * 0.06,
+        // borderWidth: 2
+    },
+    image:{
+        height: 50,
+        width: 50,
+    },
+    name:{
+        fontSize: 16,
+        fontWeight: "bold",
+        marginLeft: 20,
+    },
+    username:{
+        color: "#B4B3B3",
+        marginLeft: 20,
+    },
+})
+
+const FirstRoute = () => {
+
+    return (
+        <View style={{ alignSelf: "left", marginTop: 20 }}>
+            <FlatList
+                data={friends}
+                horizontal={false}
+                renderItem={({ item: friends }) => {
+                    return (
+                        <FriendBox
+                            image={friends.image}
+                            name={friends.name}
+                            userName={friends.userName}
+                            onPress={() => {
+                                // navigation.navigate("Profile");
+                            }}
+                        />
+                    );
+                }}
+            />
+        </View>
+    );
+};
+
+const SecondRoute = () => {
+
+    return(
+        <ScrollView style={{ flex: 1, backgroundColor: "white", flexDirection: "row" }}>
+            <Text>Interested</Text>
+        </ScrollView>
+    );
+};
+
+const ThirdRoute = () => {
+
+    return(
+        <View style={{ flex: 1, backgroundColor: "white", flexDirection: "row" }}>
+            <Text>Selling</Text>
+        </View>
+    );
+};
 const renderScene = SceneMap({
     first: FirstRoute,
     second: SecondRoute,
     third: ThirdRoute,
 });
 
-const ConcertScreen = (props) => {
-    const [index, setIndex] = React.useState(0);
-    const [routes] = React.useState([
+const ConcertScreen = ({route}) => {
+    const {name, location, date, title, image} = route.params;
+    const [font_Size, setSize] = useState((name.length + 3 + title.length) <= 21);
+    const [index, setIndex] = useState(0);
+    const [routes] = useState([
         { key: "first", title: "Going" },
         { key: "second", title: "Interested" },
         { key: "third", title: "Selling", color: Colors.darkGray },
@@ -83,29 +192,44 @@ const ConcertScreen = (props) => {
     );
 
     return (
-        <ScrollView bounces={false}>
-            <View style={{ flex: 1 }}>
+        // <ScrollView bounces={false}>
+        <>
+            <View
+                style={{
+                    flex: 1,
+                    flexShrink: 1,
+                    // flexDirection: "column",
+                    // justifyContent: "left",
+                }}
+            >
                 <ImageBackground
                     source={{
-                        uri: "https://lahiphopevents.com/wp-content/uploads/2023/02/SZA-TOUR-2.jpg",
+                        uri: image,
                     }}
                     style={{
                         width: Dim.width,
                         height: 300,
-                        justifyContent: "flex-start",
+                        alignItems: "left",
+                        justifyContent: "center",
                     }}
                 >
                     <Text
                         style={{
+                            textAlignVertical: "center",
+                            alignSelf: "left",
+                            textAlign: "left",
                             color: "white",
-                            paddingTop: 230,
-                            paddingLeft: 30,
+                            marginTop: font_Size ? 200 : 180,
+                            marginBottom: 20,
+                            marginLeft: 10,
                             zIndex: 1,
-                            fontSize: 35,
+                            fontSize: font_Size ? 40 : 30,
+                            // fontSize: 40,
                             fontWeight: "bold",
                         }}
                     >
-                        {"SZA" + " . " + "SOS TOUR"}
+                        {name} . {title}
+                        {/* hello */}
                     </Text>
                     <LinearGradient
                         colors={["rgba(0,0,0,0.8)", "transparent"]}
@@ -121,67 +245,73 @@ const ConcertScreen = (props) => {
                     ></LinearGradient>
                 </ImageBackground>
             </View>
-            <View style={{ height: 450 }}>
-                <ScrollView style={{ backgroundColor: "white" }}>
-                    <View style={styles.topRow}>
-                        <View style={{ flexDirection: "row" }}>
-                            <Icon
-                                name={"clock"}
-                                size={20}
-                                color={Colors.darkGray}
-                                style={styles.icon}
-                            />
-                            <Text style={styles.subheader}>
-                                March 11, 2023, - Wed, 8:00PM
-                            </Text>
-                        </View>
-
-                        <View style={{ flexDirection: "row" }}>
-                            <Icon
-                                name={"map-pin"}
-                                size={20}
-                                color={Colors.darkGray}
-                                style={styles.icon}
-                            />
-                            <Text style={styles.subheader}>
-                                Kia Forum - Los Angeles, CA
-                            </Text>
-                        </View>
+            <View style={{ height: 450, backgroundColor: "white" }}>
+                <View style={styles.topRow}>
+                    <View style={{ flexDirection: "row" }}>
+                        <Icon
+                            name={"clock"}
+                            size={20}
+                            color={Colors.darkGray}
+                            style={styles.icon}
+                        />
+                        <Text style={styles.subheader}>
+                            {date}
+                        </Text>
                     </View>
-                    <View style={styles.actionRow}>
+
+                    <View style={{ flexDirection: "row" }}>
+                        <Icon
+                            name={"map-pin"}
+                            size={20}
+                            color={Colors.darkGray}
+                            style={styles.icon}
+                        />
+                        <Text style={styles.subheader}>
+                            {location}
+                        </Text>
+                    </View>
+                </View>
+                <View style={styles.actionRow}>
+                    <TouchableOpacity>
                         <Icon
                             name={"heart"}
                             size={30}
                             color={Colors.darkGray}
                             style={styles.action}
                         />
+                    </TouchableOpacity>
 
+                    <TouchableOpacity>
                         <Icon
                             name={"star"}
                             size={30}
                             color={Colors.darkGray}
                             style={styles.action}
                         />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity>
                         <Icon
                             name={"shopping-cart"}
                             size={30}
                             color={Colors.darkGray}
                             style={styles.action}
                         />
-                    </View>
+                    </TouchableOpacity>
+                </View>
 
-                    <View style={{ marginTop: 20, height: "200%" }}>
-                        <TabView
-                            renderTabBar={renderTabBar}
-                            navigationState={{ index, routes }}
-                            renderScene={renderScene}
-                            onIndexChange={setIndex}
-                            initialLayout={{ width: Dim.width }}
-                        />
-                    </View>
-                </ScrollView>
+                <View style={{ marginTop: 20, height: "200%" }}>
+                    <TabView
+                        renderTabBar={renderTabBar}
+                        navigationState={{ index, routes }}
+                        renderScene={renderScene}
+                        onIndexChange={setIndex}
+                        initialLayout={{ width: Dim.width }}
+                    />
+                </View>
             </View>
-        </ScrollView>
+            </>
+        // </ScrollView>
     );
 };
 
