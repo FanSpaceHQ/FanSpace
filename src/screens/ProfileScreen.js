@@ -8,6 +8,8 @@ import {
     TextInput,
     TouchableOpacity,
 } from "react-native";
+import { useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //import Button from "../components/common/Button";
 
@@ -19,7 +21,22 @@ import Bio from "../components/common/Bio";
   -- DOCUMENTATION --
 */
 const ProfileScreen = (props) => {
-    //const [bio, setBio] = React.useState("Default Bio");
+    const [firstName, setFirstName] = useState("");
+
+    useEffect(() => {
+        retrieveName();
+    }, []);
+
+    const retrieveName = async () => {
+        try {
+            const value = await AsyncStorage.getItem("@firstName");
+            if (value !== null) {
+                setFirstName(value);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -33,29 +50,42 @@ const ProfileScreen = (props) => {
                 >
                     <View
                         style={{
-                            alignItems: "left",
-                            paddingTop: 60,
-                            height: 150,
-                            width: 150,
-                            borderRadius: 1000,
-                            backgroundColor: "black",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            marginLeft: 8,
                         }}
                     >
-                        <Text style={{ color: "white", flexWrap: true }}>
-                            Profile photo
+                        <View
+                            style={{
+                                alignItems: "center",
+                                justifyContent: "center",
+                                height: 130,
+                                width: 130,
+                                borderRadius: 1000,
+                                backgroundColor: "black",
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    color: "white",
+                                    flexWrap: true,
+                                    flexDirection: "column",
+                                }}
+                            >
+                                Profile photo
+                            </Text>
+                        </View>
+                        <Text
+                            style={{
+                                marginLeft: 10,
+                                fontSize: 30,
+                                fontWeight: "bold",
+                                height: 100,
+                            }}
+                        >
+                            {firstName}
                         </Text>
                     </View>
-
-                    <Text
-                        style={{
-                            padding: 10,
-                            fontSize: 30,
-                            fontWeight: "bold",
-                            alignContent: "right",
-                        }}
-                    >
-                        Vikram Puliyadi
-                    </Text>
 
                     {/* <View
                         style={{

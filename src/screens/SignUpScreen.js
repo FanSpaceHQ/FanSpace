@@ -10,7 +10,7 @@ import {
     TouchableWithoutFeedback,
     Keyboard,
     ActivityIndicator,
-    TouchableNativeFeedback
+    TouchableNativeFeedback,
 } from "react-native";
 import { useState } from "react";
 import TextInput from "../components/common/TextInput";
@@ -113,8 +113,7 @@ const SignUpScreen = ({ props, navigation }) => {
     };
 
     const onPressRegister = async () => {
-        if (!imagePicked)
-            return;
+        if (!imagePicked) return;
         const firstNameError =
             firstName.length > 0 ? undefined : "You must enter a first name.";
         const lastNameError =
@@ -148,8 +147,8 @@ const SignUpScreen = ({ props, navigation }) => {
             });
         } else {
             setLoading(true);
-            await imageUpload(image)
-            await signUp(firstName, lastName, email, password, pfpUrl)
+            await imageUpload(image);
+            await signUp(firstName, lastName, email, password, pfpUrl);
             setLoading(false);
         }
     };
@@ -158,8 +157,8 @@ const SignUpScreen = ({ props, navigation }) => {
         let data = new FormData();
         data.append("email", email);
         data.append("password", password), data.append("firstName", fname);
-        data.append("lastName", lname), data.append("imageUrl", imageUrl)
-        try{
+        data.append("lastName", lname), data.append("imageUrl", imageUrl);
+        try {
             let uid;
             await axios
                 .post("http://localhost:4000/api/users/", data, {
@@ -167,17 +166,19 @@ const SignUpScreen = ({ props, navigation }) => {
                 })
                 .then((response) => {
                     const uid = JSON.stringify(response.data.uid);
-                    console.log(JSON.stringify(response.data.uid))
-                    AsyncStorage.setItem('@uid', response.data.uid);
+                    const firstName = response.data.firstName;
+                    console.log(JSON.stringify(response.data.uid));
+                    AsyncStorage.setItem("@uid", response.data.uid);
+                    AsyncStorage.setItem("@firstName", fname);
                     setLoading(false);
-                    navigation.navigate("Create Profile")
+                    navigation.navigate("Create Profile");
                 })
                 .catch(function (error) {
                     console.log(error);
                     console.log(error.data);
                 });
             return uid;
-        } catch(error) {
+        } catch (error) {
             console.log(error);
             console.log(error.data);
             return error;
@@ -224,9 +225,7 @@ const SignUpScreen = ({ props, navigation }) => {
                         {image ? (
                             <View>
                                 {image && (
-                                    <TouchableOpacity
-                                        onPress={pickImage}
-                                    >
+                                    <TouchableOpacity onPress={pickImage}>
                                         <Image
                                             source={{ uri: image }}
                                             style={{
@@ -367,7 +366,7 @@ const SignUpScreen = ({ props, navigation }) => {
                                 <ActivityIndicator
                                     size="small"
                                     color={Colors.green.primary}
-                                    style={{marginTop: 20}}
+                                    style={{ marginTop: 20 }}
                                 />
                             )}
                         </View>
