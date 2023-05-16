@@ -4,6 +4,7 @@ import { HomeScreenStack } from "./HomeScreenStack.js";
 import SearchScreen from "../screens/SearchScreen.js";
 import Icon from "react-native-vector-icons/Feather";
 import { Colors } from "../Constants.js";
+import FriendScreen from "../screens/FriendScreen.js";
 
 const Tab = createBottomTabNavigator();
 
@@ -48,7 +49,7 @@ export const NavbarStack = (route) => {
             />
             <Tab.Screen
                 name="Friends"
-                component={SearchScreen}
+                component={FriendScreen}
                 options={{ headerShown: false }}
             />
             <Tab.Screen

@@ -70,7 +70,7 @@ const HomeScreen = ({ navigation, props }) => {
                         find concerts near you ▼
                     </Text>
                 </View>
-                <TouchableOpacity onPress={() => Alert.alert("fix tmr")}>
+                <TouchableOpacity onPress={() =>navigation.navigate("Inbox Screen")}>
                     <Icon
                         name={"bell"}
                         size={35}
@@ -101,7 +101,13 @@ const HomeScreen = ({ navigation, props }) => {
                                 date={concertData.date}
                                 location={concertData.location}
                                 onPress={() =>
-                                    navigation.navigate("Concert Screen")
+                                    navigation.navigate("Concert Screen", {
+                                        image: concertData.image,
+                                        name: concertData.name,
+                                        title: concertData.title,
+                                        date: concertData.date,
+                                        location: concertData.location
+                                    })
                                 }
                             />
                         );
