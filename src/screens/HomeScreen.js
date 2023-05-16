@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import {
     View,
     StyleSheet,
@@ -13,34 +13,12 @@ import Icon from "react-native-vector-icons/Feather";
 import { SearchBar } from "react-native-elements";
 import ConcertBlock from "../components/common/ConcertBlock";
 
+const axios = require("axios").default;
 
 /*
   -- DOCUMENTATION --
 */
 
-const concertData = [
-    {
-        image: "https://media.pitchfork.com/photos/61d740b79a8903a73574e2a5/1:1/w_600/FKA-twigs-Caprisongs.jpg",
-        name: "FKA twigs",
-        title: "CAPRISONGS WORLD TOUR",
-        date: "March 11, 2023",
-        location: "Crypto.com Arena",
-    },
-    {
-        image: "https://media.pitchfork.com/photos/625f0725a110f14cd837788b/master/w_1280%2Cc_limit/Bartees-Strange-2022.jpg",
-        name: "Bartees Strange",
-        title: "Acoustic Tour",
-        date: "March 27, 2023",
-        location: "The Fonda",
-    },
-    {
-        image: "https://lahiphopevents.com/wp-content/uploads/2023/02/SZA-TOUR-2.jpg",
-        name: "SZA",
-        title: "SOS Tour",
-        date: "March 11, 2023",
-        location: "Kia Forum",
-    },
-];
 //UNiversal sort function for all fields of the table
 const sort_by = (field, reverse, primer) => {
 
@@ -59,8 +37,23 @@ const sort_by = (field, reverse, primer) => {
     };
   };
 
-concertData.sort(sort_by("name",false));
+// concertData.sort(sort_by("name",false));
 const HomeScreen = ({ navigation, props }) => {
+    const [concertData, setData] = useState([]);
+
+    useEffect(() => {
+        axios
+        .get(`http://localhost:4000/api/events/`)
+        .then((res) => {
+            // console.log(res.data);
+            setData(res.data);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    }, [])
+
+    // AsyncStorage.getItem("@uid").then((uid)=>{console.log(uid);})
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.topRow}>
@@ -104,9 +97,8 @@ const HomeScreen = ({ navigation, props }) => {
                                     navigation.navigate("Concert Screen", {
                                         image: concertData.image,
                                         name: concertData.name,
-                                        title: concertData.title,
-                                        date: concertData.date,
-                                        location: concertData.location
+                                        date: concertData.localTime,
+                                        location: `${concertData.venue} - ${concertData.city}, ${concertData.state}`
                                     })
                                 }
                             />

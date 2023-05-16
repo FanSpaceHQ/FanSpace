@@ -71,7 +71,6 @@ const createUser = async (req, res) => {
                     friends: {},                    
                     pendingIncoming: {},
                     pendingOutgoing: {},
-                    image: req.body.imageUrl,
                 })
                 .then(async () => {
                     res.status(200).json({
@@ -330,7 +329,7 @@ const loginUser = async (req, res) => {
 };
 
 const loadFriends = async (req, res) => {
-    const uid = req.body.uid;
+    const uid = req.params.uid;
     database
         .collection("users")
         .doc(uid)
@@ -352,8 +351,8 @@ const loadFriends = async (req, res) => {
                 let missingFriends = [];
                 friends.forEach((friend) =>
                     friend.exists
-                        ? friendData.append(friend)
-                        : missingFriends.append(friend)
+                        ? friendData.push(friend)
+                        : missingFriends.push(friend)
                 ); //get all the friends that exist
                 res.status(200).json({
                     friends: friendData,

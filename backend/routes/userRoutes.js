@@ -9,6 +9,7 @@ const {
     loginUser,
     objectTest,
     uploadImage,
+    loadFriends,
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -19,5 +20,6 @@ router.get("/:uid", readUser);
 router.patch("/", upload.single("File"), updateUser);
 router.delete("/", deleteUser);
 router.post("/uploadImage", upload.single("File"), uploadImage);
+router.get("/friends/:uid", loadFriends);
 
 module.exports = router;
