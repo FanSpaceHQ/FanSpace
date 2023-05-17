@@ -1,3 +1,5 @@
+import { green } from "@mui/material/colors";
+import { color } from "@rneui/base";
 import React, { useState } from "react";
 import { TouchableOpacity, StyleSheet, TextInput, View } from "react-native";
 import { Button, Text } from "react-native-elements";
@@ -22,56 +24,92 @@ const Bio = () => {
 
     return (
         <View>
-            {isEditable ? (
-                <View style={styles.input}>
-                    <TextInput
-                        multiline={true}
-                        onChangeText={(text) => setBio(text)}
-                        value={bio}
-                        placeholder="Create a bio"
-                        isEditable={isEditable}
-                        onFocus={() => setIsFocused(true)}
-                        onBlur={() => setIsFocused(false)}
-                    />
-                </View>
-            ) : (
-                <TouchableOpacity onPress={handleClick}>
-                    <View
-                        style={isFocused ? styles.inputFocused : styles.input}
-                    >
-                        <Text>{bio}</Text>
-                    </View>
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                    style={[styles.button]}
+                    onPress={handleSaveBio}
+                >
+                    <Text style={styles.buttonText}>Save</Text>
                 </TouchableOpacity>
-            )}
-
-            <Button
-                style={styles.button}
-                title="Save"
-                onPress={handleSaveBio}
-            ></Button>
+            </View>
+            <TouchableOpacity onPress={handleClick}>
+                <View style={isFocused ? styles.inputFocused : styles.input}>
+                    <View style={styles.aboutBox}>
+                        <Text style={styles.aboutText}>About</Text>
+                    </View>
+                    {isEditable ? (
+                        <TextInput
+                            style={styles.inputText}
+                            multiline={true}
+                            onChangeText={(text) => setBio(text)}
+                            value={bio}
+                            placeholder="Create a bio"
+                            editable={isEditable}
+                            onFocus={() => setIsFocused(true)}
+                            onBlur={() => setIsFocused(false)}
+                        />
+                    ) : (
+                        <Text style={styles.bioText}>{bio}</Text>
+                    )}
+                </View>
+            </TouchableOpacity>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    aboutBox: {
+        backgroundColor: "#0DAD81",
+        width: 73,
+        marginLeft: 10,
+        borderRadius: 8,
+        marginBottom: 10,
+    },
+    aboutText: {
+        color: "white",
+        fontSize: 10,
+        fontWeight: "bold",
+        marginBottom: 10,
+        marginTop: 10,
+        marginLeft: 20,
+    },
+    bioText: {
+        color: "white",
+        marginLeft: 20,
+        fontSize: 18,
+    },
+    buttonContainer: {
+        marginTop: -50,
+        alignSelf: "center",
+        height: 50,
+    },
+    buttonText: {
+        color: "#0DAD81",
+        textAlign: "center",
+        paddingTop: 5,
+    },
     button: {
         marginLeft: 8,
         marginRight: 8,
-        marginTop: 8,
+        borderColor: "#0DAD81",
         width: 100,
+        backgroundColor: "white",
         alignSelf: "center",
+        borderWidth: 1,
+        borderRadius: 16,
+        height: 32,
     },
     input: {
         marginTop: 20,
         borderWidth: 1,
         marginLeft: 8,
         marginRight: 8,
-        borderColor: "black",
+        borderWidth: 0,
         borderRadius: 16,
         height: 100,
         padding: 5,
         fontSize: 18,
-        backgroundColor: "rgba(51, 127, 100, 0.5);",
+        backgroundColor: "rgba(51, 127, 100, 0.5)",
         textAlignVertical: "top",
     },
     inputFocused: {
@@ -79,13 +117,18 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         marginLeft: 8,
         marginRight: 8,
-        borderColor: "black",
+        borderWidth: 0,
         borderRadius: 16,
         height: 100,
         padding: 5,
         fontSize: 18,
-        backgroundColor: "rgba(51, 127, 100, 0.5);",
+        backgroundColor: "rgba(51, 127, 100, 0.5)",
         textAlignVertical: "top",
+    },
+    inputText: {
+        color: "white",
+        marginLeft: 20,
+        fontSize: 18,
     },
 });
 

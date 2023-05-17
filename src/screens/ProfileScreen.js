@@ -7,24 +7,28 @@ import {
     SafeAreaView,
     TextInput,
     TouchableOpacity,
+    Image,
 } from "react-native";
 import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import Alex from "../assets/Alex.png";
 //import Button from "../components/common/Button";
-
+//import ProfileImage from "./ProfileImage";
 import { Button } from "react-native-elements";
 import ScrollWindow from "../components/common/ScrollWindow";
 import Bio from "../components/common/Bio";
+import { height } from "@mui/system";
 
 /*
   -- DOCUMENTATION --
 */
-const ProfileScreen = (props) => {
+const ProfileScreen = () => {
     const [firstName, setFirstName] = useState("");
+    const [imageUrl, setImageUrl] = useState("");
 
     useEffect(() => {
         retrieveName();
+        //retrieveImageUrl();
     }, []);
 
     const retrieveName = async () => {
@@ -35,6 +39,19 @@ const ProfileScreen = (props) => {
             }
         } catch (error) {
             console.log(error);
+        }
+    };
+
+    const retrieveImageUrl = async () => {
+        try {
+            const value = await AsyncStorage.getItem("@imageUrl");
+            if (value !== null) {
+                setImageUrl(value);
+                console.log("yay");
+            }
+        } catch (error) {
+            console.log(error);
+            console.log("nay");
         }
     };
 
@@ -55,110 +72,56 @@ const ProfileScreen = (props) => {
                             marginLeft: 8,
                         }}
                     >
-                        <View
+                        <Image
                             style={{
-                                alignItems: "center",
-                                justifyContent: "center",
-                                height: 130,
                                 width: 130,
+                                height: 130,
                                 borderRadius: 1000,
-                                backgroundColor: "black",
                             }}
-                        >
+                            source={Alex}
+                        />
+                        <View style={{ alignItems: "center", height: 120 }}>
                             <Text
                                 style={{
-                                    color: "white",
-                                    flexWrap: true,
-                                    flexDirection: "column",
+                                    marginLeft: 10,
+                                    fontSize: 30,
+                                    fontWeight: "bold",
+                                    //height: 100,
                                 }}
                             >
-                                Profile photo
+                                {firstName}
+                            </Text>
+                            <Text
+                                style={{
+                                    marginLeft: 10,
+                                    fontSize: 14,
+
+                                    color: "grey",
+                                }}
+                            >
+                                @username
                             </Text>
                         </View>
-                        <Text
-                            style={{
-                                marginLeft: 10,
-                                fontSize: 30,
-                                fontWeight: "bold",
-                                height: 100,
-                            }}
-                        >
-                            {firstName}
-                        </Text>
                     </View>
-
-                    {/* <View
-                        style={{
-                            borderColor: "black",
-                            borderWidth: 1,
-                            borderRadius: 20,
-                            padding: 20,
-                        }}
-                    >
-                        <Text
-                            style={{
-                                fontSize: 15,
-                            }}
-                        >
-                            Hi! I am a 2nd year UCLA student. 🐻🌟
-                        </Text>
-                    </View> */}
                 </View>
 
                 <Bio />
-                {/* <View style={styles.input}>
-                    <TextInput
-                        multiline={true}
-                        onChangeText={(text) => setBio(text)}
-                        value={bio}
-                        placeholder="Create a bio"
-                    />
-                </View> */}
-
-                {/* <TouchableOpacity style={styles.button}>
-                    <Text style={styles.text}>Save</Text>
-                </TouchableOpacity> */}
-
-                <View style={{ flex: 1 }}>
-                    <View style={{ marginBottom: 10 }}>
-                        <Text
-                            style={{
-                                padding: 20,
-                                fontSize: 30,
-                                fontWeight: "bold",
-                            }}
-                        >
-                            Attending
-                        </Text>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    <View style={styles.sectionContainer}>
+                        <Text style={styles.sectionTitle}>Attending</Text>
                         <ScrollWindow />
                     </View>
 
-                    <View style={{ marginBottom: 10 }}>
-                        <Text
-                            style={{
-                                padding: 20,
-                                fontSize: 30,
-                                fontWeight: "bold",
-                            }}
-                        >
-                            Upcoming
-                        </Text>
+                    <View style={styles.sectionContainer}>
+                        <Text style={styles.sectionTitle}>Upcoming</Text>
                         <ScrollWindow />
                     </View>
 
-                    <View style={{ marginBottom: 10 }}>
-                        <Text
-                            style={{
-                                padding: 20,
-                                fontSize: 30,
-                                fontWeight: "bold",
-                            }}
-                        >
-                            Selling
-                        </Text>
+                    <View style={styles.sectionContainer}>
+                        <Text style={styles.sectionTitle}>Selling</Text>
                         <ScrollWindow />
                     </View>
-                </View>
+                </ScrollView>
             </ScrollView>
         </SafeAreaView>
     );
@@ -182,6 +145,19 @@ const styles = StyleSheet.create({
     //     fontWeight: "bold",
     //     textAlign: "center",
     // },
+    scrollContainer: {
+        paddingBottom: 20,
+    },
+    sectionContainer: {
+        marginBottom: 20,
+        padding: 10,
+        height: 200,
+    },
+    sectionTitle: {
+        padding: 2,
+        fontSize: 30,
+        fontWeight: "bold",
+    },
 });
 
 export default ProfileScreen;

@@ -170,6 +170,7 @@ const SignUpScreen = ({ props, navigation }) => {
                     console.log(JSON.stringify(response.data.uid));
                     AsyncStorage.setItem("@uid", response.data.uid);
                     AsyncStorage.setItem("@firstName", fname);
+                    AsyncStorage.setItem("@imageUrl", imageUrl);
                     setLoading(false);
                     navigation.navigate("Create Profile");
                 })
