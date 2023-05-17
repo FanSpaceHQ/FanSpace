@@ -109,6 +109,7 @@ const boxStyles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
         marginLeft: 20,
+        flexWrap: "wrap",
     },
     username:{
         color: "#B4B3B3",

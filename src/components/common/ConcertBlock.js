@@ -1,6 +1,8 @@
 import React from "react";
 import { View, StyleSheet, Text, Image, TouchableOpacity, ImageBackground } from "react-native";
 import { Colors, Dim } from "../../Constants";
+import { Icon } from "react-native-elements";
+
 //
 /*
   -- DOCUMENTATION --
@@ -36,13 +38,16 @@ const ConcertBlock = (props) => {
                             marginBottom: 20,
                             position:"relative",
                             flexDirection: "column",
-                            justifyContent:"flex-end"
+                            justifyContent:"flex-end",
                         }}
-                        imageStyle={{ borderRadius: 8}}
+                        imageStyle={{ 
+                            borderRadius: 8,
+                            
+                        }}
                     >
-                    <Text style={styles.header}>{props.name} . {props.title}</Text>  
-                    {/* <Text style={styles.date}>{props.date}</Text>
-                    <Text style={styles.location}>{props.location}</Text>  */}
+                    <Text style={styles.header}>{props.name} <Icon name="fiber_manual_record"></Icon>  {props.title}</Text>  
+                     <Text style={styles.date}>{props.date} <View style={styles.dot}></View>  {props.time}
+                    <Text style={styles.location}>{props.location}</Text>   </Text>
                     </ImageBackground>
                     <View
                         style={{
@@ -59,9 +64,9 @@ const ConcertBlock = (props) => {
 };
 
 const styles = StyleSheet.create({
-    header: { fontSize:20 , fontWeight: "bold", color:'white', marginLeft:10, numberOfLines:"1",ellipsizeMode:'tail',width:Dim.width*0.7,flexWrap:"nowrap",marginBottom:5},
-    subheader: { fontSize: 15,color:'white', flexWrap: "wrap", width: 130, },
-    date: { fontSize: 11, color:'white',flexWrap: "wrap", width: 130, marginLeft:10,marginBottom:5
+    header: { fontSize:22 , fontWeight: "bold", color:'white', marginLeft:10, numberOfLines:"1",ellipsizeMode:'tail',width:Dim.width*0.7,flexWrap:"nowrap",marginBottom:5},
+    subheader: { fontSize: 20,color:'white', flexWrap: "wrap", width: 130, },
+    date: { fontSize: 15, color:'white',flexWrap: "wrap", marginLeft:10,marginBottom:5
 },
     location: {
         fontSize: 11,
@@ -70,6 +75,13 @@ const styles = StyleSheet.create({
         marginLeft:10,
         fontWeight: "bold",
         color:'white',
+    },
+    dot: {
+            height: 5,
+            width: 5,
+            borderRadius: 30,
+            backgroundColor: "white",
+            
     },
 });
 

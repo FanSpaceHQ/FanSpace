@@ -12,11 +12,14 @@ import { Colors, Dim } from "../Constants";
 import Icon from "react-native-vector-icons/Feather";
 import { SearchBar } from "react-native-elements";
 import ConcertBlock from "../components/common/ConcertBlock";
+import { useState } from "react";
+const axios = require("axios").default;
 
 
 /*
   -- DOCUMENTATION --
 */
+
 
 const concertData = [
     {
@@ -58,17 +61,28 @@ const sort_by = (field, reverse, primer) => {
       return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
     };
   };
+  const loadConcertData = async () => {
+    await axios
+        .get("http://localhost:4000/api/concerts")
+            .then((response) => {
+                console.log(response);
+            }).then((concertData) => {
+                //setConcertData(concertData);
+            })
+            .catch((err) => {
+            });
+        };
 
 concertData.sort(sort_by("name",false));
 const HomeScreen = ({ navigation, props }) => {
+    //const [concertData, setConcertData] = useState(staticConcertData);
+
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.topRow}>
                 <View style={{ flexDirection: "column" }}>
                     <Text style={styles.header}>Home</Text>
-                    <Text style={styles.subheader}>
-                        find concerts near you ▼
-                    </Text>
                 </View>
                 <TouchableOpacity onPress={() =>navigation.navigate("Inbox Screen")}>
                     <Icon
@@ -87,7 +101,11 @@ const HomeScreen = ({ navigation, props }) => {
                     // onChangeText={this.updateSearch}
                     // value={search}
                 />
+                <Text style={styles.subheader}>
+                        find concerts near you ▼
+                    </Text>
             </View>
+            
             <View style={{ alignSelf: "center" }}>
                 <FlatList
                     data={concertData}
@@ -122,17 +140,29 @@ const styles = StyleSheet.create({
     container: { backgroundColor: "white", flex: 1 },
     topRow: {
         flexDirection: "row",
-        justifyContent: "space-around",
+        justifyContent: "center",
         paddingTop: 20,
     },
-    header: { fontSize: 30, fontWeight: "bold" },
-    subheader: { fontSize: 17 },
+    header: { 
+        fontSize: 30, 
+        fontWeight: "bold",
+        marginRight: Dim.width * 0.5,
+     },
+    subheader: { 
+        fontSize: 17,
+        marginLeft:10,
+        color: Colors.darkGray,
+        fontWeight: "medium",
+        color:'#6D6D6D',
+    
+    },
     icon: { paddingTop: 10 },
     searchContainer: {
         borderColor: "transparent",
         width: Dim.width * 0.9,
         alignSelf: "center",
-        marginVertical: 20,
+        marginBottom: 20,
+        marginTop: 5,
     },
     containerStyle: {
         backgroundColor: "transparent",
