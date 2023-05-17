@@ -12,12 +12,21 @@ import {
 import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Alex from "../assets/Alex.png";
+import Discord from "../assets/Discord.png";
+import Twitter from "../assets/Twitter.png";
+import Instagram1 from "../assets/Instagram1.png";
+import Instagram2 from "../assets/Instagram2.png";
+import Instagram3 from "../assets/Instagram3.png";
+import Facebook1 from "../assets/Facebook1.png";
+import Facebook2 from "../assets/Facebook2.png";
 //import Button from "../components/common/Button";
 //import ProfileImage from "./ProfileImage";
+import { Dim, Colors } from "../Constants.js";
 import { Button } from "react-native-elements";
 import ScrollWindow from "../components/common/ScrollWindow";
 import Bio from "../components/common/Bio";
 import { height } from "@mui/system";
+import { color } from "@rneui/base";
 
 /*
   -- DOCUMENTATION --
@@ -106,6 +115,84 @@ const ProfileScreen = () => {
                 </View>
 
                 <Bio />
+
+                <View
+                    style={{
+                        width: Dim.width * 0.8,
+                        borderColor: Colors.gray,
+                        borderWidth: 1,
+                        alignSelf: "center",
+                        marginTop: Dim.height * 0.02,
+                    }}
+                />
+
+                <View>
+                    <Text
+                        style={{
+                            marginLeft: 8,
+                            marginTop: 8,
+                            marginBottom: 8,
+                            fontSize: 18,
+                        }}
+                    >
+                        Contact Information
+                    </Text>
+
+                    <View style={styles.rowContainer}>
+                        <Image source={Instagram1} style={styles.image} />
+                        <Image
+                            source={Instagram2}
+                            style={{
+                                width: Dim.width * 0.03,
+                                marginLeft: Dim.width * -0.04,
+                            }}
+                        />
+                        <Text style={{ marginLeft: 10, color: "gray" }}>
+                            @username
+                        </Text>
+                    </View>
+                    <View style={styles.grayBar} />
+
+                    <View style={styles.rowContainer}>
+                        <Image source={Twitter} style={styles.image} />
+
+                        <Text style={{ marginLeft: 10, color: "gray" }}>
+                            @username
+                        </Text>
+                    </View>
+                    <View style={styles.grayBar} />
+
+                    <View style={styles.rowContainer}>
+                        <Image source={Discord} style={styles.image} />
+                        <Text style={{ marginLeft: 10, color: "gray" }}>
+                            @username
+                        </Text>
+                    </View>
+                    <View style={styles.grayBar} />
+
+                    <View style={styles.rowContainer}>
+                        <Image source={Facebook1} style={styles.image} />
+
+                        <Text style={{ marginLeft: 10, color: "gray" }}>
+                            @username
+                        </Text>
+                    </View>
+                    <View style={styles.grayBar} />
+
+                    {/* <View style={styles.container}>
+                        <Image source={Twitter} style={styles.image} />
+                        <View style={styles.grayBar} />
+                    </View>
+                    <View style={styles.container}>
+                        <Image source={Discord} style={styles.image} />
+                        <View style={styles.grayBar} />
+                    </View>
+                    <View style={styles.container}>
+                        <Image source={Facebook1} style={styles.image} />
+                        <View style={styles.grayBar} />
+                    </View> */}
+                </View>
+
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View style={styles.sectionContainer}>
                         <Text style={styles.sectionTitle}>Attending</Text>
@@ -113,7 +200,7 @@ const ProfileScreen = () => {
                     </View>
 
                     <View style={styles.sectionContainer}>
-                        <Text style={styles.sectionTitle}>Upcoming</Text>
+                        <Text style={styles.sectionTitle}>Interested</Text>
                         <ScrollWindow />
                     </View>
 
@@ -145,6 +232,34 @@ const styles = StyleSheet.create({
     //     fontWeight: "bold",
     //     textAlign: "center",
     // },
+    rowContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        //marginBottom: -30,
+        marginBottom: Dim.height * -0.035,
+    },
+    container: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 10,
+        justifyContent: "space-between",
+    },
+    image: {
+        marginLeft: Dim.width * 0.125,
+
+        width: 20,
+        height: 20,
+    },
+    grayBar: {
+        width: Dim.width * 0.7,
+        borderColor: Colors.gray,
+        borderWidth: 1,
+        alignSelf: "center",
+        marginTop: Dim.height * 0.04,
+        marginBottom: Dim.height * 0.02,
+        marginLeft: Dim.width * 0.2,
+        marginRight: Dim.width * 0.1, // Adjust this value for the desired spacing
+    },
     scrollContainer: {
         paddingBottom: 20,
     },
@@ -155,7 +270,7 @@ const styles = StyleSheet.create({
     },
     sectionTitle: {
         padding: 2,
-        fontSize: 30,
+        fontSize: 20,
         fontWeight: "bold",
     },
 });
