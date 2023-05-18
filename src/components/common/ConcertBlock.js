@@ -2,6 +2,7 @@ import React from "react";
 import { View, StyleSheet, Text, Image, TouchableOpacity, ImageBackground } from "react-native";
 import { Colors, Dim } from "../../Constants";
 import { Icon } from "react-native-elements";
+import { LinearGradient } from 'expo-linear-gradient';
 
 //
 /*
@@ -45,9 +46,11 @@ const ConcertBlock = (props) => {
                             
                         }}
                     >
+                        <LinearGradient colors={['transparent','black']}>
                     <Text style={styles.header}>{props.name} <Icon name="fiber_manual_record"></Icon>  {props.title}</Text>  
                      <Text style={styles.date}>{props.date} <View style={styles.dot}></View>  {props.time}
                     <Text style={styles.location}>{props.location}</Text>   </Text>
+                    </LinearGradient>
                     </ImageBackground>
                     <View
                         style={{
