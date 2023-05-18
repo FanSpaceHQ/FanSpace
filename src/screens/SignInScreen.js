@@ -10,7 +10,7 @@ import {
     Dimensions,
     ActivityIndicator,
     ScrollView,
-    TouchableOpacity
+    TouchableOpacity,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -41,9 +41,9 @@ const SignInScreen = ({ props, navigation }) => {
         null;
     });
 
-    const onClick = async(uid) => {
-        await fillAsync(uid)
-    }
+    const onClick = async (uid) => {
+        await fillAsync(uid);
+    };
 
     const fillAsync = async (uid) => {
         // console.log(uid);
@@ -167,7 +167,7 @@ const SignInScreen = ({ props, navigation }) => {
                                             onClick(uid);
                                         })
                                         .catch((error) => {
-                                            console.log(error)
+                                            console.log(error);
                                             setLoading(false);
                                             setError(true);
                                         });
