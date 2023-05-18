@@ -9,8 +9,9 @@ const BIO='bio'
 // const ZIPCODE='zip'
 const LOCATION = "location"
 const IMAGE_URL='imageUrl'
+const USERNAME = 'username'
 
-const required_fields=[EMAIL, PASSWORD, FIRST_NAME, LAST_NAME, IMAGE_URL]
+const required_fields=[EMAIL, PASSWORD, FIRST_NAME, LAST_NAME, IMAGE_URL, USERNAME]
 const update_fields=[DISCORD, INSTAGRAM, TWITTER, BIO, LOCATION]
 module.exports={
     required_fields, 

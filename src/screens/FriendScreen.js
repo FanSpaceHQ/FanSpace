@@ -7,76 +7,13 @@ import { SearchBar } from "react-native-elements";
 
 const axios = require("axios").default;
 
-import Galaxy from "../assets/galaxy.png"
-import Alex from "../assets/Alex.png"
+`import Galaxy from "../assets/galaxy.png"
+import Alex from "../assets/Alex.png"`
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /*
   -- DOCUMENTATION --
 */
-
-// const friends = [
-//     {
-//         id: 1,
-//         name: "Alex Smith",
-//         userName: "@username",
-//         image: Alex,
-//     },
-//     {
-//         id: 2,
-//         name: "Alex Smith",
-//         userName: "@username",
-//         image: Alex,
-//     },
-//     {
-//         id: 3,
-//         name: "Alex Smith",
-//         userName: "@username",
-//         image: Alex,
-//     },
-//     {
-//         id: 4,
-//         name: "Alex Smith",
-//         userName: "@username",
-//         image: Alex,
-//     },
-//     {
-//         id: 5,
-//         name: "Alex Smith",
-//         userName: "@username",
-//         image: Alex,
-//     },
-//     {
-//         id: 6,
-//         name: "Alex Smith",
-//         userName: "@username",
-//         image: Alex,
-//     },
-//     {
-//         id: 7,
-//         name: "Alex Smith",
-//         userName: "@username",
-//         image: Alex,
-//     },
-//     {
-//         id: 8,
-//         name: "Alex Smith",
-//         userName: "@username",
-//         image: Alex,
-//     },
-//     {
-//         id: 9,
-//         name: "Alex Smith",
-//         userName: "@username",
-//         image: Alex,
-//     },
-//     {
-//         id: 10,
-//         name: "Alex Smith",
-//         userName: "@username",
-//         image: Alex,
-//     },
-// ]
 
 const FriendBox = (props) => {
     return(
@@ -131,7 +68,10 @@ const FriendScreen = ({props, navigation}) => {
             axios
                 .get(`http://localhost:4000/api/users/friends/${uid}`)
                 .then((res)=>{
-                    // console.log(res.data.friends);
+                    // console.log(res.data.friends._fieldsProto.image.stringValue);
+                    res.data.friends.forEach(friend => {
+                        console.log(friend._fieldsProto.image.stringValue);
+                    });
                     setFriends(res.data.friends);
                 })
                 .catch((err)=>{

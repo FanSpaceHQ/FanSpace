@@ -154,7 +154,7 @@ const getEventInfo = async(id) => {
 };
 
 const getEvent=async (req,res) =>{
-    console.log("getting event...")
+    // console.log("getting event...")
     const id = req.params.id;
     //handle if needed parameter is missing
     if (!id) {
@@ -170,21 +170,22 @@ const getEvent=async (req,res) =>{
 
 }
 //getEventInfo("vvG1jZ9KbsbPCD")
-getEventInfo("vvG17Z9JEPDzpN")
+// getEventInfo("vvG17Z9JEPDzpN")
 
 const searchEvent = async (req, res) => {
-    console.log('Searching for events...')
-    const key = req.body.keyword
+    // console.log('Searching for events...')
+    const key = req.params.keyword
     try {
       const response = await axios.get('https://app.ticketmaster.com/discovery/v2/events', {
         params: {
           apikey: TICKETMASTERKEY,
           keyword: key,
+          includeSpellcheck: 'yes',
         },
       });
-      console.log(response)
+    //   console.log(response)
       const events = response.data._embedded;
-      console.log(events)
+    //   console.log(events)
       res.status(200).json(events);
     } catch (error) {
       console.error(error);

@@ -65,12 +65,12 @@ const createUser = async (req, res) => {
                 .doc(user.uid)
                 .set({
                     ...req.body,
-                    going: {},
-                    selling: {},
-                    interested: {},
-                    friends: {},                    
-                    pendingIncoming: {},
-                    pendingOutgoing: {},
+                    going: [],
+                    selling: [],
+                    interested: [],
+                    friends: [],                    
+                    pendingIncoming: [],
+                    pendingOutgoing: [],
                 })
                 .then(async () => {
                     res.status(200).json({
@@ -424,6 +424,18 @@ const objectTest = async (req, res) => {
             res.status(200);
         });
 };
+
+const checkUser = async (req, res) => {
+  const username = req.params.username;
+  const userNameQuery = database.collection("users").where("username", '==', username);
+  const userNameSnapshot = await userNameQuery.get();
+  if (userNameSnapshot.empty){
+    res.status(200).json({Status: "Username does not exist"});
+  } else{
+    res.status(400).json({error: "Username already exists"})
+  }
+}
+
 module.exports = {
     createUser,
     readUser,
@@ -436,4 +448,5 @@ module.exports = {
     addUserToEvent,
     acceptFriend,
     uploadImage,
+    checkUser,
 }
