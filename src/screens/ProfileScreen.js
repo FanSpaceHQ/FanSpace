@@ -195,17 +195,84 @@ const ProfileScreen = () => {
 
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View style={styles.sectionContainer}>
-                        <Text style={styles.sectionTitle}>Attending</Text>
+                        <View style={{ flexDirection: "row" }}>
+                            <Text style={styles.sectionTitle}>Attending</Text>
+                            <TouchableOpacity style={styles.viewAllButton}>
+                                <Text
+                                    style={{
+                                        marginLeft: Dim.width * 0.5,
+                                        marginTop: Dim.height * 0.01,
+                                        color: "#0DAD81",
+                                    }}
+                                >
+                                    View All
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                        <Text
+                            style={{
+                                marginLeft: Dim.width * 0.01,
+                                marginBottom: Dim.height * 0.02,
+                                color: "#B4B3B3",
+                            }}
+                        >
+                            See what I'm going to
+                        </Text>
+
                         <ScrollWindow />
                     </View>
 
                     <View style={styles.sectionContainer}>
-                        <Text style={styles.sectionTitle}>Interested</Text>
+                        <View style={{ flexDirection: "row" }}>
+                            <Text style={styles.sectionTitle}>Interested</Text>
+                            <TouchableOpacity style={styles.viewAllButton}>
+                                <Text
+                                    style={{
+                                        marginLeft: Dim.width * 0.5,
+                                        marginTop: Dim.height * 0.01,
+                                        color: "#0DAD81",
+                                    }}
+                                >
+                                    View All
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                        <Text
+                            style={{
+                                marginLeft: Dim.width * 0.01,
+                                marginBottom: Dim.height * 0.02,
+                                color: "#B4B3B3",
+                            }}
+                        >
+                            I'm interested in...
+                        </Text>
                         <ScrollWindow />
                     </View>
 
                     <View style={styles.sectionContainer}>
-                        <Text style={styles.sectionTitle}>Selling</Text>
+                        <View style={{ flexDirection: "row" }}>
+                            <Text style={styles.sectionTitle}>Selling</Text>
+                            <TouchableOpacity style={styles.viewAllButton}>
+                                <Text
+                                    style={{
+                                        marginLeft: Dim.width * 0.6,
+                                        marginTop: Dim.height * 0.01,
+                                        color: "#0DAD81",
+                                    }}
+                                >
+                                    View All
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                        <Text
+                            style={{
+                                marginLeft: Dim.width * 0.01,
+                                marginBottom: Dim.height * 0.02,
+                                color: "#B4B3B3",
+                            }}
+                        >
+                            Selling tickerts for:{" "}
+                        </Text>
                         <ScrollWindow />
                     </View>
                 </ScrollView>
