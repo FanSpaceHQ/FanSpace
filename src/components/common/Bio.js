@@ -1,59 +1,89 @@
 import { green } from "@mui/material/colors";
 import { color } from "@rneui/base";
-import React, { useState } from "react";
-import { TouchableOpacity, StyleSheet, TextInput, View } from "react-native";
+import React, { useState, useRef, useEffect } from "react";
+import {
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    StyleSheet,
+    TextInput,
+    View,
+    Keyboard,
+} from "react-native";
 import { Button, Text } from "react-native-elements";
 
 const Bio = () => {
     const [bio, setBio] = useState("Default Bio");
     const [isEditable, setIsEditable] = useState(true);
     const [isFocused, setIsFocused] = useState(false);
+    const bioInputRef = useRef(null);
 
-    const handleSaveBio = () => {
-        // Save the bio
+    const handleBlur = () => {
+        if (isEditable) {
+            setIsEditable(false);
+            setIsFocused(false);
+            Keyboard.dismiss();
+            saveBio();
+        }
+    };
+
+    const handleKeyPress = ({ nativeEvent }) => {
+        if (nativeEvent.key === "Enter") {
+            handleBlur();
+        }
+    };
+
+    const saveBio = () => {
         console.log("Saving bio:", bio);
-        setIsEditable(false);
+        // Here you can implement the logic to save the bio to your desired storage or API
     };
 
     const handleClick = () => {
         if (!isEditable) {
             setIsFocused(true);
             setIsEditable(true);
+            bioInputRef.current.focus();
         }
     };
 
+    useEffect(() => {
+        if (isEditable) {
+            Keyboard.addListener("keyboardDidHide", handleBlur);
+            return () => {
+                Keyboard.removeListener("keyboardDidHide", handleBlur);
+            };
+        }
+    }, [isEditable]);
+
     return (
-        <View>
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                    style={[styles.button]}
-                    onPress={handleSaveBio}
-                >
-                    <Text style={styles.buttonText}>Save</Text>
+        <TouchableWithoutFeedback onPress={handleBlur}>
+            <View>
+                <TouchableOpacity onPress={handleClick}>
+                    <View
+                        style={isFocused ? styles.inputFocused : styles.input}
+                    >
+                        <View style={styles.aboutBox}>
+                            <Text style={styles.aboutText}>About</Text>
+                        </View>
+                        {isEditable ? (
+                            <TextInput
+                                ref={bioInputRef}
+                                style={styles.inputText}
+                                multiline={true}
+                                onChangeText={(text) => setBio(text)}
+                                value={bio}
+                                placeholder="Create a bio"
+                                editable={isEditable}
+                                onFocus={() => setIsFocused(true)}
+                                onBlur={handleBlur}
+                                onKeyPress={handleKeyPress}
+                            />
+                        ) : (
+                            <Text style={styles.bioText}>{bio}</Text>
+                        )}
+                    </View>
                 </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={handleClick}>
-                <View style={isFocused ? styles.inputFocused : styles.input}>
-                    <View style={styles.aboutBox}>
-                        <Text style={styles.aboutText}>About</Text>
-                    </View>
-                    {isEditable ? (
-                        <TextInput
-                            style={styles.inputText}
-                            multiline={true}
-                            onChangeText={(text) => setBio(text)}
-                            value={bio}
-                            placeholder="Create a bio"
-                            editable={isEditable}
-                            onFocus={() => setIsFocused(true)}
-                            onBlur={() => setIsFocused(false)}
-                        />
-                    ) : (
-                        <Text style={styles.bioText}>{bio}</Text>
-                    )}
-                </View>
-            </TouchableOpacity>
-        </View>
+        </TouchableWithoutFeedback>
     );
 };
 
@@ -77,27 +107,6 @@ const styles = StyleSheet.create({
         color: "white",
         marginLeft: 20,
         fontSize: 18,
-    },
-    buttonContainer: {
-        marginTop: -50,
-        alignSelf: "center",
-        height: 50,
-    },
-    buttonText: {
-        color: "#0DAD81",
-        textAlign: "center",
-        paddingTop: 5,
-    },
-    button: {
-        marginLeft: 8,
-        marginRight: 8,
-        borderColor: "#0DAD81",
-        width: 100,
-        backgroundColor: "white",
-        alignSelf: "center",
-        borderWidth: 1,
-        borderRadius: 16,
-        height: 32,
     },
     input: {
         marginTop: 20,
