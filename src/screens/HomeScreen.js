@@ -61,17 +61,6 @@ const sort_by = (field, reverse, primer) => {
       return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
     };
   };
-  const loadConcertData = async () => {
-    await axios
-        .get("http://localhost:4000/api/concerts")
-            .then((response) => {
-                console.log(response);
-            }).then((concertData) => {
-                //setConcertData(concertData);
-            })
-            .catch((err) => {
-            });
-        };
 
 concertData.sort(sort_by("name",false));
 const HomeScreen = ({ navigation, props }) => {
