@@ -1,6 +1,4 @@
-import { green } from "@mui/material/colors";
-import { color } from "@rneui/base";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import {
     TouchableOpacity,
     TouchableWithoutFeedback,
@@ -10,10 +8,11 @@ import {
     Keyboard,
 } from "react-native";
 import { Button, Text } from "react-native-elements";
+import { Dim } from "../../Constants";
 
 const Bio = () => {
     const [bio, setBio] = useState("Default Bio");
-    const [isEditable, setIsEditable] = useState(true);
+    const [isEditable, setIsEditable] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
     const bioInputRef = useRef(null);
 
@@ -26,33 +25,24 @@ const Bio = () => {
         }
     };
 
-    const handleKeyPress = ({ nativeEvent }) => {
-        if (nativeEvent.key === "Enter") {
-            handleBlur();
-        }
-    };
-
     const saveBio = () => {
         console.log("Saving bio:", bio);
-        // Here you can implement the logic to save the bio to your desired storage or API
+        // Implement the logic to save the bio to your desired storage or API
     };
 
     const handleClick = () => {
-        if (!isEditable) {
-            setIsFocused(true);
-            setIsEditable(true);
+        setIsEditable(true);
+        setIsFocused(true);
+        if (bioInputRef.current) {
             bioInputRef.current.focus();
         }
     };
 
-    useEffect(() => {
-        if (isEditable) {
-            Keyboard.addListener("keyboardDidHide", handleBlur);
-            return () => {
-                Keyboard.removeListener("keyboardDidHide", handleBlur);
-            };
-        }
-    }, [isEditable]);
+    const handleSaveClick = () => {
+        handleBlur();
+        // Implement any additional logic you need when saving the bio
+        // This function will be triggered when another button is clicked
+    };
 
     return (
         <TouchableWithoutFeedback onPress={handleBlur}>
@@ -61,9 +51,6 @@ const Bio = () => {
                     <View
                         style={isFocused ? styles.inputFocused : styles.input}
                     >
-                        <View style={styles.aboutBox}>
-                            <Text style={styles.aboutText}>About</Text>
-                        </View>
                         {isEditable ? (
                             <TextInput
                                 ref={bioInputRef}
@@ -75,38 +62,30 @@ const Bio = () => {
                                 editable={isEditable}
                                 onFocus={() => setIsFocused(true)}
                                 onBlur={handleBlur}
-                                onKeyPress={handleKeyPress}
                             />
                         ) : (
                             <Text style={styles.bioText}>{bio}</Text>
                         )}
                     </View>
                 </TouchableOpacity>
+                {isEditable && (
+                    <Button
+                        title="Save"
+                        onPress={handleSaveClick}
+                        buttonStyle={styles.saveButton}
+                        titleStyle={styles.saveButtonTitle}
+                    />
+                )}
             </View>
         </TouchableWithoutFeedback>
     );
 };
 
 const styles = StyleSheet.create({
-    aboutBox: {
-        backgroundColor: "#0DAD81",
-        width: 73,
-        marginLeft: 10,
-        borderRadius: 8,
-        marginBottom: 10,
-    },
-    aboutText: {
-        color: "white",
-        fontSize: 10,
-        fontWeight: "bold",
-        marginBottom: 10,
-        marginTop: 10,
-        marginLeft: 20,
-    },
-    bioText: {
-        color: "white",
-        marginLeft: 20,
-        fontSize: 18,
+    saveButtonTitle: {
+        marginTop: Dim.height * -0.003,
+        color: "green",
+        fontSize: 14,
     },
     input: {
         marginTop: 20,
@@ -138,6 +117,23 @@ const styles = StyleSheet.create({
         color: "white",
         marginLeft: 20,
         fontSize: 18,
+    },
+    bioText: {
+        color: "white",
+        marginLeft: 20,
+        fontSize: 18,
+    },
+    saveButton: {
+        marginLeft: 8,
+        marginRight: 8,
+        marginTop: 8,
+        borderColor: "#0DAD81",
+        width: 100,
+        backgroundColor: "white",
+        alignSelf: "center",
+        borderWidth: 1,
+        borderRadius: 16,
+        height: 32,
     },
 });
 

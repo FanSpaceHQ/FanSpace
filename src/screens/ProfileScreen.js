@@ -35,10 +35,10 @@ import { useNavigation } from "@react-navigation/native";
 /*
   -- DOCUMENTATION --
 */
-const ProfileScreen = ({ props }) => {
+const ProfileScreen = ({ navigation, props }) => {
     const [firstName, setFirstName] = useState("");
     const [imageUrl, setImageUrl] = useState("");
-    const navigation = useNavigation();
+    //const navigation = useNavigation();
 
     useEffect(() => {
         retrieveName();
