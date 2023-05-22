@@ -5,6 +5,7 @@ import SearchScreen from "../screens/SearchScreen.js";
 import Icon from "react-native-vector-icons/Feather";
 import { Colors } from "../Constants.js";
 import FriendScreen from "../screens/FriendScreen.js";
+import { ProfileScreenStack } from "./ProfileScreenStack.js";
 
 const Tab = createBottomTabNavigator();
 
@@ -54,9 +55,9 @@ export const NavbarStack = (route) => {
             />
             <Tab.Screen
                 name="Profile"
-                component={ProfileScreen}
+                component={ProfileScreenStack}
                 options={{ headerShown: false }}
             />
         </Tab.Navigator>
     );
-}
+};

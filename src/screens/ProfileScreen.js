@@ -19,6 +19,9 @@ import Instagram2 from "../assets/Instagram2.png";
 import Instagram3 from "../assets/Instagram3.png";
 import Facebook1 from "../assets/Facebook1.png";
 import Facebook2 from "../assets/Facebook2.png";
+
+import Settings1 from "../assets/Settings1.png";
+import SettingsPage from "./Settings";
 //import Button from "../components/common/Button";
 //import ProfileImage from "./ProfileImage";
 import { Dim, Colors } from "../Constants.js";
@@ -27,13 +30,15 @@ import ScrollWindow from "../components/common/ScrollWindow";
 import Bio from "../components/common/Bio";
 import { height } from "@mui/system";
 import { color } from "@rneui/base";
+import { useNavigation } from "@react-navigation/native";
 
 /*
   -- DOCUMENTATION --
 */
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation, props }) => {
     const [firstName, setFirstName] = useState("");
     const [imageUrl, setImageUrl] = useState("");
+    //const navigation = useNavigation();
 
     useEffect(() => {
         retrieveName();
@@ -74,6 +79,15 @@ const ProfileScreen = () => {
                         paddingTop: 25,
                     }}
                 >
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate("Settings")}
+                    >
+                        <Image
+                            source={Settings1}
+                            style={{ marginLeft: Dim.width * 0.85 }}
+                        ></Image>
+                    </TouchableOpacity>
+
                     <View
                         style={{
                             flexDirection: "row",
@@ -89,7 +103,13 @@ const ProfileScreen = () => {
                             }}
                             source={Alex}
                         />
-                        <View style={{ alignItems: "center", height: 120 }}>
+                        <View
+                            style={{
+                                alignItems: "center",
+                                marginBottom: Dim.height * 0.1,
+                                height: Dim.height * 0.04,
+                            }}
+                        >
                             <Text
                                 style={{
                                     marginLeft: 10,
@@ -100,6 +120,7 @@ const ProfileScreen = () => {
                             >
                                 {firstName}
                             </Text>
+
                             <Text
                                 style={{
                                     marginLeft: 10,
@@ -178,19 +199,6 @@ const ProfileScreen = () => {
                         </Text>
                     </View>
                     <View style={styles.grayBar} />
-
-                    {/* <View style={styles.container}>
-                        <Image source={Twitter} style={styles.image} />
-                        <View style={styles.grayBar} />
-                    </View>
-                    <View style={styles.container}>
-                        <Image source={Discord} style={styles.image} />
-                        <View style={styles.grayBar} />
-                    </View>
-                    <View style={styles.container}>
-                        <Image source={Facebook1} style={styles.image} />
-                        <View style={styles.grayBar} />
-                    </View> */}
                 </View>
 
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
