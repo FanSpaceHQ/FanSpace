@@ -87,8 +87,8 @@ const SignUpScreen = ({ props, navigation }) => {
                 "content-type": "multipart/form-data",
             })
             .then((response) => {
-                setUrl(JSON.stringify(response.data).url);
-                return response;
+                setUrl(response.data.url);
+                return response.data.url;
             })
             .catch(function (error) {
                 console.log(error);
@@ -122,7 +122,7 @@ const SignUpScreen = ({ props, navigation }) => {
                 response = res.data;
             })
             .catch((err)=>{
-                // console.log(err);
+                console.log(err);
                 const usernameError = "Username already exists";
                 setErrors({
                     username: usernameError,
@@ -130,10 +130,12 @@ const SignUpScreen = ({ props, navigation }) => {
                 setLoading(false);
                 return;
             })
-        if (response.status){
+        if (response.Status){
+            console.log("here")
             const usernameError = undefined
             setErrors({username: usernameError});
-
+            await imageUpload(image);
+            await signUp(firstName, lastName, email, password, pfpUrl, userName);
         }
     }
 
@@ -174,15 +176,15 @@ const SignUpScreen = ({ props, navigation }) => {
         } else {
             setLoading(true);
             await checkUsername();
-            // await imageUpload(image)
-            // await signUp(firstName, lastName, email, password, pfpUrl)
+            // await imageUpload(image);
+            // await signUp(firstName, lastName, email, password, pfpUrl);
             setLoading(false);
         }
     };
 
-    const signUp = async (fname, lname, email, password, imageUrl) => {
+    const signUp = async (fname, lname, email, password, imageUrl, username) => {
         let data = new FormData();
-        data.append("email", email);
+        data.append("email", email), data.append("username", username);
         data.append("password", password), data.append("firstName", fname);
         data.append("lastName", lname), data.append("imageUrl", imageUrl);
         try {

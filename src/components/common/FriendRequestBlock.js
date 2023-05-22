@@ -15,11 +15,15 @@ const FriendRequestBlock = (props) => {
                     uri: props.image,
                 }}
                 />
+                <View style={{flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start"}}>
             <Text style={styles.header}>{props.name}
             <Text style={styles.subheader}>{"\n @"}{props.username} </Text></Text>
+            </View>
             <View style={styles.ButtonView}>
             <TouchableOpacity style={styles.roundedButton}><Text style={styles.buttonText}>Accept</Text></TouchableOpacity>
-                <TouchableOpacity ><Text style={{fontSize: 20}}>X</Text></TouchableOpacity>
+                <TouchableOpacity ><Text style={{fontSize: 20}}><Image style={{ width: 15, height: 15,}} source={{
+                    uri: "https://cdn.icon-icons.com/icons2/1863/PNG/512/close_119285.png",
+                }}></Image></Text></TouchableOpacity>
                 </View>
         </View>
     );
@@ -30,15 +34,16 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "flex-start",
         alignItems: "center",
-        width:Dim.width,
+        width:  Dim.width * 0.95,
         marginTop: 15,
-        marginLeft: 20,
         backgroundColor: "#f0f0f0",
 },
 ButtonView: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    width:Dim.width*0.5,
+    flex: 1,
+    marginRight: 30,
+    alignItems: "center",
     },
 
     header: {
@@ -49,11 +54,12 @@ ButtonView: {
     },
     roundedButton: {   
         width: 100,
-        height: 30,
+        height: 35,
         backgroundColor: "#0DAD81",
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
+        marginRight: 20,
         
     },
 subheader: {    
@@ -61,6 +67,8 @@ subheader: {
     fontSize: 16,
     fontWeight: "medium",
     color:'#6D6D6D',
-},});
+    
+},
+});
 
 export default FriendRequestBlock;
