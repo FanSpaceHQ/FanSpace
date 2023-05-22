@@ -37,7 +37,7 @@ const boxStyles = StyleSheet.create({
         alignItems: "left",
         alignContent: "left",
         marginBottom: 10,
-        // width: Dim.width * 0.8,
+        width: Dim.width * 0.9,
         marginLeft: Dim.width * 0.08,
     },
     image:{
@@ -53,7 +53,7 @@ const boxStyles = StyleSheet.create({
     },
     username:{
         color: "#B4B3B3",
-        marginLeft: 20,
+        marginLeft: 15,
     },
 })
 
@@ -68,11 +68,8 @@ const FriendScreen = ({props, navigation}) => {
             axios
                 .get(`http://localhost:4000/api/users/friends/${uid}`)
                 .then((res)=>{
-                    // console.log(res.data.friends._fieldsProto.image.stringValue);
-                    res.data.friends.forEach(friend => {
-                        console.log(friend._fieldsProto.image.stringValue);
-                    });
                     setFriends(res.data.friends);
+                    setSize(res.data.friends.length)
                 })
                 .catch((err)=>{
                     console.log(err);
@@ -80,17 +77,21 @@ const FriendScreen = ({props, navigation}) => {
         })
     }, []);
 
+    useEffect(()=>{
+        console.log(search);
+    }, [search])
+
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-            <ScrollView>
-            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-            <View
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: "white", flexDirection: "column", 
+            alignItems: "center", paddingTop: Dim.height * 0.015 }}>    
+            {/* <View
                 style={{
                     flexDirection: "column",
                     alignItems: "center",
                     paddingTop: Dim.height * 0.015,
                 }}
-            >
+            > */}
                 {/* Orbit At the Top */}
                 <View
                     style={{
@@ -111,8 +112,8 @@ const FriendScreen = ({props, navigation}) => {
                         placeholder="Search for friends"
                         containerStyle={styles.containerStyle}
                         inputContainerStyle={styles.inputContainerStyle}
-                        value={search}
                         onChangeText={setSearch}
+                        value={search}
                     />
                 </View>
 
@@ -128,34 +129,33 @@ const FriendScreen = ({props, navigation}) => {
                             borderWidth: 1,
                             alignSelf: "center",
                             marginTop: Dim.height * 0.01,
+                            marginBottom: 20,
                         }}
                     />
                 </View>
 
                 {/* Friends List */}
-                <View style={{ alignSelf: "left", marginTop: 20 }}>
-                <FlatList
-                    data={friends}
-                    horizontal={false}
-                    renderItem={({ item: friends }) => {
-                        return (
-                            <FriendBox
-                                image={friends._fieldsProto.image.stringValue}
-                                name={`${friends._fieldsProto.firstName.stringValue} ${friends._fieldsProto.lastName.stringValue}`}
-                                userName={"@lawrencetlee"}
-                                onPress={() =>
-                                    navigation.navigate("Profile")
-                                }
-                            />
-                        );
-                    }}
-                />
+                <View style={{ alignSelf: "left", marginTop: 0}}>
+                    <FlatList
+                        data={friends}
+                        horizontal={false}
+                        renderItem={({ item: friends }) => {
+                            return (
+                                <FriendBox
+                                    image={friends._fieldsProto.image.stringValue}
+                                    name={`${friends._fieldsProto.firstName.stringValue} ${friends._fieldsProto.lastName.stringValue}`}
+                                    userName={"@lawrencetlee"}
+                                    onPress={() =>
+                                        navigation.navigate("Profile")
+                                    }
+                                />
+                            );
+                        }}
+                    />
                 </View>
-            </View>
-            </TouchableWithoutFeedback>
             {/* </View> */}
-            </ScrollView>
-        </SafeAreaView>
+            </SafeAreaView>
+        </TouchableWithoutFeedback> 
     );
 };
 
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
         color: "#6D6D6D",
         textAlign: "left",
         // marginLeft: Dim.width * 0.025,
-        marginTop: Dim.height * 0.025,
+        marginTop: Dim.height * 0.05,
     },
     button: {
         marginTop: Dim.height * 0.0175,
@@ -202,6 +202,8 @@ const styles = StyleSheet.create({
         borderColor: "transparent",
         width: Dim.width * 0.85,
         alignSelf: "center",
+        marginVertical: 20,
+        marginTop: -5,
     },
     inputContainerStyle: {
         borderRadius: 10,

@@ -45,17 +45,36 @@ const HomeScreen = ({ navigation, props }) => {
     const [search, updateSearch] = useState("");
     const [searchResults, setResult] = useState([]);
     const [inputSearch, setBool] = useState(false);
+    const [queryData, setQueryData] = useState([]);
+    const [query, setQuery] = useState(false);
+    const [queryResult, setResponse] = useState(false);
 
-    const searchEvent = async(search) => {
-        updateSearch(search);
+
+    const searchEvent = async() => {
         setBool(true);
+        setQuery(true);
+    }
+
+    const searchTicket = async() => {
+        const getData = setTimeout(() => {
+            axios
+                .get(`http://localhost:4000/api/events/search/${search}`)
+                .then((res)=>{
+                    console.log(res.data)
+                    setQueryData(res.data);
+                    setQuery(false);
+                })
+                .catch((err)=>{
+                    setQuery(false);
+                    console.log(err);
+                })
+        }, 4000)
     }
 
     useEffect(() => {
         axios
         .get(`http://localhost:4000/api/events/`)
         .then((res) => {
-            // console.log(res.data);
             setData(res.data);
         })
         .catch((err) => {
@@ -63,9 +82,14 @@ const HomeScreen = ({ navigation, props }) => {
         });
     }, [])
 
-    // useEffect(()=>{
-    //     console.log(search);
-    // }, [search])
+    useEffect(()=>{
+        if (query){
+            searchTicket();
+        }
+    }, [query])
+
+
+
 
     // AsyncStorage.getItem("@uid").then((uid)=>{console.log(uid);})
     return (
@@ -91,32 +115,56 @@ const HomeScreen = ({ navigation, props }) => {
                         </TouchableOpacity>
                     </View>
                 ) : (
-                    <View style={styles.topRow}>
+                    <View
+                        style={{
+                            flexDirection: "column",
+                        }}
+                    >
                         <TouchableOpacity
                             onPress={() => {
                                 setBool(false);
                             }}
                         >
-                            <Text style={styles.subheader}>
-                                {" "}
-                                <Text style={styles.arrow}>← </Text> Home
-                            </Text>
+                            <View style={{marginLeft: 15, marginTop: Dim.height * 0.01}}>
+                                <Text
+                                    style={{ fontSize: 20, fontWeight: "bold" }}
+                                >
+                                    {" "}
+                                    ←{" "}
+                                    <Text style={{ fontWeight: "normal" }}>
+                                        {" "}
+                                        Home{" "}
+                                    </Text>{" "}
+                                </Text>
+                                
+                            </View>
                         </TouchableOpacity>
+                        <Text style={{fontSize: 30, fontWeight: "bold", 
+                            marginTop: 10, marginBottom: -10, marginLeft: 25,
+                        }}> Search</Text>
                     </View>
                 )}
                 <View style={styles.searchContainer}>
                     <SearchBar
                         placeholder="Search for artists..."
                         containerStyle={styles.containerStyle}
-                        inputContainerStyle={inputSearch ? styles.inputSmallStyle : styles.inputContainerStyle}
-                        onChangeText={text=>searchEvent(text)}
+                        inputContainerStyle={
+                            inputSearch
+                                ? styles.inputSmallStyle
+                                : styles.inputContainerStyle
+                        }
+                        onChangeText={(text) => {
+                            updateSearch(text);
+                            searchEvent(text)
+                        }}
                         value={search}
                         onFocus={() => {
                             setBool(true);
                         }}
                     />
                 </View>
-                <View style={{ alignSelf: "center" }}>
+                {inputSearch == 0 ? (
+                    <View style={{ alignSelf: "center" }}>
                     <FlatList
                         data={concertData}
                         horizontal={false}
@@ -141,6 +189,31 @@ const HomeScreen = ({ navigation, props }) => {
                         }}
                     />
                 </View>
+                ) : (<View style={{ alignSelf: "center" }}>
+                <FlatList
+                    data={queryData}
+                    horizontal={false}
+                    renderItem={({ item: concertData }) => {
+                        return (
+                            <ConcertBlock
+                                image={concertData.image}
+                                name={concertData.name}
+                                title={concertData.title}
+                                date={concertData.date}
+                                location={concertData.location}
+                                onPress={() =>
+                                    navigation.navigate("Concert Screen", {
+                                        image: concertData.image,
+                                        name: concertData.name,
+                                        date: concertData.localTime,
+                                        location: `${concertData.venue} - ${concertData.city}, ${concertData.state}`,
+                                    })
+                                }
+                            />
+                        );
+                    }}
+                />
+            </View>)}
             </SafeAreaView>
         </TouchableWithoutFeedback>
     );
