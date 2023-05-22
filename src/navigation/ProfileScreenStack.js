@@ -2,6 +2,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import ProfileScreen from "../screens/ProfileScreen";
 import SettingsPage from "../screens/Settings";
+import SignIn from "../screens/SignInScreen.js";
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +21,11 @@ export const ProfileScreenStack = (route) => {
                 component={SettingsPage}
                 options={{ headerShown: false }}
                 //navigation={navigation} // Pass the navigation prop here
+            />
+            <Stack.Screen
+                name="Sign In"
+                component={SignIn}
+                options={{ headerShown: false }}
             />
         </Stack.Navigator>
     );
