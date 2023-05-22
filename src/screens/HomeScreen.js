@@ -21,6 +21,29 @@ const axios = require("axios").default;
   -- DOCUMENTATION --
 */
 
+const concertData = [
+    {
+        image: "https://media.pitchfork.com/photos/61d740b79a8903a73574e2a5/1:1/w_600/FKA-twigs-Caprisongs.jpg",
+        name: "FKA twigs",
+        title: "CAPRISONGS WORLD TOUR",
+        date: "March 11, 2023",
+        location: "Crypto.com Arena",
+    },
+    {
+        image: "https://media.pitchfork.com/photos/625f0725a110f14cd837788b/master/w_1280%2Cc_limit/Bartees-Strange-2022.jpg",
+        name: "Bartees Strange",
+        title: "Acoustic Tour",
+        date: "March 27, 2023",
+        location: "The Fonda",
+    },
+    {
+        image: "https://lahiphopevents.com/wp-content/uploads/2023/02/SZA-TOUR-2.jpg",
+        name: "SZA",
+        title: "SOS Tour",
+        date: "March 11, 2023",
+        location: "Kia Forum",
+    },
+];
 //UNiversal sort function for all fields of the table
 const sort_by = (field, reverse, primer) => {
 
@@ -68,6 +91,9 @@ const HomeScreen = ({ navigation, props }) => {
     // }, [search])
 
     // AsyncStorage.getItem("@uid").then((uid)=>{console.log(uid);})
+    //const [concertData, setConcertData] = useState(staticConcertData);
+
+
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
             <SafeAreaView style={styles.container}>
@@ -150,17 +176,29 @@ const styles = StyleSheet.create({
     container: { backgroundColor: "white", flex: 1 },
     topRow: {
         flexDirection: "row",
-        justifyContent: "space-around",
+        justifyContent: "center",
         paddingTop: 20,
     },
-    header: { fontSize: 30, fontWeight: "bold" },
-    subheader: { fontSize: 17 },
+    header: { 
+        fontSize: 30, 
+        fontWeight: "bold",
+        marginRight: Dim.width * 0.5,
+     },
+    subheader: { 
+        fontSize: 17,
+        marginLeft:10,
+        color: Colors.darkGray,
+        fontWeight: "medium",
+        color:'#6D6D6D',
+    
+    },
     icon: { paddingTop: 10 },
     searchContainer: {
         borderColor: "transparent",
         width: Dim.width * 0.9,
         alignSelf: "center",
-        marginVertical: 20,
+        marginBottom: 20,
+        marginTop: 5,
     },
     containerStyle: {
         backgroundColor: "transparent",
