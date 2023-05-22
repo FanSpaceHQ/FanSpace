@@ -42,6 +42,7 @@ const SignUpScreen = ({ props, navigation }) => {
     const [imagePicked, setUpload] = useState(false);
     const [pfpUrl, setUrl] = useState("");
     const [image, setImage] = useState("");
+    const [userName, setUser] = useState("");
     const [profileCreated, setCreate] = useState(false);
     const [errors, setErrors] = useState({
         firstName: undefined,
@@ -49,6 +50,7 @@ const SignUpScreen = ({ props, navigation }) => {
         password: undefined,
         confirm: undefined,
         email: undefined,
+        username: undefined,
     });
 
     const imageUpload = async (uri) => {
@@ -112,8 +114,32 @@ const SignUpScreen = ({ props, navigation }) => {
         }
     };
 
+    const checkUsername = async () => {
+        let response; 
+        await axios
+            .get(`http://localhost:4000/api/users/username/${userName}`)
+            .then((res)=>{
+                response = res.data;
+            })
+            .catch((err)=>{
+                // console.log(err);
+                const usernameError = "Username already exists";
+                setErrors({
+                    username: usernameError,
+                });
+                setLoading(false);
+                return;
+            })
+        if (response.status){
+            const usernameError = undefined
+            setErrors({username: usernameError});
+
+        }
+    }
+
     const onPressRegister = async () => {
-        if (!imagePicked) return;
+        if (!imagePicked)
+            return;
         const firstNameError =
             firstName.length > 0 ? undefined : "You must enter a first name.";
         const lastNameError =
@@ -147,8 +173,9 @@ const SignUpScreen = ({ props, navigation }) => {
             });
         } else {
             setLoading(true);
-            await imageUpload(image);
-            await signUp(firstName, lastName, email, password, pfpUrl);
+            await checkUsername();
+            // await imageUpload(image)
+            // await signUp(firstName, lastName, email, password, pfpUrl)
             setLoading(false);
         }
     };
@@ -301,6 +328,16 @@ const SignUpScreen = ({ props, navigation }) => {
                             />
 
                             <TextInput
+                                setText={setUser}
+                                value={userName}
+                                placeholder={"Username"}
+                                isPassword={false}
+                                autoCorrect={false}
+                                error={errors.username}
+                                errorMessage={"Username already exists"}
+                            />
+
+                            <TextInput
                                 setText={setEmail}
                                 value={email}
                                 placeholder={"Email"}
@@ -367,7 +404,7 @@ const SignUpScreen = ({ props, navigation }) => {
                                 <ActivityIndicator
                                     size="small"
                                     color={Colors.green.primary}
-                                    style={{ marginTop: 20 }}
+                                    style={{  marginTop: 20  }}
                                 />
                             )}
                         </View>

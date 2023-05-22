@@ -154,7 +154,7 @@ const getEventInfo = async(id) => {
 };
 
 const getEvent=async (req,res) =>{
-    console.log("getting event...")
+    // console.log("getting event...")
     const id = req.params.id;
     //handle if needed parameter is missing
     if (!id) {
@@ -170,21 +170,22 @@ const getEvent=async (req,res) =>{
 
 }
 //getEventInfo("vvG1jZ9KbsbPCD")
-getEventInfo("vvG17Z9JEPDzpN")
+// getEventInfo("vvG17Z9JEPDzpN")
 
 const searchEvent = async (req, res) => {
-    console.log('Searching for events...')
-    const key = req.body.keyword
+    // console.log('Searching for events...')
+    const key = req.params.keyword
     try {
       const response = await axios.get('https://app.ticketmaster.com/discovery/v2/events', {
         params: {
           apikey: TICKETMASTERKEY,
           keyword: key,
+          includeSpellcheck: 'yes',
         },
       });
-      console.log(response)
+    //   console.log(response)
       const events = response.data._embedded;
-      console.log(events)
+    //   console.log(events)
       res.status(200).json(events);
     } catch (error) {
       console.error(error);
@@ -210,14 +211,16 @@ const populateEvents=async(req, res) => {
                 apikey: TICKETMASTERKEY,
                 postalCode: 90024,
                 radius: 50,
-                //classificationName: 'music',
             }
         });
         const eData = events.data._embedded
         const eventArr = eData.events
         const processedEvents = [];
 
-        console.log(eventArr)
+        const weekdays = ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'];
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+        // console.log(eventArr)
         for (let i = 0; i < eventArr.length; i++) {
             let event = eventArr[i];
 
@@ -234,20 +237,35 @@ const populateEvents=async(req, res) => {
             }
 
             //handle if localTime is undefined
-            localTime = '';
+            let localTime = 'TBD';
             if (event.dates && event.dates.start && event.dates.start.localTime) {
-                localTime = event.dates.start.localTime;
+                let dateString = '';
+                const localDate = eventArr[0].dates.start.localDate;
+                const date = new Date(localDate);
+                const localtime = eventArr[0].dates.start.localTime;
+                const dated = eventArr[0].dates.start.localDate.split('-');
+                const month = months[date.getMonth()]
+                const day = weekdays[date.getDay()];
+                let time = 'TBD';
+                const intTime = localtime.split(':');
+                const hour = parseInt(intTime[0])
+                if (hour >= 12){
+                    time = `${hour}:${intTime[1]}pm`
+                } else{
+                    time = `${hour}:${intTime[1]}am`;
+                }
+                localTime = `${month} ${dated[2]}, ${dated[0]} - ${day}, ${time}`
             }
 
             //handle if dateTime is undefined
-            let dateTime = '';
+            let dateTime = 'TBD';
             if (event.dates && event.dates.start && event.dates.start.dateTime) {
                 dateTime = event.dates.start.dateTime;
             }
 
-            let venue = '';
-            let city = '';
-            let state = '';
+            let venue = 'TBD';
+            let city = 'TBD';
+            let state = 'TBD';
             //store only the information on each event we need
             if (eventEmbedded && eventEmbedded.venues && eventEmbedded.venues[0]) {
                 if (eventEmbedded.venues[0].name) {
@@ -279,18 +297,14 @@ const populateEvents=async(req, res) => {
             processedEvents.push(eventInfo);
         }
 
-        return {
-            processedEvents: processedEvents
-        };
+        res.status(200).json(processedEvents);
     } catch (error) {
         console.error(error);
-        return {
-            error: 'Event not found'
-        };
+        res.status(500).json({error: "An error occurred loading the events"})
     }
 };
 
-//getEventInfo("vvG1jZ9KbsbPCD")
+// getEventInfo("vvG1jZ9KbsbPCD")
 //getEventInfo("vvG17Z9JEPDzpN")
 
 //function to test populate events
@@ -308,10 +322,11 @@ async function testPopulateEvents() {
     }
 }
 
-  testPopulateEvents();
+//   testPopulateEvents();
 
 module.exports= {
     getEvent,
     addUserToEvent,
-    searchEvent
+    searchEvent,
+    populateEvents
 }

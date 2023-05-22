@@ -151,7 +151,6 @@ const renderScene = SceneMap({
 
 const ConcertScreen = ({route}) => {
     const {name, location, date, title, image} = route.params;
-    const [font_Size, setSize] = useState((name.length + 3 + title.length) <= 21);
     const [index, setIndex] = useState(0);
     const [routes] = useState([
         { key: "first", title: "Going" },
@@ -219,11 +218,11 @@ const ConcertScreen = ({route}) => {
                             alignSelf: "left",
                             textAlign: "left",
                             color: "white",
-                            marginTop: font_Size ? 200 : 180,
+                            // marginTop: font_Size ? 200 : 180,
                             marginBottom: 20,
                             marginLeft: 10,
                             zIndex: 1,
-                            fontSize: font_Size ? 40 : 30,
+                            // fontSize: font_Size ? 40 : 30,
                             // fontSize: 40,
                             fontWeight: "bold",
                         }}
