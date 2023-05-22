@@ -14,8 +14,6 @@ import { Colors, Dim } from "../Constants";
 import Icon from "react-native-vector-icons/Feather";
 import { SearchBar } from "react-native-elements";
 import ConcertBlock from "../components/common/ConcertBlock";
-import { useState } from "react";
-const axios = require("axios").default;
 
 const axios = require("axios").default;
 
