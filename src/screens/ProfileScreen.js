@@ -92,7 +92,8 @@ const ProfileScreen = ({ navigation, props }) => {
                         style={{
                             flexDirection: "row",
                             alignItems: "center",
-                            marginLeft: 8,
+                            marginLeft: Dim.width * 0.05,
+                            //marginRight: Dim.width * 0.8,
                         }}
                     >
                         <Image
@@ -100,6 +101,7 @@ const ProfileScreen = ({ navigation, props }) => {
                                 width: 130,
                                 height: 130,
                                 borderRadius: 1000,
+                                marginRight: 10,
                             }}
                             source={Alex}
                         />
@@ -290,38 +292,23 @@ const ProfileScreen = ({ navigation, props }) => {
 };
 
 const styles = StyleSheet.create({
-    // h1: {color}
-    // input: {
-    //     marginTop: 5,
-    //     borderWidth: 1,
-    //     borderColor: "black",
-    //     borderRadius: 20,
-    //     height: 100, // set the height you need
-    //     padding: 5,
-    //     fontSize: 18,
-    //     textAlignVertical: "top",
-    // },
-    // text: {
-    //     color: "black",
-    //     fontSize: 16,
-    //     fontWeight: "bold",
-    //     textAlign: "center",
-    // },
     rowContainer: {
         flexDirection: "row",
         alignItems: "center",
         //marginBottom: -30,
         marginBottom: Dim.height * -0.035,
+        marginRight: Dim.width * 0.5,
     },
     container: {
         flexDirection: "row",
         alignItems: "center",
         marginBottom: 10,
         justifyContent: "space-between",
+        marginRight: Dim.width * 0.5,
     },
     image: {
-        marginLeft: Dim.width * 0.125,
-
+        marginLeft: Dim.width * 0.12,
+        marginRight: Dim.width * 0.0,
         width: 20,
         height: 20,
     },
