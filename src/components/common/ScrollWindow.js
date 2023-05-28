@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, FlatList, Image, StyleSheet } from "react-native";
 import ConcertBlock from "./ConcertBlock";
+import { useNavigation } from "@react-navigation/native";
+
+const axios = require("axios").default;
 
 const concerts = [
     {
@@ -27,6 +30,20 @@ const concerts = [
 ];
 
 const ScrollWindow = () => {
+    const [concertData, setData] = useState([]);
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        axios
+            .get(`http://localhost:4000/api/events/`)
+            .then((res) => {
+                setData(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
+
     const concertBlockStyles = StyleSheet.create({
         concertBlock: {
             width: 150,
@@ -40,17 +57,24 @@ const ScrollWindow = () => {
     return (
         <View style={{ alignSelf: "center" }}>
             <FlatList
-                data={concerts}
+                data={concertData}
                 horizontal={true}
-                renderItem={({ item: concerts }) => {
+                renderItem={({ item: concertData }) => {
                     return (
                         <ConcertBlock
-                            image={concerts.image}
-                            name={concerts.name}
-                            title={concerts.title}
-                            date={concerts.date}
-                            location={concerts.location}
-                            onPress={() => console.log("Click")}
+                            image={concertData.image}
+                            name={concertData.name}
+                            title={concertData.title}
+                            date={concertData.date}
+                            location={concertData.location}
+                            onPress={() =>
+                                navigation.navigate("Concert Screen", {
+                                    image: concertData.image,
+                                    name: concertData.name,
+                                    date: concertData.localTime,
+                                    location: `${concertData.venue} - ${concertData.city}, ${concertData.state}`,
+                                })
+                            }
                         />
                     );
                 }}
