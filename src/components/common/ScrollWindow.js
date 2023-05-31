@@ -61,21 +61,23 @@ const ScrollWindow = () => {
                 horizontal={true}
                 renderItem={({ item: concertData }) => {
                     return (
-                        <ConcertBlock
-                            image={concertData.image}
-                            name={concertData.name}
-                            title={concertData.title}
-                            date={concertData.date}
-                            location={concertData.location}
-                            onPress={() =>
-                                navigation.navigate("Concert Screen", {
-                                    image: concertData.image,
-                                    name: concertData.name,
-                                    date: concertData.localTime,
-                                    location: `${concertData.venue} - ${concertData.city}, ${concertData.state}`,
-                                })
-                            }
-                        />
+                        <View style={{ marginRight: 10 }}>
+                            <ConcertBlock
+                                image={concertData.image}
+                                name={concertData.name}
+                                title={concertData.title}
+                                date={concertData.date}
+                                location={concertData.location}
+                                onPress={() =>
+                                    navigation.navigate("Concert Screen", {
+                                        image: concertData.image,
+                                        name: concertData.name,
+                                        date: concertData.localTime,
+                                        location: `${concertData.venue} - ${concertData.city}, ${concertData.state}`,
+                                    })
+                                }
+                            />
+                        </View>
                     );
                 }}
             />

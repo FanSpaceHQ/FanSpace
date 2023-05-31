@@ -37,13 +37,21 @@ import { useNavigation } from "@react-navigation/native";
 */
 const ProfileScreen = ({ navigation, props }) => {
     const [firstName, setFirstName] = useState("");
+    const [instagram, setInstagram] = useState("");
+    const [twitter, setTwitter] = useState("");
+    const [discord, setDiscord] = useState("");
+    const [facebook, setFacebook] = useState("");
     const [imageUrl, setImageUrl] = useState("");
     //const navigation = useNavigation();
 
     useEffect(() => {
         retrieveName();
+        getDiscord();
+        getInstagram();
+        getFacebook();
+        getTwitter();
         //retrieveImageUrl();
-    }, []);
+    });
 
     const retrieveName = async () => {
         try {
@@ -66,6 +74,50 @@ const ProfileScreen = ({ navigation, props }) => {
         } catch (error) {
             console.log(error);
             console.log("nay");
+        }
+    };
+
+    const getDiscord = async () => {
+        try {
+            const value = await AsyncStorage.getItem("@discord");
+            if (value !== null) {
+                setDiscord(value);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getInstagram = async () => {
+        try {
+            const value = await AsyncStorage.getItem("@instagram");
+            if (value !== null) {
+                setInstagram(value);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getFacebook = async () => {
+        try {
+            const value = await AsyncStorage.getItem("@facebook");
+            if (value !== null) {
+                setFacebook(value);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getTwitter = async () => {
+        try {
+            const value = await AsyncStorage.getItem("@twitter");
+            if (value !== null) {
+                setTwitter(value);
+            }
+        } catch (error) {
+            console.log(error);
         }
     };
 
@@ -171,7 +223,7 @@ const ProfileScreen = ({ navigation, props }) => {
                             }}
                         />
                         <Text style={{ marginLeft: 10, color: "gray" }}>
-                            @username
+                            {instagram}
                         </Text>
                     </View>
                     <View style={styles.grayBar} />
@@ -180,7 +232,7 @@ const ProfileScreen = ({ navigation, props }) => {
                         <Image source={Twitter} style={styles.image} />
 
                         <Text style={{ marginLeft: 10, color: "gray" }}>
-                            @username
+                            {twitter}
                         </Text>
                     </View>
                     <View style={styles.grayBar} />
@@ -188,7 +240,7 @@ const ProfileScreen = ({ navigation, props }) => {
                     <View style={styles.rowContainer}>
                         <Image source={Discord} style={styles.image} />
                         <Text style={{ marginLeft: 10, color: "gray" }}>
-                            @username
+                            {discord}
                         </Text>
                     </View>
                     <View style={styles.grayBar} />
@@ -197,7 +249,7 @@ const ProfileScreen = ({ navigation, props }) => {
                         <Image source={Facebook1} style={styles.image} />
 
                         <Text style={{ marginLeft: 10, color: "gray" }}>
-                            @username
+                            {facebook}
                         </Text>
                     </View>
                     <View style={styles.grayBar} />
