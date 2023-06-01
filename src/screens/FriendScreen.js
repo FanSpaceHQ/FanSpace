@@ -5,82 +5,22 @@ import { Dim, Colors } from "../Constants.js"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SearchBar } from "react-native-elements";
 
-import Galaxy from "../assets/galaxy.png"
-import Alex from "../assets/Alex.png"
+const axios = require("axios").default;
+
+`import Galaxy from "../assets/galaxy.png"
+import Alex from "../assets/Alex.png"`
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /*
   -- DOCUMENTATION --
 */
-
-const friends = [
-    {
-        id: 1,
-        name: "Alex Smith",
-        userName: "@username",
-        image: Alex,
-    },
-    {
-        id: 2,
-        name: "Alex Smith",
-        userName: "@username",
-        image: Alex,
-    },
-    {
-        id: 3,
-        name: "Alex Smith",
-        userName: "@username",
-        image: Alex,
-    },
-    {
-        id: 4,
-        name: "Alex Smith",
-        userName: "@username",
-        image: Alex,
-    },
-    {
-        id: 5,
-        name: "Alex Smith",
-        userName: "@username",
-        image: Alex,
-    },
-    {
-        id: 6,
-        name: "Alex Smith",
-        userName: "@username",
-        image: Alex,
-    },
-    {
-        id: 7,
-        name: "Alex Smith",
-        userName: "@username",
-        image: Alex,
-    },
-    {
-        id: 8,
-        name: "Alex Smith",
-        userName: "@username",
-        image: Alex,
-    },
-    {
-        id: 9,
-        name: "Alex Smith",
-        userName: "@username",
-        image: Alex,
-    },
-    {
-        id: 10,
-        name: "Alex Smith",
-        userName: "@username",
-        image: Alex,
-    },
-]
 
 const FriendBox = (props) => {
     return(
         <TouchableOpacity onPress={props.onPress}>
         <View style={boxStyles.container}>
             <View style={{flexDirection: "row", paddingBottom: 20,}}>
-                <Image source={props.image} style={boxStyles.image}/>
+                <Image source={{uri: props.image}} style={boxStyles.image}/>
                 <View style={{justifyContent:"center"}}>
                     <Text style={boxStyles.name}>{props.name}</Text>
                     <Text style={boxStyles.username}> {props.userName}</Text>
@@ -97,42 +37,62 @@ const boxStyles = StyleSheet.create({
         alignItems: "left",
         alignContent: "left",
         marginBottom: 10,
-        // width: Dim.width * 0.8,
+        width: Dim.width * 0.9,
         marginLeft: Dim.width * 0.08,
     },
     image:{
         marginLeft: Dim.width * 0.025,
         height: 50,
         width: 50,
+        borderRadius: 1000,
     },
     name:{
         fontSize: 16,
         fontWeight: "bold",
         marginLeft: 20,
+        flexWrap: "wrap",
     },
     username:{
         color: "#B4B3B3",
-        marginLeft: 20,
+        marginLeft: 15,
     },
 })
 
 const FriendScreen = ({props, navigation}) => {
+    const [friends, setFriends] = useState([]);
     const [friendSize, setSize] = useState(friends.length);
     const [search, setSearch] = useState("");
+    const [uid, setId] = useState();
 
-    useEffect(() => {}, []);
+    useEffect(() => {
+        AsyncStorage.getItem("@uid").then((uid)=>{
+            axios
+                .get(`http://localhost:4000/api/users/friends/${uid}`)
+                .then((res)=>{
+                    setFriends(res.data.friends);
+                    setSize(res.data.friends.length)
+                })
+                .catch((err)=>{
+                    console.log(err);
+                })
+        })
+    }, []);
+
+    useEffect(()=>{
+        console.log(search);
+    }, [search])
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-            <ScrollView>
-            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-            <View
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: "white", flexDirection: "column", 
+            alignItems: "center", paddingTop: Dim.height * 0.015 }}>    
+            {/* <View
                 style={{
                     flexDirection: "column",
                     alignItems: "center",
                     paddingTop: Dim.height * 0.015,
                 }}
-            >
+            > */}
                 {/* Orbit At the Top */}
                 <View
                     style={{
@@ -153,8 +113,8 @@ const FriendScreen = ({props, navigation}) => {
                         placeholder="Search for friends"
                         containerStyle={styles.containerStyle}
                         inputContainerStyle={styles.inputContainerStyle}
-                        value={search}
                         onChangeText={setSearch}
+                        value={search}
                     />
                 </View>
 
@@ -170,31 +130,33 @@ const FriendScreen = ({props, navigation}) => {
                             borderWidth: 1,
                             alignSelf: "center",
                             marginTop: Dim.height * 0.01,
+                            marginBottom: 20,
                         }}
                     />
                 </View>
 
                 {/* Friends List */}
-                <View style={{ alignSelf: "left", marginTop: 20 }}>
-                    <ScrollView bounces={true}>
-                        {friends.map((friend) => (
-                        <FriendBox
-                            key={friend.id}
-                            image={friend.image}
-                            name={friend.name}
-                            userName={friend.userName}
-                            onPress={() => {
-                            navigation.navigate("Profile");
-                            }}
-                        />
-                        ))}
-                    </ScrollView>
+                <View style={{ alignSelf: "left", marginTop: 0}}>
+                    <FlatList
+                        data={friends}
+                        horizontal={false}
+                        renderItem={({ item: friends }) => {
+                            return (
+                                <FriendBox
+                                    image={friends._fieldsProto.image.stringValue}
+                                    name={`${friends._fieldsProto.firstName.stringValue} ${friends._fieldsProto.lastName.stringValue}`}
+                                    userName={"@lawrencetlee"}
+                                    onPress={() =>
+                                        navigation.navigate("Profile")
+                                    }
+                                />
+                            );
+                        }}
+                    />
                 </View>
-            </View>
-            </TouchableWithoutFeedback>
             {/* </View> */}
-            </ScrollView>
-        </SafeAreaView>
+            </SafeAreaView>
+        </TouchableWithoutFeedback> 
     );
 };
 
@@ -213,7 +175,7 @@ const styles = StyleSheet.create({
         color: "#6D6D6D",
         textAlign: "left",
         // marginLeft: Dim.width * 0.025,
-        marginTop: Dim.height * 0.025,
+        marginTop: Dim.height * 0.05,
     },
     button: {
         marginTop: Dim.height * 0.0175,
@@ -241,6 +203,8 @@ const styles = StyleSheet.create({
         borderColor: "transparent",
         width: Dim.width * 0.85,
         alignSelf: "center",
+        marginVertical: 20,
+        marginTop: -5,
     },
     inputContainerStyle: {
         borderRadius: 10,

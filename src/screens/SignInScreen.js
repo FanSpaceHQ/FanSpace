@@ -10,7 +10,7 @@ import {
     Dimensions,
     ActivityIndicator,
     ScrollView,
-    TouchableOpacity
+    TouchableOpacity,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -41,9 +41,9 @@ const SignInScreen = ({ props, navigation }) => {
         null;
     });
 
-    const onClick = async(uid) => {
-        await fillAsync(uid)
-    }
+    const onClick = async (uid) => {
+        await fillAsync(uid);
+    };
 
     const fillAsync = async (uid) => {
         // console.log(uid);
@@ -57,17 +57,14 @@ const SignInScreen = ({ props, navigation }) => {
             .catch((err) => {
                 console.log(err);
             });
-        // console.log(typeof JSON.stringify(data.bio));
-        // console.log(data.data.bio);
-        await AsyncStorage.setItem["@uid", uid];
-        await AsyncStorage.setItem["@bio", data.data.bio];
-        await AsyncStorage.setItem["@discord", data.data.discord];
-        await AsyncStorage.setItem["@twitter", data.data.twitter];
-        await AsyncStorage.setItem["@firstName", data.data.firstName];
-        await AsyncStorage.setItem["@lastName", data.data.lastName];
-        await AsyncStorage.setItem["@imageUrl", data.data.imageUrl];
-        await AsyncStorage.setItem["@location", data.data.location];
-        // console.log(data);
+        await AsyncStorage.setItem("@uid", uid);
+        await AsyncStorage.setItem("@bio", data.data.bio);
+        await AsyncStorage.setItem("@discord", data.data.discord);
+        await AsyncStorage.setItem("@twitter", data.data.twitter);
+        await AsyncStorage.setItem("@firstName", data.data.firstName);
+        await AsyncStorage.setItem("@lastName", data.data.lastName);
+        await AsyncStorage.setItem("@imageUrl", data.data.imageUrl);
+        await AsyncStorage.setItem("@location", data.data.location);
         setLoading(false);
         navigation.navigate("NavbarStack");
     };
@@ -163,14 +160,14 @@ const SignInScreen = ({ props, navigation }) => {
                                         .then((userCred) => {
                                             const uid = userCred.user.uid;
                                             //TODO set local state to userid
-                                            AsyncStorage.setItem[
-                                                ("@uid", userCred.user.uid)
-                                            ];
+                                            // AsyncStorage.setItem[
+                                            //     ("@uid", userCred.user.uid)
+                                            // ];
                                             setID(uid);
                                             onClick(uid);
                                         })
                                         .catch((error) => {
-                                            console.log(error)
+                                            console.log(error);
                                             setLoading(false);
                                             setError(true);
                                         });

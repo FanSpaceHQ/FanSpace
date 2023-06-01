@@ -29,12 +29,11 @@ const App = () => {
 
     useEffect(() => {
         AsyncStorage.getItem("@uid").then((userId) => {
-            console.log(userId);
             if (userId !== null) {
                 setUserID(true);
                 setLoading(false);
             } else {
-                setUserID(false);
+                setUserID(true);
                 setLoading(false);
             }
         });

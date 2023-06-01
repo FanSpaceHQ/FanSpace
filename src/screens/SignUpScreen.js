@@ -10,7 +10,7 @@ import {
     TouchableWithoutFeedback,
     Keyboard,
     ActivityIndicator,
-    TouchableNativeFeedback
+    TouchableNativeFeedback,
 } from "react-native";
 import { useState } from "react";
 import TextInput from "../components/common/TextInput";
@@ -42,6 +42,7 @@ const SignUpScreen = ({ props, navigation }) => {
     const [imagePicked, setUpload] = useState(false);
     const [pfpUrl, setUrl] = useState("");
     const [image, setImage] = useState("");
+    const [userName, setUser] = useState("");
     const [profileCreated, setCreate] = useState(false);
     const [errors, setErrors] = useState({
         firstName: undefined,
@@ -49,6 +50,7 @@ const SignUpScreen = ({ props, navigation }) => {
         password: undefined,
         confirm: undefined,
         email: undefined,
+        username: undefined,
     });
 
     const imageUpload = async (uri) => {
@@ -85,8 +87,8 @@ const SignUpScreen = ({ props, navigation }) => {
                 "content-type": "multipart/form-data",
             })
             .then((response) => {
-                setUrl(JSON.stringify(response.data).url);
-                return response;
+                setUrl(response.data.url);
+                return response.data.url;
             })
             .catch(function (error) {
                 console.log(error);
@@ -111,6 +113,31 @@ const SignUpScreen = ({ props, navigation }) => {
             setUpload(true);
         }
     };
+
+    const checkUsername = async () => {
+        let response; 
+        await axios
+            .get(`http://localhost:4000/api/users/username/${userName}`)
+            .then((res)=>{
+                response = res.data;
+            })
+            .catch((err)=>{
+                console.log(err);
+                const usernameError = "Username already exists";
+                setErrors({
+                    username: usernameError,
+                });
+                setLoading(false);
+                return;
+            })
+        if (response.Status){
+            console.log("here")
+            const usernameError = undefined
+            setErrors({username: usernameError});
+            await imageUpload(image);
+            await signUp(firstName, lastName, email, password, pfpUrl, userName);
+        }
+    }
 
     const onPressRegister = async () => {
         if (!imagePicked)
@@ -148,18 +175,19 @@ const SignUpScreen = ({ props, navigation }) => {
             });
         } else {
             setLoading(true);
-            await imageUpload(image)
-            await signUp(firstName, lastName, email, password, pfpUrl)
+            await checkUsername();
+            // await imageUpload(image);
+            // await signUp(firstName, lastName, email, password, pfpUrl);
             setLoading(false);
         }
     };
 
-    const signUp = async (fname, lname, email, password, imageUrl) => {
+    const signUp = async (fname, lname, email, password, imageUrl, username) => {
         let data = new FormData();
-        data.append("email", email);
+        data.append("email", email), data.append("username", username);
         data.append("password", password), data.append("firstName", fname);
-        data.append("lastName", lname), data.append("imageUrl", imageUrl)
-        try{
+        data.append("lastName", lname), data.append("imageUrl", imageUrl);
+        try {
             let uid;
             await axios
                 .post("http://localhost:4000/api/users/", data, {
@@ -167,17 +195,20 @@ const SignUpScreen = ({ props, navigation }) => {
                 })
                 .then((response) => {
                     const uid = JSON.stringify(response.data.uid);
-                    console.log(JSON.stringify(response.data.uid))
-                    AsyncStorage.setItem('@uid', response.data.uid);
+                    const firstName = response.data.firstName;
+                    console.log(JSON.stringify(response.data.uid));
+                    AsyncStorage.setItem("@uid", response.data.uid);
+                    AsyncStorage.setItem("@firstName", fname);
+                    AsyncStorage.setItem("@imageUrl", imageUrl);
                     setLoading(false);
-                    navigation.navigate("Create Profile")
+                    navigation.navigate("Create Profile");
                 })
                 .catch(function (error) {
                     console.log(error);
                     console.log(error.data);
                 });
             return uid;
-        } catch(error) {
+        } catch (error) {
             console.log(error);
             console.log(error.data);
             return error;
@@ -224,9 +255,7 @@ const SignUpScreen = ({ props, navigation }) => {
                         {image ? (
                             <View>
                                 {image && (
-                                    <TouchableOpacity
-                                        onPress={pickImage}
-                                    >
+                                    <TouchableOpacity onPress={pickImage}>
                                         <Image
                                             source={{ uri: image }}
                                             style={{
@@ -301,6 +330,16 @@ const SignUpScreen = ({ props, navigation }) => {
                             />
 
                             <TextInput
+                                setText={setUser}
+                                value={userName}
+                                placeholder={"Username"}
+                                isPassword={false}
+                                autoCorrect={false}
+                                error={errors.username}
+                                errorMessage={"Username already exists"}
+                            />
+
+                            <TextInput
                                 setText={setEmail}
                                 value={email}
                                 placeholder={"Email"}
@@ -367,7 +406,7 @@ const SignUpScreen = ({ props, navigation }) => {
                                 <ActivityIndicator
                                     size="small"
                                     color={Colors.green.primary}
-                                    style={{marginTop: 20}}
+                                    style={{  marginTop: 20  }}
                                 />
                             )}
                         </View>
