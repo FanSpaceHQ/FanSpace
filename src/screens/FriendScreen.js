@@ -128,11 +128,19 @@ const FriendScreen = ({props, navigation}) => {
         }
     }, [debounce])
 
+    useEffect(()=>{
+        console.log(search);
+    },[search])
+
     return (
         <TouchableWithoutFeedback onPress={() => {
             Keyboard.dismiss()
             setClicked(false);
             setQueryData([]);
+            setSearch(() => {
+                setSearch("");
+                console.log(search);
+            });
         }}>
             <SafeAreaView
                 style={{
@@ -160,6 +168,7 @@ const FriendScreen = ({props, navigation}) => {
                 {/* Search Container */}
                 <View style={styles.searchContainer}>
                     <SearchBar
+                        value={search}
                         placeholder="Search for friends"
                         containerStyle={styles.containerStyle}
                         inputContainerStyle={styles.inputContainerStyle}
@@ -170,7 +179,10 @@ const FriendScreen = ({props, navigation}) => {
                         onFocus={() => {
                             setClicked(true);
                         }}
-                        value={search}
+                        onClear={()=>{
+                            setSearch("")
+                            setQueryData([]);
+                        }}
                     />
                 </View>
 
@@ -219,7 +231,24 @@ const FriendScreen = ({props, navigation}) => {
                                 marginBottom: 20,
                             }}
                         />
-                    </View>
+                    </View> 
+                    {friendSize == 0 ? (
+                        <View>
+                            <Text style={{fontWeight: "bold", fontSize: 20, marginTop: -(Dim.height * .01), marginLeft: Dim.width * 0.1}}>
+                                No friends yet
+                            </Text>
+                            <Text style={{
+                                fontSize: 16,
+                                color: "#6D6D6D",
+                                textAlign: "left",
+                                marginLeft: Dim.width * 0.1,
+                                marginTop: Dim.height * 0.01,
+                                fontWeight: "300",
+                            }}>
+                                Find people interested in going to the same concerts.
+                            </Text>
+                        </View>
+                    ) : (
                     <View style={{ alignSelf: "left", marginTop: 0 }}>
                         <FlatList
                             data={friends}
@@ -239,7 +268,7 @@ const FriendScreen = ({props, navigation}) => {
                                 );
                             }}
                         />
-                    </View>
+                    </View>)}
                 </View>
                 )}
             </SafeAreaView>
