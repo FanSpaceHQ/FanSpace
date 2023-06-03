@@ -231,7 +231,7 @@ const FriendScreen = ({props, navigation}) => {
                                             friends._fieldsProto.image.stringValue
                                         }
                                         name={`${friends._fieldsProto.firstName.stringValue} ${friends._fieldsProto.lastName.stringValue}`}
-                                        userName={"@lawrencetlee"}
+                                        userName={`${friends._fieldsProto.username.stringValue}`}
                                         onPress={() =>
                                             navigation.navigate("Profile")
                                         }
