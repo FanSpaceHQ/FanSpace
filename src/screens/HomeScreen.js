@@ -195,7 +195,7 @@ const HomeScreen = ({ navigation, props }) => {
                                     name={concertData.name}
                                     title={concertData.title}
                                     date={concertData.date}
-                                    location={concertData.location}
+                                    location={concertData.venue}
                                     onPress={() =>
                                         navigation.navigate("Concert Screen", {
                                             image: concertData.image,
@@ -253,7 +253,6 @@ const styles = StyleSheet.create({
      },
     subheader: { 
         fontSize: 17,
-        marginLeft:10,
         color: Colors.darkGray,
         fontWeight: "medium",
         color:'#6D6D6D',

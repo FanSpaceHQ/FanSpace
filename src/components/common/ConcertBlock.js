@@ -48,8 +48,8 @@ const ConcertBlock = (props) => {
                     >
                         <LinearGradient colors={['transparent','black']}>
                     <Text style={styles.header}>{props.name} {props.title}</Text>  
-                     <Text style={styles.date}>{props.date} <View style={styles.dot}></View>  {props.time}
-                    <Text style={styles.location}>{props.location}</Text>   </Text>
+                    <Text style={styles.date}>{props.date}
+                    <Text style={styles.location}>{props.location}  </Text>   </Text>
                     </LinearGradient>
                     </ImageBackground>
                     <View
