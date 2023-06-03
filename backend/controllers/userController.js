@@ -370,10 +370,208 @@ const loadFriends = async (req, res) => {
         });
 };
 
-//TODO
 const searchUser = async (req, res) => {
-    //query all documents in fb where matches, fname, lname, insta, discord, etc
-    //look into here https://firebase.google.com/docs/firestore/solutions/search?provider=algolia
+  try {
+    // console.log(req.params)
+        // const searchQuery = req.body.thing.trim();
+        const fullSearch = req.params.username;
+        const searchQuery = req.params.username.trim();
+        const searchWords = searchQuery.split(' ');
+        let result = [];
+        try {
+          const firstNameQuery = database.collection('users').where('firstName', "==", fullSearch);
+          const lastNameQuery = database.collection('users').where('lastName', '==', fullSearch);
+          const discordQuery = database.collection('users').where('discord', '==', fullSearch);
+          const instaQuery = database.collection('users').where('insta', '==', fullSearch);
+          const twitterQuery = database.collection('users').where('twitter', '==', fullSearch);
+          const [firstNameSnapshot, lastNameSnapshot, discordSnapshot, instaSnapshot, twitterSnapshot] = await Promise.all([
+              firstNameQuery.get(),
+              lastNameQuery.get(),
+              discordQuery.get(),
+              instaQuery.get(),
+              twitterQuery.get()
+          ]);
+          firstNameSnapshot.forEach(doc => {
+              const uid = doc.id;
+              console.log(doc.data())
+              const { firstName, lastName, imageUrl, username } = doc.data();
+              const userInfo = {
+                [uid]: {
+                  firstName,
+                  lastName,
+                  imageUrl,
+                  username,
+                }
+              };
+              if (!result.some(user => user[uid])) {
+                result.push(userInfo);
+              }
+          });
+          lastNameSnapshot.forEach(doc => {
+              const uid = doc.id;
+              const { firstName, lastName, imageUrl, username } = doc.data();
+              const userInfo = {
+                [uid]: {
+                  firstName,
+                  lastName,
+                  imageUrl,
+                  username,
+                }
+              };
+              if (!result.some(user => user[uid])) {
+                result.push(userInfo);
+              }
+          });
+          discordSnapshot.forEach(doc => {
+              const uid = doc.id;
+              const { firstName, lastName, imageUrl, username } = doc.data();
+              const userInfo = {
+                [uid]: {
+                  firstName,
+                  lastName,
+                  imageUrl,
+                  username,
+                }
+              };
+              if (!result.some(user => user[uid])) {
+                result.push(userInfo);
+              }
+          });
+          instaSnapshot.forEach(doc => {
+              const uid = doc.id;
+              const { firstName, lastName, imageUrl, username } = doc.data();
+              const userInfo = {
+                [uid]: {
+                  firstName,
+                  lastName,
+                  imageUrl,
+                  username,
+                }
+              };
+              if (!result.some(user => user[uid])) {
+                result.push(userInfo);
+              }
+          });
+          twitterSnapshot.forEach(doc => {
+              const uid = doc.id;
+              const { firstName, lastName, imageUrl, username } = doc.data();
+              const userInfo = {
+                [uid]: {
+                  firstName,
+                  lastName,
+                  imageUrl,
+                  username,
+                }
+              };
+              if (!result.some(user => user[uid])) {
+                result.push(userInfo);
+              }
+          });
+          console.log("here");
+        } catch (err) {
+          console.error(error);
+          res.status(500).json({
+              message: "Internal server error",
+              error: error,
+          });
+        }
+        for (const word of searchWords) {
+        const firstNameQuery = database.collection('users').where('firstName', "==", word);
+        const lastNameQuery = database.collection('users').where('lastName', "==", word);
+        const discordQuery = database.collection('users').where('discord', "==", word);
+        const instaQuery = database.collection('users').where('insta', "==", word);
+        const twitterQuery = database.collection('users').where('twitter', "==", word);
+        const [firstNameSnapshot, lastNameSnapshot, discordSnapshot, instaSnapshot, twitterSnapshot] = await Promise.all([
+            firstNameQuery.get(),
+            lastNameQuery.get(),
+            discordQuery.get(),
+            instaQuery.get(),
+            twitterQuery.get()
+        ]);
+        firstNameSnapshot.forEach(doc => {
+            const uid = doc.id;
+            // console.log(doc.data())
+            const { firstName, lastName, imageUrl, username } = doc.data();
+            const userInfo = {
+              [uid]: {
+                firstName,
+                lastName,
+                imageUrl,
+                username,
+              }
+            };
+            if (!result.some(user => user[uid])) {
+              result.push(userInfo);
+            }
+        });
+        lastNameSnapshot.forEach(doc => {
+            const uid = doc.id;
+            const { firstName, lastName, imageUrl, username } = doc.data();
+            const userInfo = {
+              [uid]: {
+                firstName,
+                lastName,
+                imageUrl,
+                username,
+              }
+            };
+            if (!result.some(user => user[uid])) {
+              result.push(userInfo);
+            }
+        });
+        discordSnapshot.forEach(doc => {
+            const uid = doc.id;
+            const { firstName, lastName, imageUrl, username } = doc.data();
+            const userInfo = {
+              [uid]: {
+                firstName,
+                lastName,
+                imageUrl,
+                username,
+              }
+            };
+            if (!result.some(user => user[uid])) {
+              result.push(userInfo);
+            }
+        });
+        instaSnapshot.forEach(doc => {
+            const uid = doc.id;
+            const { firstName, lastName, imageUrl, username } = doc.data();
+            const userInfo = {
+              [uid]: {
+                firstName,
+                lastName,
+                imageUrl,
+                username,
+              }
+            };
+            if (!result.some(user => user[uid])) {
+              result.push(userInfo);
+            }
+        });
+        twitterSnapshot.forEach(doc => {
+            const uid = doc.id;
+            const { firstName, lastName, imageUrl, username } = doc.data();
+            const userInfo = {
+              [uid]: {
+                firstName,
+                lastName,
+                imageUrl,
+                username,
+              }
+            };
+            if (!result.some(user => user[uid])) {
+              result.push(userInfo);
+            }
+        });
+        }
+        console.log(result);
+        res.status(200).json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error',
+    error: error });
+    }
 };
 
 const addUserToEvent = async (req, res) => {
