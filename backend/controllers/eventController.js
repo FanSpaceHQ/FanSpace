@@ -336,7 +336,7 @@ const populateEvents = async (req, res) => {
                 dmaId: 324,
                 classificationName: 'music',
             }
-        );
+        });
         const eData = events.data._embedded;
         const eventArr = eData.events;
         const processedEvents = [];
