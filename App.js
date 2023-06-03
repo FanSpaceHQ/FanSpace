@@ -22,6 +22,7 @@ const MyTheme = {
 };
 
 const Stack = createNativeStackNavigator();
+LogBox.ignoreAllLogs();
 
 const App = () => {
     const [userID, setUserID] = useState(false);
@@ -33,7 +34,7 @@ const App = () => {
                 setUserID(true);
                 setLoading(false);
             } else {
-                setUserID(true);
+                setUserID(false);
                 setLoading(false);
             }
         });
