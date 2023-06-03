@@ -24,6 +24,6 @@ router.delete("/", deleteUser);
 router.post("/uploadImage", upload.single("File"), uploadImage);
 router.get("/friends/:uid", loadFriends);
 router.get("/username/:username", checkUser)
-router.get("/search/friends/:username", searchUser)
+router.get("/search/friends/:uid/:username", searchUser)
 
 module.exports = router;

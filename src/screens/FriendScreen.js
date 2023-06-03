@@ -71,7 +71,7 @@ const FriendScreen = ({props, navigation}) => {
     const querySearch = async() =>{
         if (!debounce){
             const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-            await delay(1000);
+            await delay(2000);
             setDebounce(true);
         }
     }
@@ -115,9 +115,9 @@ const FriendScreen = ({props, navigation}) => {
     useEffect(()=>{
         if (debounce){
             axios // TODO Fix the Request Path
-                .get(`http://localhost:4000/api/users/search/friends/${search}`)
+                .get(`http://localhost:4000/api/users/search/friends/${uid}/${search}`)
                 .then((res)=> {
-                    console.log(res.data);
+                    // console.log(res.data);
                     setQueryData(res.data)
                     setDebounce(false);
                 })
