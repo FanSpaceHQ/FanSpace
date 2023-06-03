@@ -330,8 +330,8 @@ const populateEvents = async (req, res) => {
         //const events = await Promise.all([axios.get(url + '.json?&apikey=' + TICKETMASTERKEY + '&postalCode=' + zipCode + '&radius=' + radius)]);
 
         //const events = await axios.get('https://app.ticketmaster.com/discovery/v2/events',{
-        const events = await axios.get('https://app.ticketmaster.com/discovery/v2/events', {
-            params: {
+        const events = await axios.get('https://app.ticketmaster.com/discovery/v2/events',{
+            params:{
                 apikey: TICKETMASTERKEY,
                 dmaId: 324,
                 classificationName: 'music',

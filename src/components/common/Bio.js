@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
     TouchableOpacity,
     TouchableWithoutFeedback,
@@ -9,12 +9,28 @@ import {
 } from "react-native";
 import { Button, Text } from "react-native-elements";
 import { Dim } from "../../Constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Bio = () => {
     const [bio, setBio] = useState("Default Bio");
     const [isEditable, setIsEditable] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
     const bioInputRef = useRef(null);
+
+    useEffect(() => {
+        getBio();
+    });
+
+    const getBio = async () => {
+        try {
+            const value = await AsyncStorage.getItem("@bio");
+            if (value !== null) {
+                setBio(value);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const handleBlur = () => {
         if (isEditable) {

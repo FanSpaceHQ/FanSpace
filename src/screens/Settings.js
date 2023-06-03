@@ -110,6 +110,10 @@ const SettingsPage = ({ props, navigation }) => {
             setUpload(true);
         }
     };
+
+    const handleSave = () => {
+        console.log("Saved!");
+    };
     // const success = async () => {
     //     await AsyncStorage.setItem("@discord", discord);
     //     await AsyncStorage.setItem("@twitter", twitter);
@@ -352,6 +356,9 @@ const SettingsPage = ({ props, navigation }) => {
                                 <Button
                                     title="Save"
                                     //onPress={onPressRegister}
+                                    onPress={() =>
+                                        navigation.navigate("Profile Screen")
+                                    }
                                     style={styles.button}
                                 />
                             ) : (
@@ -365,6 +372,7 @@ const SettingsPage = ({ props, navigation }) => {
                             <Button
                                 title="Sign Out"
                                 //onPress={onPressRegister}
+                                onPress={() => navigation.navigate("Sign In")}
                                 style={styles.button}
                             />
                         </View>

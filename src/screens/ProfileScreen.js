@@ -37,13 +37,21 @@ import { useNavigation } from "@react-navigation/native";
 */
 const ProfileScreen = ({ navigation, props }) => {
     const [firstName, setFirstName] = useState("");
+    const [instagram, setInstagram] = useState("");
+    const [twitter, setTwitter] = useState("");
+    const [discord, setDiscord] = useState("");
+    const [facebook, setFacebook] = useState("");
     const [imageUrl, setImageUrl] = useState("");
     //const navigation = useNavigation();
 
     useEffect(() => {
         retrieveName();
+        getDiscord();
+        getInstagram();
+        getFacebook();
+        getTwitter();
         //retrieveImageUrl();
-    }, []);
+    });
 
     const retrieveName = async () => {
         try {
@@ -66,6 +74,50 @@ const ProfileScreen = ({ navigation, props }) => {
         } catch (error) {
             console.log(error);
             console.log("nay");
+        }
+    };
+
+    const getDiscord = async () => {
+        try {
+            const value = await AsyncStorage.getItem("@discord");
+            if (value !== null) {
+                setDiscord(value);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getInstagram = async () => {
+        try {
+            const value = await AsyncStorage.getItem("@instagram");
+            if (value !== null) {
+                setInstagram(value);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getFacebook = async () => {
+        try {
+            const value = await AsyncStorage.getItem("@facebook");
+            if (value !== null) {
+                setFacebook(value);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getTwitter = async () => {
+        try {
+            const value = await AsyncStorage.getItem("@twitter");
+            if (value !== null) {
+                setTwitter(value);
+            }
+        } catch (error) {
+            console.log(error);
         }
     };
 
@@ -92,7 +144,8 @@ const ProfileScreen = ({ navigation, props }) => {
                         style={{
                             flexDirection: "row",
                             alignItems: "center",
-                            marginLeft: 8,
+                            marginLeft: Dim.width * 0.05,
+                            //marginRight: Dim.width * 0.8,
                         }}
                     >
                         <Image
@@ -100,6 +153,7 @@ const ProfileScreen = ({ navigation, props }) => {
                                 width: 130,
                                 height: 130,
                                 borderRadius: 1000,
+                                marginRight: 10,
                             }}
                             source={Alex}
                         />
@@ -169,7 +223,7 @@ const ProfileScreen = ({ navigation, props }) => {
                             }}
                         />
                         <Text style={{ marginLeft: 10, color: "gray" }}>
-                            @username
+                            {instagram}
                         </Text>
                     </View>
                     <View style={styles.grayBar} />
@@ -178,7 +232,7 @@ const ProfileScreen = ({ navigation, props }) => {
                         <Image source={Twitter} style={styles.image} />
 
                         <Text style={{ marginLeft: 10, color: "gray" }}>
-                            @username
+                            {twitter}
                         </Text>
                     </View>
                     <View style={styles.grayBar} />
@@ -186,7 +240,7 @@ const ProfileScreen = ({ navigation, props }) => {
                     <View style={styles.rowContainer}>
                         <Image source={Discord} style={styles.image} />
                         <Text style={{ marginLeft: 10, color: "gray" }}>
-                            @username
+                            {discord}
                         </Text>
                     </View>
                     <View style={styles.grayBar} />
@@ -195,7 +249,7 @@ const ProfileScreen = ({ navigation, props }) => {
                         <Image source={Facebook1} style={styles.image} />
 
                         <Text style={{ marginLeft: 10, color: "gray" }}>
-                            @username
+                            {facebook}
                         </Text>
                     </View>
                     <View style={styles.grayBar} />
@@ -290,38 +344,23 @@ const ProfileScreen = ({ navigation, props }) => {
 };
 
 const styles = StyleSheet.create({
-    // h1: {color}
-    // input: {
-    //     marginTop: 5,
-    //     borderWidth: 1,
-    //     borderColor: "black",
-    //     borderRadius: 20,
-    //     height: 100, // set the height you need
-    //     padding: 5,
-    //     fontSize: 18,
-    //     textAlignVertical: "top",
-    // },
-    // text: {
-    //     color: "black",
-    //     fontSize: 16,
-    //     fontWeight: "bold",
-    //     textAlign: "center",
-    // },
     rowContainer: {
         flexDirection: "row",
         alignItems: "center",
         //marginBottom: -30,
         marginBottom: Dim.height * -0.035,
+        marginRight: Dim.width * 0.5,
     },
     container: {
         flexDirection: "row",
         alignItems: "center",
         marginBottom: 10,
         justifyContent: "space-between",
+        marginRight: Dim.width * 0.5,
     },
     image: {
-        marginLeft: Dim.width * 0.125,
-
+        marginLeft: Dim.width * 0.12,
+        marginRight: Dim.width * 0.0,
         width: 20,
         height: 20,
     },
