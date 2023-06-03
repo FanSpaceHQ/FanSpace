@@ -394,7 +394,6 @@ const populateEvents = async (req, res) => {
                 event.dates.start &&
                 event.dates.start.localTime
             ) {
-                let dateString = "";
                 const localDate = eventArr[0].dates.start.localDate;
                 const date = new Date(localDate);
                 const localtime = eventArr[0].dates.start.localTime;
