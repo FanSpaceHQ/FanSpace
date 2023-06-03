@@ -322,26 +322,21 @@ const populateEvents = async (req, res) => {
     const url = "https://app.ticketmaster.com/discovery/v2/events";
 
     //parameters
-    const radius = 50;
-    const zipCode = 90024;
+    const dmaId = 324;
+    const classificationName = "music";
 
     try {
         //fetch events from Ticketmaster API
         //const events = await Promise.all([axios.get(url + '.json?&apikey=' + TICKETMASTERKEY + '&postalCode=' + zipCode + '&radius=' + radius)]);
 
         //const events = await axios.get('https://app.ticketmaster.com/discovery/v2/events',{
-        const events = await axios.get(
-            "https://app.ticketmaster.com/discovery/v2/events",
-            {
-                params: {
-                    apikey: TICKETMASTERKEY,
-                    postalCode: 90024,
-                    radius: 50,
-                    // classificationID: 'music',
-                    // sort: "relevance,asc",
-                },
+        const events = await axios.get('https://app.ticketmaster.com/discovery/v2/events', {
+            params: {
+                apikey: TICKETMASTERKEY,
+                dmaId: 324,
+                classificationName: 'music',
             }
-        );
+        });
         const eData = events.data._embedded;
         const eventArr = eData.events;
         const processedEvents = [];
