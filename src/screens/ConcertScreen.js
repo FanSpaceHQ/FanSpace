@@ -103,9 +103,8 @@ const boxStyles = StyleSheet.create({
 })
 
 const FirstRoute = () => {
-
     return (
-        <View style={{ alignSelf: "left", marginTop: 20 }}>
+        <View style={{ alignSelf: "left", marginTop: 20, height: "30%", width: "100%"}}>
             <FlatList
                 data={friends}
                 horizontal={false}
@@ -127,19 +126,47 @@ const FirstRoute = () => {
 };
 
 const SecondRoute = () => {
-
     return(
-        <ScrollView style={{ flex: 1, backgroundColor: "white", flexDirection: "row" }}>
-            <Text>Interested</Text>
-        </ScrollView>
+        <View style={{ alignSelf: "left", marginTop: 20, height: "30%", width: "100%" }}>
+            <FlatList
+                data={friends}
+                horizontal={false}
+                renderItem={({ item: friends }) => {
+                    return (
+                        <FriendBox
+                            image={friends.image}
+                            name={friends.name}
+                            userName={friends.userName}
+                            onPress={() => {
+                                // navigation.navigate("Profile");
+                            }}
+                        />
+                    );
+                }}
+            />
+        </View>
     );
 };
 
 const ThirdRoute = () => {
-
     return(
-        <View style={{ flex: 1, backgroundColor: "white", flexDirection: "row" }}>
-            <Text>Selling</Text>
+        <View style={{ alignSelf: "left", marginTop: 20, height: "30%", width:"100%" }}>
+            <FlatList
+                data={friends}
+                horizontal={false}
+                renderItem={({ item: friends }) => {
+                    return (
+                        <FriendBox
+                            image={friends.image}
+                            name={friends.name}
+                            userName={friends.userName}
+                            onPress={() => {
+                                // navigation.navigate("Profile");
+                            }}
+                        />
+                    );
+                }}
+            />
         </View>
     );
 };
@@ -165,13 +192,13 @@ const ConcertScreen = ({route}) => {
                 backgroundColor: Colors.green.primary,
                 color: Colors.darkGray,
             }}
-            style={{ backgroundColor: Colors.gray }}
-            renderLabel={({ route, focused, color }) =>
+            style={{ backgroundColor: Colors.white, }}
+            renderLabel={({ route, focused }) =>
                 focused ? (
                     <Text
                         style={{
                             color: Colors.green.primary,
-                            margin: 8,
+                            fontWeight: "bold",
                         }}
                     >
                         {route.title}
@@ -180,7 +207,7 @@ const ConcertScreen = ({route}) => {
                     <Text
                         style={{
                             color: Colors.darkGray,
-                            margin: 8,
+                            fontWeight: "bold",
                         }}
                     >
                         {route.title}
@@ -193,55 +220,21 @@ const ConcertScreen = ({route}) => {
     return (
         // <ScrollView bounces={false}>
         <>
-            <View
-                style={{
-                    flex: 1,
-                    flexShrink: 1,
-                    // flexDirection: "column",
-                    // justifyContent: "left",
-                }}
-            >
+            <View style={ styles.topBanner }>
                 <ImageBackground
-                    source={{
-                        uri: image,
-                    }}
-                    style={{
-                        width: Dim.width,
-                        height: 300,
-                        alignItems: "left",
-                        justifyContent: "center",
-                    }}
+                    source={{ uri: image }}
+                    style={ styles.image }
                 >
-                    <Text
-                        style={{
-                            textAlignVertical: "center",
-                            alignSelf: "left",
-                            textAlign: "left",
-                            color: "white",
-                            // marginTop: font_Size ? 200 : 180,
-                            marginBottom: 20,
-                            marginLeft: 10,
-                            zIndex: 1,
-                            // fontSize: font_Size ? 40 : 30,
-                            // fontSize: 40,
-                            fontWeight: "bold",
-                        }}
-                    >
-                        {name} . {title}
-                        {/* hello */}
+                    <Text style={ styles.title }>
+                        {name} • {title}
                     </Text>
                     <LinearGradient
                         colors={["rgba(0,0,0,0.8)", "transparent"]}
                         start={{ x: 0.5, y: 1 }}
                         end={{ x: 0.5, y: 0 }}
-                        style={{
-                            position: "absolute",
-                            left: 0,
-                            right: 0,
-                            top: 0,
-                            height: "100%",
-                        }}
-                    ></LinearGradient>
+                        style={ styles.linearGradient }
+                    >
+                    </LinearGradient>
                 </ImageBackground>
             </View>
             <View style={{ height: 450, backgroundColor: "white" }}>
@@ -257,7 +250,6 @@ const ConcertScreen = ({route}) => {
                             {date}
                         </Text>
                     </View>
-
                     <View style={{ flexDirection: "row" }}>
                         <Icon
                             name={"map-pin"}
@@ -279,7 +271,6 @@ const ConcertScreen = ({route}) => {
                             style={styles.action}
                         />
                     </TouchableOpacity>
-
                     <TouchableOpacity>
                         <Icon
                             name={"star"}
@@ -288,7 +279,6 @@ const ConcertScreen = ({route}) => {
                             style={styles.action}
                         />
                     </TouchableOpacity>
-
                     <TouchableOpacity>
                         <Icon
                             name={"shopping-cart"}
@@ -315,7 +305,9 @@ const ConcertScreen = ({route}) => {
 };
 
 const styles = StyleSheet.create({
-    container: { backgroundColor: "white", flex: 1 },
+    container: { 
+        backgroundColor: "white", flex: 1 
+    },
     topRow: {
         flexDirection: "column",
         // justifyContent: "space-around",
@@ -328,12 +320,55 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingLeft: 25,
     },
-    header: { fontSize: 30, fontWeight: "bold" },
-    subheader: { fontSize: 15, marginTop: 11, marginLeft: 10 },
-
-    icon: { paddingTop: 10 },
-    action: { paddingTop: 10, marginRight: 20 },
-
+    header: { 
+        fontSize: 30, 
+        fontWeight: "bold" 
+    },
+    subheader: { 
+        fontSize: 15, 
+        marginTop: 11, 
+        marginLeft: 10 
+    },
+    title: {
+        alignItems: "end",
+        alignSelf: "flex-start",
+        textAlign: "left",
+        color: "white",
+        // marginTop: font_Size ? 200 : 180,
+        marginBottom: 10,
+        marginLeft: 25,
+        zIndex: 1,
+        // fontSize: font_Size ? 40 : 30,
+        fontSize: 30,
+        fontWeight: "bold",
+    },
+    image: {
+        width: Dim.width,
+        height: 300,
+        alignItems: "self-end",
+        justifyContent: "center",
+    },
+    icon: { 
+        paddingTop: 10 
+    },
+    action: { 
+        paddingTop: 10,
+        marginRight: 20 
+    },
+    linearGradient: {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: 0,
+        height: "100%",
+    },
+    topBanner: {
+        flex: 1,
+        flexGrow: 1,
+        alignSelf: "flex-end"
+        // flexDirection: "column",
+        // justifyContent: "left",
+    },
     searchContainer: {
         borderColor: "transparent",
         width: Dim.width * 0.9,
