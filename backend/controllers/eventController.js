@@ -268,6 +268,7 @@ const populateEvents = async (req, res) => {
 
             //handle if localTime is undefined
             let localTime = "TBD";
+            let monthDay = "TBD";;
             if (
                 event.dates &&
                 event.dates.start &&
@@ -283,6 +284,7 @@ const populateEvents = async (req, res) => {
                 let time = "TBD";
                 const intTime = localtime.split(":");
                 let hour = parseInt(intTime[0]);
+                
                 if (hour >= 12) {
                     if (hour > 12) {
                         hour -= 12;
@@ -292,10 +294,12 @@ const populateEvents = async (req, res) => {
                     time = `${hour}:${intTime[1]}am`;
                 }
                 localTime = `${month} ${dated[2]}, ${dated[0]} - ${day}, ${time}`;
+                monthDay = `${month} ${dated[2]}`
             }
 
             //handle if dateTime is undefined
             let dateTime = "TBD";
+            let date = "TBD";
             if (
                 event.dates &&
                 event.dates.start &&
@@ -330,10 +334,11 @@ const populateEvents = async (req, res) => {
                 id: i + 1,
                 eventID: event.id,
                 name: event.name,
-                artist,
+                artist, 
                 image: event.images[0].url,
                 localTime,
                 dateTime,
+                monthDay,
                 venue,
                 address,
                 city,
