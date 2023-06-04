@@ -330,13 +330,14 @@ const populateEvents = async (req, res) => {
         //const events = await Promise.all([axios.get(url + '.json?&apikey=' + TICKETMASTERKEY + '&postalCode=' + zipCode + '&radius=' + radius)]);
 
         //const events = await axios.get('https://app.ticketmaster.com/discovery/v2/events',{
-        const events = await axios.get('https://app.ticketmaster.com/discovery/v2/events',{
-            params:{
+        const events = await axios.get('https://app.ticketmaster.com/discovery/v2/events', {
+            params: {
                 apikey: TICKETMASTERKEY,
                 dmaId: 324,
                 classificationName: 'music',
             }
         });
+            
         const eData = events.data._embedded;
         const eventArr = eData.events;
         const processedEvents = [];
@@ -389,6 +390,7 @@ const populateEvents = async (req, res) => {
 
             //handle if localTime is undefined
             let localTime = "TBD";
+            let monthDay = "TBD";;
             if (
                 event.dates &&
                 event.dates.start &&
@@ -402,17 +404,23 @@ const populateEvents = async (req, res) => {
                 const day = weekdays[date.getDay()];
                 let time = "TBD";
                 const intTime = localtime.split(":");
-                const hour = parseInt(intTime[0]);
+                let hour = parseInt(intTime[0]);
+                
                 if (hour >= 12) {
+                    if (hour > 12) {
+                        hour -= 12;
+                    }
                     time = `${hour}:${intTime[1]}pm`;
                 } else {
                     time = `${hour}:${intTime[1]}am`;
                 }
                 localTime = `${month} ${dated[2]}, ${dated[0]} - ${day}, ${time}`;
+                monthDay = `${month} ${dated[2]}`
             }
 
             //handle if dateTime is undefined
             let dateTime = "TBD";
+            let date = "TBD";
             if (
                 event.dates &&
                 event.dates.start &&
@@ -445,11 +453,13 @@ const populateEvents = async (req, res) => {
 
             let eventInfo = {
                 id: i + 1,
+                eventID: event.id,
                 name: event.name,
-                artist,
+                artist, 
                 image: event.images[0].url,
                 localTime,
                 dateTime,
+                monthDay,
                 venue,
                 address,
                 city,
@@ -467,18 +477,29 @@ const populateEvents = async (req, res) => {
 
 //function to test populate events
 async function testPopulateEvents() {
-    const result = await populateEvents();
-    if (result.error) {
-      console.error(result.error);
-      return;
+    try {
+      const req = {}; // Empty request object
+      const res = {
+        status: function (statusCode) {
+          // Define a mock status function that logs the status code
+          console.log("Response status:", statusCode);
+          return this; // Return the response object for method chaining
+        },
+        json: function (data) {
+          // Define a mock json function that logs the response data
+          console.log("Response data:", data);
+        },
+      };
+  
+      await populateEvents(req, res);
+    } catch (error) {
+      console.error(error);
     }
-    const { processedEvents } = result;
-    console.log('Number of events processed:', processedEvents.length);
-    //printing out all processed events
-    for (let i = 0; i < processedEvents.length; i++) {
-        console.log(processedEvents[i])
-    }
-}
+  }
+  
+  testPopulateEvents();
+  
+//   testPopulateEvents();
 
 module.exports= {
     getEvent,
