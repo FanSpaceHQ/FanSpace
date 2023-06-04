@@ -1,6 +1,9 @@
 import React from "react";
 import { View, StyleSheet, Text, Image, TouchableOpacity, ImageBackground } from "react-native";
 import { Colors, Dim } from "../../Constants";
+import { Icon } from "react-native-elements";
+import { LinearGradient } from 'expo-linear-gradient';
+
 //
 /*
   -- DOCUMENTATION --
@@ -36,9 +39,12 @@ const ConcertBlock = (props) => {
                             marginBottom: 20,
                             position:"relative",
                             flexDirection: "column",
-                            justifyContent:"flex-end"
+                            justifyContent:"flex-end",
                         }}
-                        imageStyle={{ borderRadius: 8}}
+                        imageStyle={{ 
+                            borderRadius: 8,
+                            
+                        }}
                     >
                     <Text style={styles.header}>{props.name} • {props.title}</Text>  
                     <Text style={styles.date}>{props.date} • {props.location}</Text>
@@ -89,6 +95,13 @@ const styles = StyleSheet.create({
         marginLeft:10,
         fontWeight: "bold",
         color:'white',
+    },
+    dot: {
+            height: 5,
+            width: 5,
+            borderRadius: 30,
+            backgroundColor: "white",
+            
     },
 });
 
