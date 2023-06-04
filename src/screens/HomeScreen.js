@@ -64,64 +64,57 @@ const sort_by = (field, reverse, primer) => {
 
 // concertData.sort(sort_by("name",false));
 const HomeScreen = ({ navigation, props }) => {
-    const [concertData, setData] = useState([]);
+    const [concertData, setConcertData] = useState([]);
     const [search, updateSearch] = useState("");
-    const [searchResults, setResult] = useState([]);
-    const [inputSearch, setBool] = useState(false);
+    const [searchBarClicked, setClicked] = useState(false);
     const [queryData, setQueryData] = useState([]);
-    const [query, setQuery] = useState(false);
-    const [queryResult, setResponse] = useState(false);
+    const [debounce, setDebounce] = useState(false);
+    const [reload, setLoad] = useState(true);
 
-
-    const searchEvent = async() => {
-        setBool(true);
-        setQuery(true);
-    }
-
-    const searchTicket = async() => {
-        const getData = setTimeout(() => {
-            axios
-                .get(`http://localhost:4000/api/events/search/${search}`)
-                .then((res)=>{
-                    console.log(res.data)
-                    setQueryData(res.data);
-                    setQuery(false);
-                })
-                .catch((err)=>{
-                    setQuery(false);
-                    console.log(err);
-                })
-        }, 4000)
+    const querySearch = async() =>{
+        if (!debounce){
+            const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+            await delay(1500);
+            setDebounce(true);
+        }
     }
 
     useEffect(() => {
-        axios
-        .get(`http://localhost:4000/api/events/`)
-        .then((res) => {
-            setData(res.data);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-    }, [])
-
-    useEffect(()=>{
-        if (query){
-            searchTicket();
+        if (reload){
+            axios
+                .get(`http://localhost:4000/api/events/`)
+                .then((res)=>{
+                    setLoad(false);
+                    setConcertData(res.data);
+                })
+                .catch((err)=>{
+                    console.log(err);
+                    setLoad(false);
+                    setLoad(true);
+                })
         }
-    }, [query])
+    }, [reload]);
 
 
-
-
-    // AsyncStorage.getItem("@uid").then((uid)=>{console.log(uid);})
-    //const [concertData, setConcertData] = useState(staticConcertData);
-
+    useEffect(() => {
+        if (debounce){
+            axios
+                .get(`http://localhost:4000/api/events/search/${search}`)
+                .then((res)=> {
+                    setQueryData(res.data)
+                    setDebounce(false);
+                })
+                .catch((err)=>{
+                    console.log(err);
+                    setDebounce(false);
+                })
+        }
+    }, [debounce])
 
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
             <SafeAreaView style={styles.container}>
-                {inputSearch == 0 ? (
+                {searchBarClicked == 0 ? (
                     <View style={styles.topRow}>
                         <View style={{ flexDirection: "column" }}>
                             <Text style={styles.header}>Home</Text>
@@ -148,7 +141,8 @@ const HomeScreen = ({ navigation, props }) => {
                     >
                         <TouchableOpacity
                             onPress={() => {
-                                setBool(false);
+                                setClicked(false);
+                                setQueryData([]);
                             }}
                         >
                             <View style={{marginLeft: 15, marginTop: Dim.height * 0.01}}>
@@ -175,21 +169,21 @@ const HomeScreen = ({ navigation, props }) => {
                         placeholder="Search for artists..."
                         containerStyle={styles.containerStyle}
                         inputContainerStyle={
-                            inputSearch
+                            searchBarClicked
                                 ? styles.inputSmallStyle
                                 : styles.inputContainerStyle
                         }
                         onChangeText={(text) => {
                             updateSearch(text);
-                            searchEvent(text)
+                            querySearch()
                         }}
                         value={search}
                         onFocus={() => {
-                            setBool(true);
+                            setClicked(true);
                         }}
                     />
                 </View>
-                {inputSearch == 0 ? (
+                {searchBarClicked == 0 ? (
                     <View style={{ alignSelf: "center" }}>
                     <FlatList
                         data={concertData}
@@ -201,7 +195,7 @@ const HomeScreen = ({ navigation, props }) => {
                                     name={concertData.name}
                                     title={concertData.title}
                                     date={concertData.date}
-                                    location={concertData.location}
+                                    location={concertData.venue}
                                     onPress={() =>
                                         navigation.navigate("Concert Screen", {
                                             image: concertData.image,
@@ -259,7 +253,6 @@ const styles = StyleSheet.create({
      },
     subheader: { 
         fontSize: 17,
-        marginLeft:10,
         color: Colors.darkGray,
         fontWeight: "medium",
         color:'#6D6D6D',
