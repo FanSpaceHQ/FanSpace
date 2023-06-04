@@ -259,7 +259,10 @@ const ProfileScreen = ({ navigation, props }) => {
                     <View style={styles.sectionContainer}>
                         <View style={{ flexDirection: "row" }}>
                             <Text style={styles.sectionTitle}>Attending</Text>
-                            <TouchableOpacity style={styles.viewAllButton}>
+                            <TouchableOpacity 
+                                style={styles.viewAllButton}
+                                onPress={() => navigation.navigate("Saved")}
+                            >
                                 <Text
                                     style={{
                                         marginLeft: Dim.width * 0.5,
@@ -287,7 +290,10 @@ const ProfileScreen = ({ navigation, props }) => {
                     <View style={styles.sectionContainer}>
                         <View style={{ flexDirection: "row" }}>
                             <Text style={styles.sectionTitle}>Interested</Text>
-                            <TouchableOpacity style={styles.viewAllButton}>
+                            <TouchableOpacity 
+                                style={styles.viewAllButton}
+                                onPress={() => navigation.navigate("Saved")}
+                            >
                                 <Text
                                     style={{
                                         marginLeft: Dim.width * 0.5,
@@ -314,7 +320,10 @@ const ProfileScreen = ({ navigation, props }) => {
                     <View style={styles.sectionContainer}>
                         <View style={{ flexDirection: "row" }}>
                             <Text style={styles.sectionTitle}>Selling</Text>
-                            <TouchableOpacity style={styles.viewAllButton}>
+                            <TouchableOpacity 
+                                style={styles.viewAllButton}
+                                onPress={() => navigation.navigate("Saved")}
+                            >
                                 <Text
                                     style={{
                                         marginLeft: Dim.width * 0.6,

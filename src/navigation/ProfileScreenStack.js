@@ -5,6 +5,7 @@ import SettingsPage from "../screens/Settings";
 import SignIn from "../screens/SignInScreen.js";
 import HomeScreen from "../screens/HomeScreen";
 import ConcertScreen from "../screens/ConcertScreen";
+import SavedScreen from "../screens/SavedScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -33,6 +34,11 @@ export const ProfileScreenStack = (route) => {
             <Stack.Screen
                 name="Concert Screen"
                 component={ConcertScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Saved"
+                component={SavedScreen}
                 options={{ headerShown: false }}
             />
         </Stack.Navigator>
