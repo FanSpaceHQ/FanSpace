@@ -191,9 +191,6 @@ const FriendScreen = ({props, navigation}) => {
                     <View
                         style={{ marginTop: Dim.height * 0.05 }}
                     >
-                        {/* <View>
-                            <Text> Hello World </Text>
-                        </View> */}
                         <View style={{ alignSelf: "left", marginTop: 0 }}>
                         <FlatList
                             data={queryData}
@@ -201,9 +198,7 @@ const FriendScreen = ({props, navigation}) => {
                             renderItem={({ item: friends }) => {
                                 return (
                                     <FriendBox
-                                        image={
-                                            friends.imageUrl
-                                        }
+                                        image={ friends.imageUrl }
                                         name={`${friends.firstName} ${friends.lastName}`}
                                         userName={friends.username}
                                         onPress={() =>
@@ -249,7 +244,7 @@ const FriendScreen = ({props, navigation}) => {
                             </Text>
                         </View>
                     ) : (
-                    <View style={{ alignSelf: "left", marginTop: 0 }}>
+                    <View style={{ alignSelf: "left", marginTop: 0, height: "80%" }}>
                         <FlatList
                             data={friends}
                             horizontal={false}

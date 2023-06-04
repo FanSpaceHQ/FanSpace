@@ -96,13 +96,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color:'white',
     },
-    dot: {
-            height: 5,
-            width: 5,
-            borderRadius: 30,
-            backgroundColor: "white",
-            
-    },
 });
 
 export default ConcertBlock;
