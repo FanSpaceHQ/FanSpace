@@ -116,22 +116,19 @@ const HomeScreen = ({ navigation, props }) => {
             <SafeAreaView style={styles.container}>
                 {searchBarClicked == 0 ? (
                     <View style={styles.topRow}>
-                        <View style={{ flexDirection: "column" }}>
+                        <View style={{ flexDirection: "row", alignItems: "center" }}>
                             <Text style={styles.header}>Home</Text>
-                            <Text style={styles.subheader}>
-                                find concerts near you ▼
-                            </Text>
-                        </View>
-                        <TouchableOpacity
+                            <TouchableOpacity
                             onPress={() => navigation.navigate("Inbox Screen")}
                         >
                             <Icon
                                 name={"bell"}
-                                size={35}
+                                size={33}
                                 color={Colors.darkGray}
                                 style={styles.icon}
                             />
                         </TouchableOpacity>
+                        </View>
                     </View>
                 ) : (
                     <View
@@ -184,7 +181,7 @@ const HomeScreen = ({ navigation, props }) => {
                     />
                 </View>
                 {searchBarClicked == 0 ? (
-                    <View style={{ alignSelf: "center" }}>
+                    <View style={{ alignSelf: "center", height: "78%" }}>
                     <FlatList
                         data={concertData}
                         horizontal={false}
@@ -208,31 +205,32 @@ const HomeScreen = ({ navigation, props }) => {
                             );
                         }}
                     />
-                </View>
-                ) : (<View style={{ alignSelf: "center" }}>
-                <FlatList
-                    data={queryData}
-                    horizontal={false}
-                    renderItem={({ item: concertData }) => {
-                        return (
-                            <ConcertBlock
-                                image={concertData.image}
-                                name={concertData.name}
-                                title={concertData.title}
-                                date={concertData.date}
-                                location={concertData.location}
-                                onPress={() =>
-                                    navigation.navigate("Concert Screen", {
-                                        image: concertData.image,
-                                        name: concertData.name,
-                                        date: concertData.localTime,
-                                        location: `${concertData.venue} - ${concertData.city}, ${concertData.state}`,
-                                    })
-                                }
-                            />
-                        );
-                    }}
-                />
+                    </View>
+                ) : (
+                    <View style={{ alignSelf: "center", height: "78%" }}>
+                    <FlatList
+                        data={queryData}
+                        horizontal={false}
+                        renderItem={({ item: concertData }) => {
+                            return (
+                                <ConcertBlock
+                                    image={concertData.image}
+                                    name={concertData.name}
+                                    title={concertData.title}
+                                    date={concertData.date}
+                                    location={concertData.location}
+                                    onPress={() =>
+                                        navigation.navigate("Concert Screen", {
+                                            image: concertData.image,
+                                            name: concertData.name,
+                                            date: concertData.localTime,
+                                            location: `${concertData.venue} - ${concertData.city}, ${concertData.state}`,
+                                        })
+                                    }
+                                />
+                            );
+                        }}
+                    />
             </View>)}
             </SafeAreaView>
         </TouchableWithoutFeedback>

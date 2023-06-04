@@ -191,9 +191,6 @@ const FriendScreen = ({props, navigation}) => {
                     <View
                         style={{ marginTop: Dim.height * 0.05 }}
                     >
-                        {/* <View>
-                            <Text> Hello World </Text>
-                        </View> */}
                         <View style={{ alignSelf: "left", marginTop: 0 }}>
                         <FlatList
                             data={queryData}
@@ -217,7 +214,7 @@ const FriendScreen = ({props, navigation}) => {
                     </View>
                 ) : (
                     <View>
-                    <View style={{ alignItems: "left", alignContent: "left" }}>
+                    <View style={{ alignItems: "left", alignContent: "left", height: "80%" }}>
                         <Text style={styles.subtitle}>
                             Friends ({friendSize})
                         </Text>
@@ -249,7 +246,7 @@ const FriendScreen = ({props, navigation}) => {
                             </Text>
                         </View>
                     ) : (
-                    <View style={{ alignSelf: "left", marginTop: 0 }}>
+                    <View style={{ alignSelf: "left", marginTop: 0, height: "80%" }}>
                         <FlatList
                             data={friends}
                             horizontal={false}
