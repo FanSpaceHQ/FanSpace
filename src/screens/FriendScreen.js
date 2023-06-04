@@ -198,9 +198,7 @@ const FriendScreen = ({props, navigation}) => {
                             renderItem={({ item: friends }) => {
                                 return (
                                     <FriendBox
-                                        image={
-                                            friends.imageUrl
-                                        }
+                                        image={ friends.imageUrl }
                                         name={`${friends.firstName} ${friends.lastName}`}
                                         userName={friends.username}
                                         onPress={() =>
@@ -214,7 +212,7 @@ const FriendScreen = ({props, navigation}) => {
                     </View>
                 ) : (
                     <View>
-                    <View style={{ alignItems: "left", alignContent: "left", height: "80%" }}>
+                    <View style={{ alignItems: "left", alignContent: "left" }}>
                         <Text style={styles.subtitle}>
                             Friends ({friendSize})
                         </Text>
