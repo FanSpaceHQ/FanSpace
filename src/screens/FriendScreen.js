@@ -62,37 +62,95 @@ const FriendScreen = ({props, navigation}) => {
     const [friends, setFriends] = useState([]);
     const [friendSize, setSize] = useState(friends.length);
     const [search, setSearch] = useState("");
-    const [uid, setId] = useState();
+    const [searchBarClicked, setClicked] = useState(false);
+    const [queryData, setQueryData] = useState([]);
+    const [debounce, setDebounce] = useState(false);
+    const [reload, setLoad] = useState(true);
+    const [uid, setId] = useState(null);
+
+    const querySearch = async() =>{
+        if (!debounce){
+            const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+            await delay(2000);
+            setDebounce(true);
+        }
+    }
+
 
     useEffect(() => {
-        AsyncStorage.getItem("@uid").then((uid)=>{
-            axios
-                .get(`http://localhost:4000/api/users/friends/${uid}`)
-                .then((res)=>{
-                    setFriends(res.data.friends);
-                    setSize(res.data.friends.length)
+        if (reload){
+            if (!uid){
+                AsyncStorage.getItem("@uid").then((uid) => {
+                    setId(uid);
+                        axios
+                        .get(`http://localhost:4000/api/users/friends/${uid}`)
+                        .then((res) => {
+                            setFriends(res.data.friends);
+                            setSize(res.data.friends.length);
+                            setLoad(false);
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            setLoad(false);
+                            setLoad(true);
+                        });
+                });
+            } else{
+                axios
+                    .get(`http://localhost:4000/api/users/friends/${uid}`)
+                    .then((res) => {
+                        setFriends(res.data.friends);
+                        setSize(res.data.friends.length);
+                        setLoad(false);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        setLoad(false);
+                        setLoad(true);
+                    });
+            }
+        }
+    }, [reload]);
+
+    useEffect(()=>{
+        if (debounce){
+            axios // TODO Fix the Request Path
+                .get(`http://localhost:4000/api/users/search/friends/${uid}/${search}`)
+                .then((res)=> {
+                    // console.log(res.data);
+                    setQueryData(res.data)
+                    setDebounce(false);
                 })
                 .catch((err)=>{
                     console.log(err);
+                    setDebounce(false);
                 })
-        })
-    }, []);
+        }
+    }, [debounce])
 
     useEffect(()=>{
         console.log(search);
-    }, [search])
+    },[search])
 
     return (
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-            <SafeAreaView style={{ flex: 1, backgroundColor: "white", flexDirection: "column", 
-            alignItems: "center", paddingTop: Dim.height * 0.015 }}>    
-            {/* <View
+        <TouchableWithoutFeedback onPress={() => {
+            Keyboard.dismiss()
+            setClicked(false);
+            setQueryData([]);
+            setSearch(() => {
+                setSearch("");
+                console.log(search);
+            });
+        }}>
+            <SafeAreaView
                 style={{
+                    flex: 1,
+                    backgroundColor: "white",
                     flexDirection: "column",
                     alignItems: "center",
                     paddingTop: Dim.height * 0.015,
                 }}
-            > */}
+            >
                 {/* Orbit At the Top */}
                 <View
                     style={{
@@ -110,53 +168,111 @@ const FriendScreen = ({props, navigation}) => {
                 {/* Search Container */}
                 <View style={styles.searchContainer}>
                     <SearchBar
+                        value={search}
                         placeholder="Search for friends"
                         containerStyle={styles.containerStyle}
                         inputContainerStyle={styles.inputContainerStyle}
-                        onChangeText={setSearch}
-                        value={search}
+                        onChangeText={(text)=>{
+                            setSearch(text);
+                            querySearch();
+                        }}
+                        onFocus={() => {
+                            setClicked(true);
+                        }}
+                        onClear={()=>{
+                            setSearch("")
+                            setQueryData([]);
+                        }}
                     />
                 </View>
 
                 {/* Friend Number and bar */}
-                <View style={{ alignItems: "left", alignContent: "left" }}>
-                    <Text style={styles.subtitle}>
-                        Friends ({friendSize})
-                    </Text>
+                {searchBarClicked ? (
                     <View
-                        style={{
-                            width: Dim.width * 0.8,
-                            borderColor: Colors.gray,
-                            borderWidth: 1,
-                            alignSelf: "center",
-                            marginTop: Dim.height * 0.01,
-                            marginBottom: 20,
-                        }}
-                    />
+                        style={{ marginTop: Dim.height * 0.05 }}
+                    >
+                        {/* <View>
+                            <Text> Hello World </Text>
+                        </View> */}
+                        <View style={{ alignSelf: "left", marginTop: 0 }}>
+                        <FlatList
+                            data={queryData}
+                            horizontal={false}
+                            renderItem={({ item: friends }) => {
+                                return (
+                                    <FriendBox
+                                        image={
+                                            friends.imageUrl
+                                        }
+                                        name={`${friends.firstName} ${friends.lastName}`}
+                                        userName={friends.username}
+                                        onPress={() =>
+                                            navigation.navigate("Profile")
+                                        }
+                                    />
+                                );
+                            }}
+                        />
+                    </View>
+                    </View>
+                ) : (
+                    <View>
+                    <View style={{ alignItems: "left", alignContent: "left" }}>
+                        <Text style={styles.subtitle}>
+                            Friends ({friendSize})
+                        </Text>
+                        <View
+                            style={{
+                                width: Dim.width * 0.8,
+                                borderColor: Colors.gray,
+                                borderWidth: 1,
+                                alignSelf: "center",
+                                marginTop: Dim.height * 0.01,
+                                marginBottom: 20,
+                            }}
+                        />
+                    </View> 
+                    {friendSize == 0 ? (
+                        <View>
+                            <Text style={{fontWeight: "bold", fontSize: 20, marginTop: -(Dim.height * .01), marginLeft: Dim.width * 0.1}}>
+                                No friends yet
+                            </Text>
+                            <Text style={{
+                                fontSize: 16,
+                                color: "#6D6D6D",
+                                textAlign: "left",
+                                marginLeft: Dim.width * 0.1,
+                                marginTop: Dim.height * 0.01,
+                                fontWeight: "300",
+                            }}>
+                                Find people interested in going to the same concerts.
+                            </Text>
+                        </View>
+                    ) : (
+                    <View style={{ alignSelf: "left", marginTop: 0 }}>
+                        <FlatList
+                            data={friends}
+                            horizontal={false}
+                            renderItem={({ item: friends }) => {
+                                return (
+                                    <FriendBox
+                                        image={
+                                            friends._fieldsProto.image.stringValue
+                                        }
+                                        name={`${friends._fieldsProto.firstName.stringValue} ${friends._fieldsProto.lastName.stringValue}`}
+                                        userName={`${friends._fieldsProto.username.stringValue}`}
+                                        onPress={() =>
+                                            navigation.navigate("Profile")
+                                        }
+                                    />
+                                );
+                            }}
+                        />
+                    </View>)}
                 </View>
-
-                {/* Friends List */}
-                <View style={{ alignSelf: "left", marginTop: 0}}>
-                    <FlatList
-                        data={friends}
-                        horizontal={false}
-                        renderItem={({ item: friends }) => {
-                            return (
-                                <FriendBox
-                                    image={friends._fieldsProto.image.stringValue}
-                                    name={`${friends._fieldsProto.firstName.stringValue} ${friends._fieldsProto.lastName.stringValue}`}
-                                    userName={"@lawrencetlee"}
-                                    onPress={() =>
-                                        navigation.navigate("Profile")
-                                    }
-                                />
-                            );
-                        }}
-                    />
-                </View>
-            {/* </View> */}
+                )}
             </SafeAreaView>
-        </TouchableWithoutFeedback> 
+        </TouchableWithoutFeedback>
     );
 };
 
@@ -174,7 +290,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "#6D6D6D",
         textAlign: "left",
-        // marginLeft: Dim.width * 0.025,
+        marginLeft: Dim.width * 0.1,
         marginTop: Dim.height * 0.05,
     },
     button: {
