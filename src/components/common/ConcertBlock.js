@@ -46,11 +46,8 @@ const ConcertBlock = (props) => {
                             
                         }}
                     >
-                        <LinearGradient colors={['transparent','black']}>
-                    <Text style={styles.header}>{props.name} {props.title}</Text>  
-                    <Text style={styles.date}>{props.date}
-                    <Text style={styles.location}>{props.location}  </Text>   </Text>
-                    </LinearGradient>
+                    <Text style={styles.header}>{props.name} • {props.title}</Text>  
+                    <Text style={styles.date}>{props.date} • {props.location}</Text>
                     </ImageBackground>
                     <View
                         style={{
@@ -67,10 +64,30 @@ const ConcertBlock = (props) => {
 };
 
 const styles = StyleSheet.create({
-    header: { fontSize:22 , fontWeight: "bold", color:'white', marginLeft:10, numberOfLines:"1",ellipsizeMode:'tail',width:Dim.width*0.7,flexWrap:"nowrap",marginBottom:5},
-    subheader: { fontSize: 20,color:'white', flexWrap: "wrap", width: 130, },
-    date: { fontSize: 15, color:'white',flexWrap: "wrap", marginLeft:10,marginBottom:5
-},
+    header: { 
+        fontSize:20, 
+        fontWeight: "bold", 
+        color:'white', 
+        marginLeft:10, 
+        numberOfLines:"1",
+        ellipsizeMode:'tail',
+        width:Dim.width*0.7,
+        flexWrap:"nowrap",
+        marginBottom:5
+    },
+    subheader: { 
+        fontSize: 15,
+        color:'white', 
+        flexWrap: "wrap", 
+        width: 130, 
+    },
+    date: { 
+        fontSize: 11, 
+        color:'white',
+        width: 200, 
+        marginLeft:10,
+        marginBottom:5
+    },
     location: {
         fontSize: 11,
         flexWrap: "wrap",

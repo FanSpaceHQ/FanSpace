@@ -18,9 +18,10 @@ export const Colors = {
         secondary: "#205C6E",
         tertialy: "#2F4858",
     },
-    darkGray: "#303437",
+    darkGray: "#61646B",
     lightGray: "#CDCFD0",
     gray: "#E3E5E5",
+    white: '#FFFFFF',
     error: "red",
 };
 
