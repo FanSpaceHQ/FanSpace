@@ -282,8 +282,11 @@ const populateEvents = async (req, res) => {
                 const day = weekdays[date.getDay()];
                 let time = "TBD";
                 const intTime = localtime.split(":");
-                const hour = parseInt(intTime[0]);
+                let hour = parseInt(intTime[0]);
                 if (hour >= 12) {
+                    if (hour > 12) {
+                        hour -= 12;
+                    }
                     time = `${hour}:${intTime[1]}pm`;
                 } else {
                     time = `${hour}:${intTime[1]}am`;
