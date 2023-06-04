@@ -6,7 +6,7 @@ import InboxScreen from "../screens/InboxScreen.js";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-export const HomeScreenStack = (route) => {
+export const InboxScreenStack = (route) => {
     return (
         <Stack.Navigator headerMode="false">
             <Tab.Screen
