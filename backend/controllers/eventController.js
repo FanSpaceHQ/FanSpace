@@ -325,6 +325,7 @@ const populateEvents = async (req, res) => {
 
             let eventInfo = {
                 id: i + 1,
+                eventID: event.id,
                 name: event.name,
                 artist,
                 image: event.images[0].url,
@@ -350,19 +351,28 @@ const populateEvents = async (req, res) => {
 
 //function to test populate events
 async function testPopulateEvents() {
-    const result = await populateEvents();
-    if (result.error) {
-      console.error(result.error);
-      return;
+    try {
+      const req = {}; // Empty request object
+      const res = {
+        status: function (statusCode) {
+          // Define a mock status function that logs the status code
+          console.log("Response status:", statusCode);
+          return this; // Return the response object for method chaining
+        },
+        json: function (data) {
+          // Define a mock json function that logs the response data
+          console.log("Response data:", data);
+        },
+      };
+  
+      await populateEvents(req, res);
+    } catch (error) {
+      console.error(error);
     }
-    const { processedEvents } = result;
-    console.log('Number of events processed:', processedEvents.length);
-    //printing out all processed events
-    for (let i = 0; i < processedEvents.length; i++) {
-        console.log(processedEvents[i])
-    }
-}
-
+  }
+  
+  testPopulateEvents();
+  
 //   testPopulateEvents();
 
 module.exports= {
