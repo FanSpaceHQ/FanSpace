@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Colors, Dim } from "../Constants";
 import Icon from "react-native-vector-icons/Feather";
-import FontAwesomeIcon from "react-native-vector-icons/FontAwesome"
+import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import { LinearGradient } from "expo-linear-gradient";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 
@@ -49,34 +49,33 @@ const friends = [
         userName: "@username",
         image: Alex,
     },
-]
+];
 
-const addToProfile = async() => {
+const addToProfile = async () => {};
 
-};
-
-const getList = async() => {
-
-};
+const getList = async () => {};
 
 const FriendBox = (props) => {
-    return(
+    return (
         <TouchableOpacity onPress={props.onPress}>
-        <View style={boxStyles.container}>
-            <View style={{flexDirection: "row", paddingBottom: 20,}}>
-                <Image source={props.image} style={boxStyles.image}/>
-                <View style={{justifyContent:"center"}}>
-                    <Text style={boxStyles.name}>{props.name}</Text>
-                    <Text style={boxStyles.username}> {props.userName}</Text>
+            <View style={boxStyles.container}>
+                <View style={{ flexDirection: "row", paddingBottom: 20 }}>
+                    <Image source={props.image} style={boxStyles.image} />
+                    <View style={{ justifyContent: "center" }}>
+                        <Text style={boxStyles.name}>{props.name}</Text>
+                        <Text style={boxStyles.username}>
+                            {" "}
+                            {props.userName}
+                        </Text>
+                    </View>
                 </View>
             </View>
-        </View>
         </TouchableOpacity>
-    )
+    );
 };
 
 const boxStyles = StyleSheet.create({
-    container:{
+    container: {
         flex: 1,
         flexDirection: "column",
         justifyContent: "center",
@@ -87,24 +86,31 @@ const boxStyles = StyleSheet.create({
         marginLeft: Dim.width * 0.06,
         // borderWidth: 2
     },
-    image:{
+    image: {
         height: 50,
         width: 50,
     },
-    name:{
+    name: {
         fontSize: 16,
         fontWeight: "bold",
         marginLeft: 20,
     },
-    username:{
+    username: {
         color: "#B4B3B3",
         marginLeft: 20,
     },
-})
+});
 
 const FirstRoute = () => {
     return (
-        <View style={{ alignSelf: "left", marginTop: 20, height: "30%", width: "100%"}}>
+        <View
+            style={{
+                alignSelf: "left",
+                marginTop: 20,
+                height: "30%",
+                width: "100%",
+            }}
+        >
             <FlatList
                 data={friends}
                 horizontal={false}
@@ -126,8 +132,15 @@ const FirstRoute = () => {
 };
 
 const SecondRoute = () => {
-    return(
-        <View style={{ alignSelf: "left", marginTop: 20, height: "30%", width: "100%" }}>
+    return (
+        <View
+            style={{
+                alignSelf: "left",
+                marginTop: 20,
+                height: "30%",
+                width: "100%",
+            }}
+        >
             <FlatList
                 data={friends}
                 horizontal={false}
@@ -149,8 +162,15 @@ const SecondRoute = () => {
 };
 
 const ThirdRoute = () => {
-    return(
-        <View style={{ alignSelf: "left", marginTop: 20, height: "30%", width:"100%" }}>
+    return (
+        <View
+            style={{
+                alignSelf: "left",
+                marginTop: 20,
+                height: "30%",
+                width: "100%",
+            }}
+        >
             <FlatList
                 data={friends}
                 horizontal={false}
@@ -176,8 +196,8 @@ const renderScene = SceneMap({
     third: ThirdRoute,
 });
 
-const ConcertScreen = ({route}) => {
-    const {name, location, date, title, image} = route.params;
+const ConcertScreen = ({ navigation, route }) => {
+    const { name, location, date, title, image } = route.params;
     const [index, setIndex] = useState(0);
     const [routes] = useState([
         { key: "first", title: "Going" },
@@ -192,7 +212,7 @@ const ConcertScreen = ({route}) => {
                 backgroundColor: Colors.green.primary,
                 color: Colors.darkGray,
             }}
-            style={{ backgroundColor: Colors.white, }}
+            style={{ backgroundColor: Colors.white }}
             renderLabel={({ route, focused }) =>
                 focused ? (
                     <Text
@@ -220,21 +240,27 @@ const ConcertScreen = ({route}) => {
     return (
         // <ScrollView bounces={false}>
         <>
-            <View style={ styles.topBanner }>
-                <ImageBackground
-                    source={{ uri: image }}
-                    style={ styles.image }
-                >
-                    <Text style={ styles.title }>
+            <View style={styles.topBanner}>
+                <View style={styles.topRow2}>
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate("Home Screen")}
+                    >
+                        <Text style={styles.subheader2}>
+                            {" "}
+                            <Text style={styles.arrow2}>← </Text> Home
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+                <ImageBackground source={{ uri: image }} style={styles.image}>
+                    <Text style={styles.title}>
                         {name} • {title}
                     </Text>
                     <LinearGradient
                         colors={["rgba(0,0,0,0.8)", "transparent"]}
                         start={{ x: 0.5, y: 1 }}
                         end={{ x: 0.5, y: 0 }}
-                        style={ styles.linearGradient }
-                    >
-                    </LinearGradient>
+                        style={styles.linearGradient}
+                    ></LinearGradient>
                 </ImageBackground>
             </View>
             <View style={{ height: 450, backgroundColor: "white" }}>
@@ -246,9 +272,7 @@ const ConcertScreen = ({route}) => {
                             color={Colors.darkGray}
                             style={styles.icon}
                         />
-                        <Text style={styles.subheader}>
-                            {date}
-                        </Text>
+                        <Text style={styles.subheader}>{date}</Text>
                     </View>
                     <View style={{ flexDirection: "row" }}>
                         <Icon
@@ -257,9 +281,7 @@ const ConcertScreen = ({route}) => {
                             color={Colors.darkGray}
                             style={styles.icon}
                         />
-                        <Text style={styles.subheader}>
-                            {location}
-                        </Text>
+                        <Text style={styles.subheader}>{location}</Text>
                     </View>
                 </View>
                 <View style={styles.actionRow}>
@@ -299,14 +321,15 @@ const ConcertScreen = ({route}) => {
                     />
                 </View>
             </View>
-            </>
+        </>
         // </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { 
-        backgroundColor: "white", flex: 1 
+    container: {
+        backgroundColor: "white",
+        flex: 1,
     },
     topRow: {
         flexDirection: "column",
@@ -320,14 +343,14 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingLeft: 25,
     },
-    header: { 
-        fontSize: 30, 
-        fontWeight: "bold" 
+    header: {
+        fontSize: 30,
+        fontWeight: "bold",
     },
-    subheader: { 
-        fontSize: 15, 
-        marginTop: 11, 
-        marginLeft: 10 
+    subheader: {
+        fontSize: 15,
+        marginTop: 11,
+        marginLeft: 10,
     },
     title: {
         alignItems: "end",
@@ -348,12 +371,12 @@ const styles = StyleSheet.create({
         alignItems: "self-end",
         justifyContent: "center",
     },
-    icon: { 
-        paddingTop: 10 
-    },
-    action: { 
+    icon: {
         paddingTop: 10,
-        marginRight: 20 
+    },
+    action: {
+        paddingTop: 10,
+        marginRight: 20,
     },
     linearGradient: {
         position: "absolute",
@@ -365,7 +388,7 @@ const styles = StyleSheet.create({
     topBanner: {
         flex: 1,
         flexGrow: 1,
-        alignSelf: "flex-end"
+        alignSelf: "flex-end",
         // flexDirection: "column",
         // justifyContent: "left",
     },
@@ -385,6 +408,23 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         backgroundColor: Colors.gray,
+    },
+    topRow2: {
+        flexDirection: "row",
+        justifyContent: "flex-start",
+        paddingTop: 40,
+        paddingBottom: 10,
+        marginLeft: 20,
+    },
+    subheader2: {
+        color: Colors.darkGray,
+        fontSize: 16,
+        fontWeight: "medium",
+        color: "black",
+    },
+    arrow2: {
+        fontSize: 20,
+        fontWeight: "bold",
     },
 });
 
