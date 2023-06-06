@@ -19,7 +19,7 @@ const uploadImage = async(req, res) => {
   const fullPath = `UserImages/${v4()}`;
   const bucketFile = bucket.file(fullPath);
 
-  console.log(req.file);
+  // console.log(req.file);
   await bucketFile.save(req.file.buffer, {
       contentType: req.file.mimetype,
       gzip: true,
