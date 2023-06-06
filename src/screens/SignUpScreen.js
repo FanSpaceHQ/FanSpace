@@ -43,7 +43,7 @@ const SignUpScreen = ({ props, navigation }) => {
     const [pfpUrl, setUrl] = useState("");
     const [image, setImage] = useState("");
     const [userName, setUser] = useState("");
-    const [profileCreated, setCreate] = useState(false);
+    const [profileCreated, setCreate] = useState(false); // Check back and look for the purpose of this
     const [errors, setErrors] = useState({
         firstName: undefined,
         lastName: undefined,
@@ -54,6 +54,7 @@ const SignUpScreen = ({ props, navigation }) => {
     });
 
     const imageUpload = async (uri) => {
+        AsyncStorage.setItem("@imageUrl", uri);
         async function uriToBase64(uri) {
             let response = await fetch(uri);
             let blob = await response.blob();
@@ -120,6 +121,7 @@ const SignUpScreen = ({ props, navigation }) => {
             .get(`http://localhost:4000/api/users/username/${userName}`)
             .then((res)=>{
                 response = res.data;
+                AsyncStorage.setItem("@username", userName);
             })
             .catch((err)=>{
                 console.log(err);
@@ -134,8 +136,9 @@ const SignUpScreen = ({ props, navigation }) => {
             console.log("here")
             const usernameError = undefined
             setErrors({username: usernameError});
-            await imageUpload(image);
-            await signUp(firstName, lastName, email, password, pfpUrl, userName);
+            let imageUrl; 
+            await imageUpload(image).then((res)=>{imageUrl = res;});
+            await signUp(firstName, lastName, email, password, imageUrl, userName);
         }
     }
 
@@ -199,7 +202,7 @@ const SignUpScreen = ({ props, navigation }) => {
                     console.log(JSON.stringify(response.data.uid));
                     AsyncStorage.setItem("@uid", response.data.uid);
                     AsyncStorage.setItem("@firstName", fname);
-                    AsyncStorage.setItem("@imageUrl", imageUrl);
+                    // AsyncStorage.setItem("@imageUrl", imageUrl);
                     setLoading(false);
                     navigation.navigate("Create Profile");
                 })

@@ -63,7 +63,7 @@ const Bio = () => {
     return (
         <TouchableWithoutFeedback onPress={handleBlur}>
             <View>
-                <TouchableOpacity onPress={handleClick}>
+                {/* <TouchableOpacity onPress={handleClick}> */}
                     <View
                         style={isFocused ? styles.inputFocused : styles.input}
                     >
@@ -83,7 +83,7 @@ const Bio = () => {
                             <Text style={styles.bioText}>{bio}</Text>
                         )}
                     </View>
-                </TouchableOpacity>
+                {/* </TouchableOpacity> */}
                 {isEditable && (
                     <Button
                         title="Save"

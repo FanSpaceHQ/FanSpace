@@ -40,86 +40,16 @@ const ProfileScreen = ({ navigation, props }) => {
     const [instagram, setInstagram] = useState("");
     const [twitter, setTwitter] = useState("");
     const [discord, setDiscord] = useState("");
-    const [facebook, setFacebook] = useState("");
     const [imageUrl, setImageUrl] = useState("");
     //const navigation = useNavigation();
 
     useEffect(() => {
-        retrieveName();
-        getDiscord();
-        getInstagram();
-        getFacebook();
-        getTwitter();
-        //retrieveImageUrl();
+        AsyncStorage.getItem("@firstName").then((item)=>setFirstName(item));
+        AsyncStorage.getItem("@imageUrl").then((item)=>{setImageUrl(item)});
+        AsyncStorage.getItem("@discord").then((item)=>setDiscord(item));
+        AsyncStorage.getItem("@instagram").then((item)=>setInstagram(item));
+        AsyncStorage.getItem("@twitter").then((item)=>setTwitter(item));
     });
-
-    const retrieveName = async () => {
-        try {
-            const value = await AsyncStorage.getItem("@firstName");
-            if (value !== null) {
-                setFirstName(value);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const retrieveImageUrl = async () => {
-        try {
-            const value = await AsyncStorage.getItem("@imageUrl");
-            if (value !== null) {
-                setImageUrl(value);
-                console.log("yay");
-            }
-        } catch (error) {
-            console.log(error);
-            console.log("nay");
-        }
-    };
-
-    const getDiscord = async () => {
-        try {
-            const value = await AsyncStorage.getItem("@discord");
-            if (value !== null) {
-                setDiscord(value);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const getInstagram = async () => {
-        try {
-            const value = await AsyncStorage.getItem("@instagram");
-            if (value !== null) {
-                setInstagram(value);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const getFacebook = async () => {
-        try {
-            const value = await AsyncStorage.getItem("@facebook");
-            if (value !== null) {
-                setFacebook(value);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const getTwitter = async () => {
-        try {
-            const value = await AsyncStorage.getItem("@twitter");
-            if (value !== null) {
-                setTwitter(value);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -155,7 +85,7 @@ const ProfileScreen = ({ navigation, props }) => {
                                 borderRadius: 1000,
                                 marginRight: 10,
                             }}
-                            source={Alex}
+                            source={{uri: imageUrl}}
                         />
                         <View
                             style={{
@@ -245,14 +175,14 @@ const ProfileScreen = ({ navigation, props }) => {
                     </View>
                     <View style={styles.grayBar} />
 
-                    <View style={styles.rowContainer}>
+                    {/* <View style={styles.rowContainer}>
                         <Image source={Facebook1} style={styles.image} />
 
                         <Text style={{ marginLeft: 10, color: "gray" }}>
                             {facebook}
                         </Text>
                     </View>
-                    <View style={styles.grayBar} />
+                    <View style={styles.grayBar} /> */}
                 </View>
 
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
