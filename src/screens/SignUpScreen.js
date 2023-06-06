@@ -83,12 +83,15 @@ const SignUpScreen = ({ props, navigation }) => {
             name: image.name,
             mimetype: "image/jpeg",
         });
+        let imageUrl;
         await axios
             .post("http://localhost:4000/api/users/uploadImage", data, {
                 "content-type": "multipart/form-data",
             })
             .then((response) => {
+                // console.log(response.data.url);
                 setUrl(response.data.url);
+                imageUrl = response.data.url;
                 return response.data.url;
             })
             .catch(function (error) {
@@ -96,6 +99,7 @@ const SignUpScreen = ({ props, navigation }) => {
                 console.log(error.data);
                 return error;
             });
+        return imageUrl;
     };
 
     const pickImage = async () => {
@@ -133,11 +137,11 @@ const SignUpScreen = ({ props, navigation }) => {
                 return;
             })
         if (response.Status){
-            console.log("here")
             const usernameError = undefined
             setErrors({username: usernameError});
             let imageUrl; 
-            await imageUpload(image).then((res)=>{imageUrl = res;});
+            imageUrl = await imageUpload(image);
+            // console.log(imageUrl);
             await signUp(firstName, lastName, email, password, imageUrl, userName);
         }
     }
@@ -179,8 +183,6 @@ const SignUpScreen = ({ props, navigation }) => {
         } else {
             setLoading(true);
             await checkUsername();
-            // await imageUpload(image);
-            // await signUp(firstName, lastName, email, password, pfpUrl);
             setLoading(false);
         }
     };
@@ -199,7 +201,7 @@ const SignUpScreen = ({ props, navigation }) => {
                 .then((response) => {
                     const uid = JSON.stringify(response.data.uid);
                     const firstName = response.data.firstName;
-                    console.log(JSON.stringify(response.data.uid));
+                    // console.log(JSON.stringify(response.data.uid));
                     AsyncStorage.setItem("@uid", response.data.uid);
                     AsyncStorage.setItem("@firstName", fname);
                     // AsyncStorage.setItem("@imageUrl", imageUrl);
@@ -403,7 +405,12 @@ const SignUpScreen = ({ props, navigation }) => {
                                 <Button
                                     title="Continue"
                                     onPress={onPressRegister}
-                                    style={styles.button}
+                                    style={{
+                                        marginTop: height * 0.0175,
+                                        alignSelf: "center",
+                                        backgroundColor: Colors.green.primary,
+                                        marginBottom: 30,
+                                    }}
                                 />
                             ) : (
                                 <ActivityIndicator
