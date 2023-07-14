@@ -193,6 +193,7 @@ const HomeScreen = ({ navigation, props }) => {
                                     title={concertData.title}
                                     date={concertData.date}
                                     location={concertData.venue}
+                                    monthDay={concertData.monthDay}
                                     onPress={() =>
                                         navigation.navigate("Concert Screen", {
                                             image: concertData.image,

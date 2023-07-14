@@ -12,23 +12,6 @@ const ConcertBlock = (props) => {
     return (
         <TouchableOpacity onPress={props.onPress}>
             <View>
-               {/*  <View
-                    style={{
-                        marginBottom: 20,
-                        alignSelf: "center",
-                        flexDirection: "row",
-                        height: 130,
-                        width: Dim.width * 0.84,
-                        backgroundColor: "white",
-                        borderColor: Colors.darkGray,
-                        borderWidth: 1,
-                        shadowColor: Colors.lightGray,
-                        shadowOffset: { width: 0, height: 4 },
-                        shadowOpacity: 0.4,
-                        shadowRadius: 2,
-                        borderRadius: 30,
-                    }}
-                > */}
                     <ImageBackground
                         source={{
                             uri: props.image,
@@ -46,8 +29,8 @@ const ConcertBlock = (props) => {
                             
                         }}
                     >
-                    <Text style={styles.header}>{props.name} • {props.title}</Text>  
-                    <Text style={styles.date}>{props.date} • {props.location}</Text>
+                    <Text style={styles.header}>{props.name}</Text>  
+                    <Text style={styles.date}>{props.location} • {props.monthDay}</Text>
                     </ImageBackground>
                     <View
                         style={{

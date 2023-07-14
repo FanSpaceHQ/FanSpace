@@ -12,11 +12,12 @@ import {
     FlatList,
 } from "react-native";
 import { Colors, Dim } from "../Constants";
-import Icon from "react-native-vector-icons/Feather";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import { LinearGradient } from "expo-linear-gradient";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import Alex from "../assets/Alex.png";
 
 /*
@@ -204,6 +205,22 @@ const ConcertScreen = ({ navigation, route }) => {
         { key: "second", title: "Interested" },
         { key: "third", title: "Selling", color: Colors.darkGray },
     ]);
+    const [favorite, setFavorite] = useState(false);
+    const [interested, setInterest] = useState(false);
+    const [selling, setSell] = useState(false);
+
+    const favoriteClick = async () =>{
+        setFavorite(!favorite);
+
+    }
+
+    const interestClick = async () =>{
+        setInterest(!interested);
+    }
+
+    const sellClick = async () => {
+        setSell(!selling);
+    }
 
     const renderTabBar = (props) => (
         <TabBar
@@ -253,7 +270,7 @@ const ConcertScreen = ({ navigation, route }) => {
                 </View>
                 <ImageBackground source={{ uri: image }} style={styles.image}>
                     <Text style={styles.title}>
-                        {name} • {title}
+                        {name}
                     </Text>
                     <LinearGradient
                         colors={["rgba(0,0,0,0.8)", "transparent"]}
@@ -267,7 +284,7 @@ const ConcertScreen = ({ navigation, route }) => {
                 <View style={styles.topRow}>
                     <View style={{ flexDirection: "row" }}>
                         <Icon
-                            name={"clock"}
+                            name={"schedule"}
                             size={20}
                             color={Colors.darkGray}
                             style={styles.icon}
@@ -276,7 +293,7 @@ const ConcertScreen = ({ navigation, route }) => {
                     </View>
                     <View style={{ flexDirection: "row" }}>
                         <Icon
-                            name={"map-pin"}
+                            name={"place"}
                             size={20}
                             color={Colors.darkGray}
                             style={styles.icon}
@@ -285,27 +302,33 @@ const ConcertScreen = ({ navigation, route }) => {
                     </View>
                 </View>
                 <View style={styles.actionRow}>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={favoriteClick}
+                    >
                         <Icon
-                            name={"heart"}
+                            name={favorite ? "favorite" : "favorite-border"}
                             size={30}
-                            color={Colors.darkGray}
+                            color={favorite ? "#0DAD81" : Colors.darkGray}
                             style={styles.action}
                         />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={interestClick}
+                    >
                         <Icon
-                            name={"star"}
+                            name={interested ? "star" : "star-outline"}
                             size={30}
-                            color={Colors.darkGray}
+                            color={interested ? "#0DAD81" : Colors.darkGray}
                             style={styles.action}
                         />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={sellClick}
+                    >
                         <Icon
-                            name={"shopping-cart"}
+                            name={"add-shopping-cart"}
                             size={30}
-                            color={Colors.darkGray}
+                            color={selling ? "#0DAD81" : Colors.darkGray}
                             style={styles.action}
                         />
                     </TouchableOpacity>

@@ -9,5 +9,6 @@ router.post('/:event/users/:uid/:field', addUserToEvent);
 router.put('/events', searchEvent);
 router.get('/', populateEvents)
 router.get('/search/:keyword', searchEvent);
+router.post('/add/user/', addUserToEvent);
 
 module.exports = router;    

@@ -4,13 +4,18 @@ const {FieldValue}=require('@google-cloud/firestore');
 const axios = require('axios');
 const {TICKETMASTERKEY} = require('../constants/ticketmasterConstants');
 
-const addUserToEvent=async(req,res)=>{ //take in three params, the user we're changing, the event we're changing their relation to, and which field we're chaning (interested, selling, going)
-    const uid=req.params.uid
-    const event=req.params.event
-    const field=req.params.field
+const addUserToEvent=async(req,res)=>{ 
+    //take in three params, the user we're changing, the event 
+    //we're changing their relation to, and which field we're 
+    //chaning (interested, selling, going)
+    const uid=req.body.uid
+    const event=req.body.event
+    const field=req.body.field
     
+    // console.log(req.body);
+
     //make sure there is a parameter sepcifying if someone if intersted, going, or selling tickets for an event
-    if(!event || !uid || (field!='interested' && field!='going' && field != 'selling')) 
+    if(!event || !uid || (field !='interested' && field!='going' && field != 'selling')) 
       return res.status(400).json({
         error:"one or more parameters are missing from the request"
       }) 
@@ -56,6 +61,7 @@ const addUserToEvent=async(req,res)=>{ //take in three params, the user we're ch
         }
 
         let allEventData = eventdoc.data()
+        console.log(allEventData);
         let addUser=true
 
         if(eventdoc.exists){

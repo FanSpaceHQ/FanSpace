@@ -252,7 +252,7 @@ const FriendScreen = ({props, navigation}) => {
                                 return (
                                     <FriendBox
                                         image={
-                                            friends._fieldsProto.image.stringValue
+                                            friends._fieldsProto.imageUrl.stringValue
                                         }
                                         name={`${friends._fieldsProto.firstName.stringValue} ${friends._fieldsProto.lastName.stringValue}`}
                                         userName={`${friends._fieldsProto.username.stringValue}`}

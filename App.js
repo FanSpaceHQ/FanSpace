@@ -28,17 +28,17 @@ const App = () => {
     const [userID, setUserID] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    // useEffect(() => {
-    //     AsyncStorage.getItem("@uid").then((userId) => {
-    //         if (userId !== null) {
-    //             setUserID(true);
-    //             setLoading(false);
-    //         } else {
-    //             setUserID(false);
-    //             setLoading(false);
-    //         }
-    //     });
-    // }, []);
+    useEffect(() => {
+        AsyncStorage.getItem("@uid").then((userId) => {
+            if (userId !== null) {
+                setUserID(true);
+                setLoading(false);
+            } else {
+                setUserID(false);
+                setLoading(false);
+            }
+        });
+    }, []);
 
     return(
         <NavigationContainer theme={MyTheme}>
