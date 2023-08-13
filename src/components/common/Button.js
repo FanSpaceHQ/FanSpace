@@ -8,21 +8,8 @@ import { Colors, Dim } from "../../Constants";
 const Button = (props) => {
     return (
         <TouchableOpacity onPress={props.onPress}>
-            <View
-                style={{
-                    ...props.style,
-                    width: Dim.width * 0.5,
-                    borderRadius: 30,
-                }}
-            >
-                <Text
-                    style={{
-                        padding: 15,
-                        fontSize: 16,
-                        color: "white",
-                        textAlign: "center",
-                    }}
-                >
+            <View style={styles.button}>
+                <Text style={styles.text}>
                     {props.title}
                 </Text>
             </View>
@@ -30,6 +17,21 @@ const Button = (props) => {
     );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    button: {
+        borderRadius: 20,
+        borderColor: Colors.green.primary,
+        borderWidth: 1,
+        width: 170,
+        marginTop: 5
+    },
+    text: {
+        color: Colors.green.primary,
+        textAlign: "center", 
+        marginHorizontal: 12,
+        marginVertical: 10
+
+    }
+});
 
 export default Button;

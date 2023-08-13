@@ -19,7 +19,7 @@ const uploadImage = async(req, res) => {
   const fullPath = `UserImages/${v4()}`;
   const bucketFile = bucket.file(fullPath);
 
-  console.log(req.file);
+  // console.log(req.file);
   await bucketFile.save(req.file.buffer, {
       contentType: req.file.mimetype,
       gzip: true,
@@ -65,13 +65,12 @@ const createUser = async (req, res) => {
                 .doc(user.uid)
                 .set({
                     ...req.body,
-                    going: {},
-                    selling: {},
-                    interested: {},
-                    friends: {},                    
-                    pendingIncoming: {},
-                    pendingOutgoing: {},
-                    image: req.body.imageUrl,
+                    going: [],
+                    selling: [],
+                    interested: [],
+                    friends: [],                    
+                    pendingIncoming: [],
+                    pendingOutgoing: [],
                 })
                 .then(async () => {
                     res.status(200).json({
@@ -83,8 +82,7 @@ const createUser = async (req, res) => {
   }
 
 const readUser = async (req, res) => {
-    const uid = req.body.uid;
-
+    const uid = req.params.uid;
     admin
         .firestore()
         .collection("users")
@@ -114,23 +112,23 @@ const updateUser = async (req, res) => {
     for (const [key, value] of Object.entries(data)) {
         if (update_fields.includes(key)) newData[key] = value;
     }
-    // if(req.file)
-    // {
-    //   const bucket = storage.bucket();
-    //   const fullPath = `UserImages/${v4()}`;
-    //   const bucketFile = bucket.file(fullPath);
+    if(req.file)
+    {
+      const bucket = storage.bucket();
+      const fullPath = `UserImages/${v4()}`;
+      const bucketFile = bucket.file(fullPath);
    
-    //   console.log(req.file)
-    //   await bucketFile.save(req.file.buffer, {
-    //     contentType: req.file.mimetype,
-    //     gzip: true
-    //   });
-    //   const [url] = await bucketFile.getSignedUrl({
-    //     action: 'read',
-    //     expires: '01-01-2030'
-    //   });
-    //   newData['image']=url
-    // }
+      console.log(req.file)
+      await bucketFile.save(req.file.buffer, {
+        contentType: req.file.mimetype,
+        gzip: true
+      });
+      const [url] = await bucketFile.getSignedUrl({
+        action: 'read',
+        expires: '01-01-2030'
+      });
+      newData['image']=url
+    }
     if(newData)
     admin.firestore().collection('users').doc(uid).update(newData).then(()=>{
     res.status(200).json({
@@ -331,7 +329,7 @@ const loginUser = async (req, res) => {
 };
 
 const loadFriends = async (req, res) => {
-    const uid = req.body.uid;
+    const uid = req.params.uid;
     database
         .collection("users")
         .doc(uid)
@@ -353,8 +351,8 @@ const loadFriends = async (req, res) => {
                 let missingFriends = [];
                 friends.forEach((friend) =>
                     friend.exists
-                        ? friendData.append(friend)
-                        : missingFriends.append(friend)
+                        ? friendData.push(friend)
+                        : missingFriends.push(friend)
                 ); //get all the friends that exist
                 res.status(200).json({
                     friends: friendData,
@@ -372,10 +370,112 @@ const loadFriends = async (req, res) => {
         });
 };
 
-//TODO
 const searchUser = async (req, res) => {
-    //query all documents in fb where matches, fname, lname, insta, discord, etc
-    //look into here https://firebase.google.com/docs/firestore/solutions/search?provider=algolia
+  try {
+    // console.log(req.params)
+        // const searchQuery = req.body.thing.trim();
+        const userId = req.params.uid;
+        const fullSearch = req.params.username;
+        const searchQuery = req.params.username.trim();
+        const searchWords = searchQuery.split(' ');
+        let result = [];
+        for (const word of searchWords) {
+        const firstNameQuery = database.collection('users').where('firstName', "==", word);
+        const lastNameQuery = database.collection('users').where('lastName', "==", word);
+        const discordQuery = database.collection('users').where('discord', "==", word);
+        const instaQuery = database.collection('users').where('insta', "==", word);
+        const twitterQuery = database.collection('users').where('twitter', "==", word);
+        const [firstNameSnapshot, lastNameSnapshot, discordSnapshot, instaSnapshot, twitterSnapshot] = await Promise.all([
+            firstNameQuery.get(),
+            lastNameQuery.get(),
+            discordQuery.get(),
+            instaQuery.get(),
+            twitterQuery.get()
+        ]);
+        firstNameSnapshot.forEach(doc => {
+            const uid = doc.id;
+            if (uid != userId) {
+                const { firstName, lastName, imageUrl, username } = doc.data();
+                const userInfo = {
+                    uid,
+                    firstName,
+                    lastName,
+                    imageUrl,
+                    username,
+                };
+                if (!result.some((user) => user.uid == uid)) {
+                    result.push(userInfo);
+                }
+            }
+        });
+        lastNameSnapshot.forEach(doc => {
+            const uid = doc.id;
+            if (uid != userId){
+              const { firstName, lastName, imageUrl, username } = doc.data();
+              const userInfo = {
+                  uid,
+                  firstName,
+                  lastName,
+                  imageUrl,
+                  username,
+              };
+              if (!result.some(user => user.uid == uid)) {
+                result.push(userInfo);
+            }}
+        });
+        discordSnapshot.forEach(doc => {
+            const uid = doc.id;
+            if (uid != userId){
+              const { firstName, lastName, imageUrl, username } = doc.data();
+              const userInfo = {
+                uid,
+                firstName,
+                lastName,
+                imageUrl,
+                username,
+              };
+              if (!result.some(user => user.uid == uid)) {
+                result.push(userInfo);
+            }}
+        });
+        instaSnapshot.forEach(doc => {
+            const uid = doc.id;
+            if (uid != userId){
+              const { firstName, lastName, imageUrl, username } = doc.data();
+              const userInfo = {
+                uid,
+                firstName,
+                lastName,
+                imageUrl,
+                username,
+              };
+              if (!result.some(user => user.uid == uid)) {
+                result.push(userInfo);
+            }}
+        });
+        twitterSnapshot.forEach(doc => {
+            const uid = doc.id;
+            if (uid != userId){
+              const { firstName, lastName, imageUrl, username } = doc.data();
+              const userInfo = {
+                uid,
+                firstName,
+                lastName,
+                imageUrl,
+                username,
+              };
+              if (!result.some(user => user.uid == uid)) {
+                result.push(userInfo);
+            }}
+        });
+        }
+        // console.log(result);
+        res.status(200).json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error',
+    error: error });
+    }
 };
 
 const addUserToEvent = async (req, res) => {
@@ -426,6 +526,18 @@ const objectTest = async (req, res) => {
             res.status(200);
         });
 };
+
+const checkUser = async (req, res) => {
+  const username = req.params.username;
+  const userNameQuery = database.collection("users").where("username", '==', username);
+  const userNameSnapshot = await userNameQuery.get();
+  if (userNameSnapshot.empty){
+    res.status(200).json({Status: "Username does not exist"});
+  } else{
+    res.status(400).json({error: "Username already exists"})
+  }
+}
+
 module.exports = {
     createUser,
     readUser,
@@ -438,4 +550,5 @@ module.exports = {
     addUserToEvent,
     acceptFriend,
     uploadImage,
+    checkUser,
 }
