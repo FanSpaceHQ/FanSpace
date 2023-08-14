@@ -18,6 +18,63 @@ We use ground-breaking novel technologies to develop, run, and deploy this app.
   - Realtime Database
   - Cloud Functions (powered by Google Cloud Run)
   - Storage Buckets
-  - Cloud Messaging (Push Notifications)
 - React Native
 - Expo
+
+# Run/Deploy
+Requirements:
+- Node.js v20^
+- Node Package Manager (npm) v9^
+- Xcode v14^ (to test on iOS, or use the Expo Go app on a physical iOS device)
+
+Other requirements are in the `package.json` file in both the `functions` and
+`frontend` directories.
+
+## Deploying Cloud Functions
+In order to deploy Cloud Functions to Firebase, you must have the
+`firebase-tools` npm package installed globally:
+```shell
+$ npm install -g firebase-tools
+```
+Use the Firebase CLI to sign into your Google Account:
+```shell
+$ firebase login
+```
+Then deploy with:
+```shell
+$ firebase deploy
+```
+You may also deploy locally with:
+```shell
+$ cd functions
+$ npm install
+$ npm run serve
+```
+Note that this should be used for debugging purposes only—the frontend
+application is set to the production Firebase server.
+## Running the Expo Application
+Use Yarn to install all dependencies and run the Expo server:
+```shell
+$ yarn
+$ yarn start
+```
+## Deploying to the App Store
+Make sure you have a valid Apple Developer account (paid) before continuing.
+```shell
+$ eas build -p ios
+$ eas submit -p ios
+```
+
+# Notes
+- 8/13/23: The `frontend/backend` folder is now just for reference. It contains
+  no currently usable code.
+
+# To Do
+- [ ] Update Realtime Database rules for validation
+- [ ] Create Firebase abstraction for CRUD operations
+- [ ] Cloud Functions:
+  - [ ] Friend request lifecycle
+  - [ ] Ticketmaster Sync
+- [ ] UI overhaul:
+  - [ ] Update profile page
+  - [ ] Connect logic for inbox + UI tweaks
