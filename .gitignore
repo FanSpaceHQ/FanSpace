@@ -9,9 +9,14 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+package-lock.json
+yarn.lock
+.firebaserc
 
 # macOS
 .DS_Store
 
 #firebase service account
 service_account.json
+
+.vscode/

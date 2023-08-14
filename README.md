@@ -15,8 +15,9 @@ Our mobile application aims to help students connect with other students with si
 # Our Technology
 We use ground-breaking novel technologies to develop, run, and deploy this app. 
 - Firebase
-  - Firestore
-  - Cloud Functions
+  - Realtime Database
+  - Cloud Functions (powered by Google Cloud Run)
+  - Storage Buckets
   - Cloud Messaging (Push Notifications)
 - React Native
 - Expo
