@@ -29,15 +29,16 @@ const App = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        AsyncStorage.getItem("@uid").then((userId) => {
-            if (userId !== null) {
-                setUserID(true);
-                setLoading(false);
-            } else {
-                setUserID(false);
-                setLoading(false);
-            }
-        });
+        // AsyncStorage.getItem("@uid").then((userId) => {
+        //     if (userId !== null) {
+        //         setUserID(true);
+        //         setLoading(false);
+        //     } else {
+        //         setUserID(false);
+        //         setLoading(false);
+        //     }
+        // });
+        setUserID(true); // Bootstrap before Firebase int
     }, []);
 
     return(

@@ -44,11 +44,14 @@ const ProfileScreen = ({ navigation, props }) => {
     //const navigation = useNavigation();
 
     useEffect(() => {
-        AsyncStorage.getItem("@firstName").then((item)=>setFirstName(item));
-        AsyncStorage.getItem("@imageUrl").then((item)=>{setImageUrl(item)});
-        AsyncStorage.getItem("@discord").then((item)=>setDiscord(item));
-        AsyncStorage.getItem("@instagram").then((item)=>setInstagram(item));
-        AsyncStorage.getItem("@twitter").then((item)=>setTwitter(item));
+        // AsyncStorage.getItem("@firstName").then((item)=>setFirstName(item));
+        // AsyncStorage.getItem("@imageUrl").then((item)=>{setImageUrl(item)});
+        // AsyncStorage.getItem("@discord").then((item)=>setDiscord(item));
+        // AsyncStorage.getItem("@instagram").then((item)=>setInstagram(item));
+        // AsyncStorage.getItem("@twitter").then((item)=>setTwitter(item));
+
+        // To Florence: Set each variable to a dummy variable then adjust UI as
+        // necessary. Review Figma docs. 
     });
 
     return (

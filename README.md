@@ -69,7 +69,7 @@ $ eas submit -p ios
 - 8/13/23: The `frontend/backend` folder is now just for reference. It contains
   no currently usable code.
 
-# To Do
+## To Do
 - [ ] Update Realtime Database rules for validation
 - [ ] Create Firebase abstraction for CRUD operations
 - [ ] Cloud Functions:
