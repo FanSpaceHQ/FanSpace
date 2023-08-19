@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Pencil from "../assets/Pencil.png";
 import Alex from "../assets/Alex.png";
 import Discord from "../assets/Discord.png";
 import Twitter from "../assets/Twitter.png";
@@ -64,60 +65,105 @@ const ProfileScreen = ({ navigation, props }) => {
                         paddingTop: 25,
                     }}
                 >
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate("Settings")}
-                    >
-                        <Image
-                            source={Settings1}
-                            style={{ marginLeft: Dim.width * 0.85 }}
-                        ></Image>
-                    </TouchableOpacity>
+                   
+                    <View style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between", // Align to the right and center horizontally
+                        paddingHorizontal: 16, // Add some padding to both sides,
+                        paddingRight: 30,
+                        marginBottom: 25
 
+                    }}>
+                        <Text style={{
+                            flex: 1,
+                            fontSize: 20,
+                            fontWeight: "600",
+                            color: "#000000",
+                            // marginLeft: Dim.width * 0.5
+                            textAlign: "center",
+                          
+                            }}
+                        >
+                            Profile
+                        </Text>
+                        
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate("Settings")}
+                        >
+                            <Image
+                                source={Settings1}
+                                // style={{ marginLeft: Dim.width * 0.85 }}
+                            ></Image>
+                        </TouchableOpacity>
+                    </View>
+                    
                     <View
                         style={{
                             flexDirection: "row",
                             alignItems: "center",
-                            marginLeft: Dim.width * 0.05,
+                            paddingLeft: Dim.width * 0.05,
                             //marginRight: Dim.width * 0.8,
                         }}
                     >
-                        <Image
-                            style={{
-                                width: 130,
-                                height: 130,
-                                borderRadius: 1000,
-                                marginRight: 10,
-                            }}
-                            source={{uri: imageUrl}}
-                        />
+                       
                         <View
                             style={{
-                                alignItems: "center",
-                                marginBottom: Dim.height * 0.1,
-                                height: Dim.height * 0.04,
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                marginRight: 10, // Add this property
+                                marginLeft: 15
                             }}
                         >
+                             <Image
+                            style={{
+                                width: 110,
+                                height: 110,
+                                borderRadius: 1000,
+                                marginRight: 10,
+                                // alignItems: "flex-start"
+                            }}
+                            source={Alex}
+                            />
+                        </View>
+
+                        <View>
                             <Text
                                 style={{
                                     marginLeft: 10,
-                                    fontSize: 30,
-                                    fontWeight: "bold",
+                                    fontSize: 18,
+                                    fontWeight: 500,
                                     //height: 100,
                                 }}
                             >
-                                {firstName}
+                                {/* {firstName} */}
+                                Alex Smith
                             </Text>
 
                             <Text
                                 style={{
                                     marginLeft: 10,
-                                    fontSize: 14,
-
+                                    fontSize: 10,
                                     color: "grey",
                                 }}
                             >
                                 @username
                             </Text>
+
+                            <TouchableOpacity 
+                                style={{ 
+                                backgroundColor: "#0B8F6B",height: 32,
+                                width: 133,
+                                borderRadius: 16,
+                                flexDirection: "row", 
+                                justifyContent: "center", 
+                                alignItems: "center", 
+                                marginTop: 12,
+                             }}
+                            >
+                                <Image source={Pencil} style={{marginRight: 12}} />
+                                <Text style={{color: "#FFFFFF", fontSize: 12}}>Edit Profile</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </View>
@@ -140,7 +186,8 @@ const ProfileScreen = ({ navigation, props }) => {
                             marginLeft: 8,
                             marginTop: 8,
                             marginBottom: 8,
-                            fontSize: 18,
+                            fontWeight: 500,
+                            fontSize: 16,
                         }}
                     >
                         Contact Information
