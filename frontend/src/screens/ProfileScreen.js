@@ -183,9 +183,9 @@ const ProfileScreen = ({ navigation, props }) => {
                 <View>
                     <Text
                         style={{
-                            marginLeft: 8,
+                            marginLeft: 26,
                             marginTop: 8,
-                            marginBottom: 8,
+                            marginBottom: 20,
                             fontWeight: 500,
                             fontSize: 16,
                         }}
@@ -219,9 +219,9 @@ const ProfileScreen = ({ navigation, props }) => {
 
                     <View style={styles.rowContainer}>
                         <Image source={Discord} style={styles.image} />
-                        <Text style={{ marginLeft: 10, color: "gray" }}>
-                            {discord}
-                        </Text>
+                        <View style={{ flex: 1 }}>
+                            <Text style={{ marginLeft: 10, color: "gray" }}>{discord}</Text>
+                        </View>
                     </View>
                     <View style={styles.grayBar} />
 
