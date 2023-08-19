@@ -18,10 +18,11 @@ import Twitter from "../assets/Twitter.png";
 import Instagram1 from "../assets/Instagram1.png";
 import Instagram2 from "../assets/Instagram2.png";
 import Instagram3 from "../assets/Instagram3.png";
+import Instagram from "../assets/Instagram.png";
 import Facebook1 from "../assets/Facebook1.png";
 import Facebook2 from "../assets/Facebook2.png";
 
-import Settings1 from "../assets/Settings1.png";
+import Setting from "../assets/Setting.png";
 import SettingsPage from "./Settings";
 //import Button from "../components/common/Button";
 //import ProfileImage from "./ProfileImage";
@@ -92,7 +93,7 @@ const ProfileScreen = ({ navigation, props }) => {
                             onPress={() => navigation.navigate("Settings")}
                         >
                             <Image
-                                source={Settings1}
+                                source={Setting}
                                 // style={{ marginLeft: Dim.width * 0.85 }}
                             ></Image>
                         </TouchableOpacity>
@@ -184,7 +185,7 @@ const ProfileScreen = ({ navigation, props }) => {
                     <Text
                         style={{
                             marginLeft: 26,
-                            marginTop: 8,
+                            marginTop: 12,
                             marginBottom: 20,
                             fontWeight: 500,
                             fontSize: 16,
@@ -193,15 +194,10 @@ const ProfileScreen = ({ navigation, props }) => {
                         Contact Information
                     </Text>
                     <View>
-                        <View style={styles.rowContainer}>
-                        <Image source={Instagram1} style={styles.image} />
-                        <Image
-                            source={Instagram2}
-                            style={{
-                                width: Dim.width * 0.03,
-                                marginLeft: Dim.width * -0.04,
-                            }}
-                        />
+                        
+                    <View style={styles.rowContainer}>
+                        <Image source={Instagram} style={styles.image} />
+
                         <Text style={{ marginLeft: 10, color: "gray" }}>
                             {instagram}
                         </Text>
@@ -352,8 +348,8 @@ const styles = StyleSheet.create({
     image: {
         marginLeft: Dim.width * 0.12,
         marginRight: Dim.width * 0.0,
-        width: 20,
-        height: 20,
+        width: 24,
+        height: 24,
     },
     grayBar: {
         width: Dim.width * 0.7,
