@@ -192,8 +192,8 @@ const ProfileScreen = ({ navigation, props }) => {
                     >
                         Contact Information
                     </Text>
-
-                    <View style={styles.rowContainer}>
+                    <View>
+                        <View style={styles.rowContainer}>
                         <Image source={Instagram1} style={styles.image} />
                         <Image
                             source={Instagram2}
@@ -225,14 +225,16 @@ const ProfileScreen = ({ navigation, props }) => {
                     </View>
                     <View style={styles.grayBar} />
 
-                    {/* <View style={styles.rowContainer}>
+                    <View style={styles.rowContainer}>
                         <Image source={Facebook1} style={styles.image} />
 
                         <Text style={{ marginLeft: 10, color: "gray" }}>
-                            {facebook}
+                            {/* {facebook} */}
                         </Text>
                     </View>
-                    <View style={styles.grayBar} /> */}
+                    <View style={styles.grayBar} />
+                    </View>
+                    
                 </View>
 
                 <ScrollView contentContainerStyle={styles.scrollContainer}>

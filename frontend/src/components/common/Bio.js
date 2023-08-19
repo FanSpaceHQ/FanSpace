@@ -106,8 +106,8 @@ const styles = StyleSheet.create({
     input: {
         marginTop: 20,
         borderWidth: 1,
-        marginLeft: 8,
-        marginRight: 8,
+        marginLeft: 25,
+        marginRight: 25,
         borderWidth: 0,
         borderRadius: 16,
         height: 100,
@@ -119,8 +119,8 @@ const styles = StyleSheet.create({
     inputFocused: {
         marginTop: 20,
         borderWidth: 1,
-        marginLeft: 8,
-        marginRight: 8,
+        marginLeft: 25,
+        marginRight: 25,
         borderWidth: 0,
         borderRadius: 16,
         height: 100,
