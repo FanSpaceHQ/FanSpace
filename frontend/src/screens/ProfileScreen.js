@@ -21,6 +21,10 @@ import Instagram3 from "../assets/Instagram3.png";
 import Instagram from "../assets/Instagram.png";
 import Facebook1 from "../assets/Facebook1.png";
 import Facebook2 from "../assets/Facebook2.png";
+import Heart from "../assets/Heart.png";
+import Star from "../assets/Star.png";
+import Buy from "../assets/Buy.png";
+
 
 import Setting from "../assets/Setting.png";
 import SettingsPage from "./Settings";
@@ -68,35 +72,40 @@ const ProfileScreen = ({ navigation, props }) => {
                 >
                    
                     <View style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "space-between", // Align to the right and center horizontally
-                        paddingHorizontal: 16, // Add some padding to both sides,
-                        paddingRight: 30,
-                        marginBottom: 25
-
-                    }}>
-                        <Text style={{
-                            flex: 1,
-                            fontSize: 20,
-                            fontWeight: "600",
-                            color: "#000000",
-                            // marginLeft: Dim.width * 0.5
-                            textAlign: "center",
-                          
-                            }}
-                        >
-                            Profile
-                        </Text>
+                         flexDirection: "row",
+                         alignItems: "center",
+                         justifyContent: "center",
+                         paddingHorizontal: 16,
+                         marginBottom: 25,
+                    }}> 
+                        {/* <View style={{ width: Dim.width * 0.5 - 165 }} /> */}
+                        {/* <View style={{ flex: 1, alignItems: "center" }}> */}
+                            <Text style={{ 
+                                 fontSize: 20,
+                                 fontWeight: "600",
+                                 color: "#000000",
+                                 textAlign: "center",
+                                 flex: 1,
+                                 
+                            }}>
+                                Profile
+                            </Text>
+                        {/* </View> */}
                         
+                        <View style={{ position: "absolute",
+        right: 30,}}>
                         <TouchableOpacity
-                            onPress={() => navigation.navigate("Settings")}
-                        >
-                            <Image
-                                source={Setting}
-                                // style={{ marginLeft: Dim.width * 0.85 }}
-                            ></Image>
-                        </TouchableOpacity>
+                                onPress={() => navigation.navigate("Settings")}
+                            >
+                                <Image
+                                    source={Setting}
+                                    style={{ width: 26, height: 26
+                                }}
+                                ></Image>
+                            </TouchableOpacity>
+                        
+                        </View>
+                          
                     </View>
                     
                     <View
@@ -236,7 +245,8 @@ const ProfileScreen = ({ navigation, props }) => {
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View style={styles.sectionContainer}>
                         <View style={{ flexDirection: "row" }}>
-                            <Text style={styles.sectionTitle}>Attending</Text>
+                            <Text style={styles.sectionTitle}>Going</Text>
+                            <Image style={styles.sectionIcon} src={Heart}/>
                             <TouchableOpacity 
                                 style={styles.viewAllButton}
                                 onPress={() => navigation.navigate("Saved")}
@@ -268,6 +278,7 @@ const ProfileScreen = ({ navigation, props }) => {
                     <View style={styles.sectionContainer}>
                         <View style={{ flexDirection: "row" }}>
                             <Text style={styles.sectionTitle}>Interested</Text>
+                            <Image style={styles.sectionIcon} src={Star}/>
                             <TouchableOpacity 
                                 style={styles.viewAllButton}
                                 onPress={() => navigation.navigate("Saved")}
@@ -298,6 +309,7 @@ const ProfileScreen = ({ navigation, props }) => {
                     <View style={styles.sectionContainer}>
                         <View style={{ flexDirection: "row" }}>
                             <Text style={styles.sectionTitle}>Selling</Text>
+                            <Image style={styles.sectionIcon} src={Buy}/>
                             <TouchableOpacity 
                                 style={styles.viewAllButton}
                                 onPress={() => navigation.navigate("Saved")}
@@ -320,7 +332,7 @@ const ProfileScreen = ({ navigation, props }) => {
                                 color: "#B4B3B3",
                             }}
                         >
-                            Selling tickerts for:{" "}
+                            Selling tickets for:{" "}
                         </Text>
                         <ScrollWindow />
                     </View>
@@ -371,9 +383,13 @@ const styles = StyleSheet.create({
     },
     sectionTitle: {
         padding: 2,
-        fontSize: 20,
-        fontWeight: "bold",
+        fontSize: 16,
+        fontWeight: "500",
     },
+    sectionIcon: {
+        height: 16,
+        width: 16
+    }
 });
 
 export default ProfileScreen;
