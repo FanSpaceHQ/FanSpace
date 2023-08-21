@@ -12,7 +12,7 @@ import { Dim } from "../../Constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Bio = () => {
-    const [bio, setBio] = useState("Default Bio");
+    const [bio, setBio] = useState("");
     const [isEditable, setIsEditable] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
     const bioInputRef = useRef(null);
@@ -67,6 +67,9 @@ const Bio = () => {
                     <View
                         style={isFocused ? styles.inputFocused : styles.input}
                     >
+                        <View style={styles.about}>
+                            <Text style={{color:"#FFFFFF",  fontSize: 8, textAlign: "center"}}>About</Text>
+                        </View>
                         {isEditable ? (
                             <TextInput
                                 ref={bioInputRef}
@@ -151,6 +154,16 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         height: 32,
     },
+    about: {
+        height: 16,
+        width: 48,
+        backgroundColor: "#0DAD81",
+        borderRadius: 3,
+        justifyContent: 'center', 
+        alignItems: 'center',
+        marginLeft: 15,
+        marginTop: 12
+    }
 });
 
 export default Bio;
