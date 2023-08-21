@@ -24,6 +24,7 @@ import Facebook2 from "../assets/Facebook2.png";
 import Heart from "../assets/Heart.png";
 import Star from "../assets/Star.png";
 import Buy from "../assets/Buy.png";
+import Arrow from "../assets/Arrow.png";
 
 
 import Setting from "../assets/Setting.png";
@@ -244,27 +245,30 @@ const ProfileScreen = ({ navigation, props }) => {
 
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View style={styles.sectionContainer}>
-                        <View style={{ flexDirection: "row" }}>
+                        <View style={{ flexDirection: "row", position: "relative"}}>
                             <Text style={styles.sectionTitle}>Going</Text>
-                            <Image style={styles.sectionIcon} src={Heart}/>
+                            <Image style={styles.sectionIcon} source={Heart}/>
                             <TouchableOpacity 
                                 style={styles.viewAllButton}
                                 onPress={() => navigation.navigate("Saved")}
                             >
                                 <Text
                                     style={{
-                                        marginLeft: Dim.width * 0.5,
-                                        marginTop: Dim.height * 0.01,
+                                       
+                                        // marginLeft: "auto",
+                                        marginTop: Dim.height * 0.02,
                                         color: "#0DAD81",
                                     }}
                                 >
                                     View All
                                 </Text>
+                                <Image style={styles.sectionExpand} source={Arrow}/>
                             </TouchableOpacity>
+                          
                         </View>
                         <Text
                             style={{
-                                marginLeft: Dim.width * 0.01,
+                                marginLeft: 26,
                                 marginBottom: Dim.height * 0.02,
                                 color: "#B4B3B3",
                             }}
@@ -278,25 +282,26 @@ const ProfileScreen = ({ navigation, props }) => {
                     <View style={styles.sectionContainer}>
                         <View style={{ flexDirection: "row" }}>
                             <Text style={styles.sectionTitle}>Interested</Text>
-                            <Image style={styles.sectionIcon} src={Star}/>
+                            <Image style={styles.sectionIcon} source={Star}/>
                             <TouchableOpacity 
                                 style={styles.viewAllButton}
                                 onPress={() => navigation.navigate("Saved")}
                             >
                                 <Text
                                     style={{
-                                        marginLeft: Dim.width * 0.5,
-                                        marginTop: Dim.height * 0.01,
+                                        // marginLeft: Dim.width * 0.42,
+                                        marginTop: Dim.height * 0.02,
                                         color: "#0DAD81",
                                     }}
                                 >
                                     View All
                                 </Text>
+                                <Image style={styles.sectionExpand} source={Arrow}/>
                             </TouchableOpacity>
                         </View>
                         <Text
                             style={{
-                                marginLeft: Dim.width * 0.01,
+                                marginLeft: 26,
                                 marginBottom: Dim.height * 0.02,
                                 color: "#B4B3B3",
                             }}
@@ -309,25 +314,26 @@ const ProfileScreen = ({ navigation, props }) => {
                     <View style={styles.sectionContainer}>
                         <View style={{ flexDirection: "row" }}>
                             <Text style={styles.sectionTitle}>Selling</Text>
-                            <Image style={styles.sectionIcon} src={Buy}/>
+                            <Image style={styles.sectionIcon} source={Buy}/>
                             <TouchableOpacity 
                                 style={styles.viewAllButton}
                                 onPress={() => navigation.navigate("Saved")}
                             >
                                 <Text
                                     style={{
-                                        marginLeft: Dim.width * 0.6,
-                                        marginTop: Dim.height * 0.01,
+                                        // marginLeft: Dim.width * 0.47,
+                                        marginTop: Dim.height * 0.02,
                                         color: "#0DAD81",
                                     }}
                                 >
                                     View All
                                 </Text>
+                                <Image style={styles.sectionExpand} source={Arrow}/>
                             </TouchableOpacity>
                         </View>
                         <Text
                             style={{
-                                marginLeft: Dim.width * 0.01,
+                                marginLeft: 26,
                                 marginBottom: Dim.height * 0.02,
                                 color: "#B4B3B3",
                             }}
@@ -378,17 +384,28 @@ const styles = StyleSheet.create({
     },
     sectionContainer: {
         marginBottom: 20,
-        padding: 10,
+        // padding: 10,
         height: 200,
     },
     sectionTitle: {
-        padding: 2,
         fontSize: 16,
         fontWeight: "500",
+        paddingLeft: 26
     },
     sectionIcon: {
         height: 16,
-        width: 16
+        width: 16,
+        marginLeft: 10
+    },
+    viewAllButton: {
+        position: "absolute",
+        marginLeft: Dim.width * 0.73,
+    },
+    sectionExpand: {
+        marginTop: Dim.height * 0.023,
+        position: "absolute",
+        // marginLeft: Dim.width * 0.88,
+        marginLeft: Dim.width * 0.16,
     }
 });
 
