@@ -173,7 +173,7 @@ const ProfileScreen = ({ navigation, props }) => {
                              }}
                             >
                                 <Image source={Pencil} style={{marginRight: 12}} />
-                                <Text style={{color: "#FFFFFF", fontSize: 12}}>Edit Profile</Text>
+                                <Text style={{color: "#333333", fontSize: 12}}>Edit Profile</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
