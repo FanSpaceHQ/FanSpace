@@ -25,6 +25,7 @@ import Heart from "../assets/Heart.png";
 import Star from "../assets/Star.png";
 import Buy from "../assets/Buy.png";
 import Arrow from "../assets/Arrow.png";
+import Event from "../assets/Event.png";
 
 
 import Setting from "../assets/Setting.png";
@@ -38,6 +39,7 @@ import Bio from "../components/common/Bio";
 import { height } from "@mui/system";
 import { color } from "@rneui/base";
 import { useNavigation } from "@react-navigation/native";
+import { FlatList } from "react-native";
 
 /*
   -- DOCUMENTATION --
@@ -268,13 +270,19 @@ const ProfileScreen = ({ navigation, props }) => {
                         </View>
                         <Text
                             style={{
-                                marginLeft: 26,
+                                // marginLeft: 26,
                                 marginBottom: Dim.height * 0.02,
                                 color: "#B4B3B3",
+                                marginTop: 5,
                             }}
                         >
                             See what I'm going to
                         </Text>
+                        
+                        <Image
+                        style={[styles.event, { marginRight: 10 }]}
+                        source={Event}
+                        />
 
                         <ScrollWindow />
                     </View>
@@ -301,9 +309,10 @@ const ProfileScreen = ({ navigation, props }) => {
                         </View>
                         <Text
                             style={{
-                                marginLeft: 26,
+                                // marginLeft: 26,
                                 marginBottom: Dim.height * 0.02,
                                 color: "#B4B3B3",
+                                marginTop: 5,
                             }}
                         >
                             I'm interested in...
@@ -333,9 +342,10 @@ const ProfileScreen = ({ navigation, props }) => {
                         </View>
                         <Text
                             style={{
-                                marginLeft: 26,
+                                // marginLeft: 26,
                                 marginBottom: Dim.height * 0.02,
                                 color: "#B4B3B3",
+                                marginTop: 5,
                             }}
                         >
                             Selling tickets for:{" "}
@@ -383,14 +393,16 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
     },
     sectionContainer: {
-        marginBottom: 20,
+        paddingTop: 15,
+        // marginBottom: 20,
         // padding: 10,
         height: 200,
+        marginLeft: 26,
     },
     sectionTitle: {
         fontSize: 16,
         fontWeight: "500",
-        paddingLeft: 26
+        // paddingLeft: 26
     },
     sectionIcon: {
         height: 16,
@@ -399,13 +411,18 @@ const styles = StyleSheet.create({
     },
     viewAllButton: {
         position: "absolute",
-        marginLeft: Dim.width * 0.73,
+        marginLeft: Dim.width * 0.68,
     },
     sectionExpand: {
         marginTop: Dim.height * 0.023,
         position: "absolute",
         // marginLeft: Dim.width * 0.88,
         marginLeft: Dim.width * 0.16,
+        
+    },
+    event: {
+        height: 80,
+        width: 131
     }
 });
 
