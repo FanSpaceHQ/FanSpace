@@ -55,6 +55,7 @@ application is set to the production Firebase server.
 ## Running the Expo Application
 Use Yarn to install all dependencies and run the Expo server:
 ```shell
+$ cd frontend
 $ yarn
 $ yarn start
 ```
