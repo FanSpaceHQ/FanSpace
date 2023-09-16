@@ -21,6 +21,8 @@ exports.syncEvents = onSchedule(
     async () => {
         logger.info("Syncing events from Ticketmaster");
 
+        const db = getDatabase();
+
         // Retrieve events using Ticketmaster API
         const events = await axios.get(
             "https://app.ticketmaster.com/discovery/v2/events",
@@ -33,12 +35,18 @@ exports.syncEvents = onSchedule(
             }
         );
 
-        // 
-        const eventArr = events.data._embedded.events;
+        let prevEvents = {};
+        try {
+            prevEvents = await db.ref("eventsData").get();
+            if (prevEvents) {
+                prevEvents = prevEvents.val() || {};
+                logger.info("found events")
+            }
+        } catch {
+            
+        }
 
-        for (let i = 0; i < eventArr.length; i++) {
-            let event = eventArr[i];
-
+        for (let event of events.data._embedded.events) {
             let artist = "";
             eventEmbedded = event._embedded;
             if (
@@ -49,7 +57,6 @@ exports.syncEvents = onSchedule(
                 artist = eventEmbedded.attractions[0].name;
             }
 
-            // Handle if address is undefined
             let address = "";
             if (
                 eventEmbedded &&
@@ -65,51 +72,10 @@ exports.syncEvents = onSchedule(
                     eventEmbedded.venues[0].state.name;
             }
 
-            // Handle if localTime is undefined
-            let localTime = "TBD";
-            let monthDay = "TBD";
-            if (
-                event.dates &&
-                event.dates.start &&
-                event.dates.start.localTime
-            ) {
-                const localDate = eventArr[0].dates.start.localDate;
-                const date = new Date(localDate);
-                const localtime = eventArr[0].dates.start.localTime;
-                const dated = eventArr[0].dates.start.localDate.split("-");
-                const month = months[date.getMonth()];
-                const day = weekdays[date.getDay()];
-                let time = "TBD";
-                const intTime = localtime.split(":");
-                let hour = parseInt(intTime[0]);
-
-                if (hour >= 12) {
-                    if (hour > 12) {
-                        hour -= 12;
-                    }
-                    time = `${hour}:${intTime[1]}pm`;
-                } else {
-                    time = `${hour}:${intTime[1]}am`;
-                }
-                localTime = `${month} ${dated[2]}, ${dated[0]} - ${day}, ${time}`;
-                monthDay = `${month} ${dated[2]}`;
-            }
-
-            // Handle if dateTime is undefined
-            let dateTime = "TBD";
-            if (
-                event.dates &&
-                event.dates.start &&
-                event.dates.start.dateTime
-            ) {
-                dateTime = event.dates.start.dateTime;
-            }
-
             let venue = "TBD";
             let city = "TBD";
             let state = "TBD";
 
-            // Store only the information on each event we need
             if (
                 eventEmbedded &&
                 eventEmbedded.venues &&
@@ -131,26 +97,22 @@ exports.syncEvents = onSchedule(
             let eventInfo = {
                 name: event.name,
                 artist,
-                image: event.images[0].url,
-                localTime,
-                dateTime,
-                monthDay,
+                image: event.images.reduce((p, c) => p.width > c.width ? p : c).url,
+                dateTime: event.dates.start.dateTime,
                 venue,
                 address,
                 city,
                 state,
             };
-            processedEvents[event.id] = eventInfo;
-        }
 
-        // Push to Realtime Database
-        const db = getDatabase();
-        db.ref("eventsData")
-            .set(processedEvents)
-            .then(
-                () => logger.info("Updated events"),
-                (res) => logger.warn(`Failed to update events: ${res}`)
-            )
-            .catch((res) => logger.warn(`Failed to update events: ${res}`));
+            const prevEvent = Object.entries(prevEvents).find(val => val[1].name === event.name);
+            if (prevEvent) {
+                db.ref("eventsData/" + prevEvent[0]).set(eventInfo);
+            } else {
+                db.ref("eventsData/" + event.id).set(eventInfo);
+                prevEvents[event.id] = eventInfo;
+            }
+        }
+        logger.info("Finished syncing events from Ticketmaster");
     }
 );
