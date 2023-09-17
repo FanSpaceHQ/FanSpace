@@ -6,6 +6,8 @@ import Icon from "react-native-vector-icons/Feather";
 import { Colors } from "../Constants.js";
 import FriendScreen from "../screens/FriendScreen.js";
 import { ProfileScreenStack } from "./ProfileScreenStack.js";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { FriendScreenStack } from "./FriendScreenStack.js";
 
 const Tab = createBottomTabNavigator();
 
@@ -21,6 +23,7 @@ export const NavbarStack = (route) => {
                     paddingTop: 10,
                     paddingBottom: 30,
                     height: 90,
+                    backgroundColor: '#333333',
                 },
                 tabBarHideOnKeyboard: true,
                 tabBarIcon: ({ focused, color, size }) => {
@@ -50,7 +53,7 @@ export const NavbarStack = (route) => {
             />
             <Tab.Screen
                 name="Friends"
-                component={FriendScreen}
+                component={FriendScreenStack}
                 options={{ headerShown: false }}
             />
             <Tab.Screen

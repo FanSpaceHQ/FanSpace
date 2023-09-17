@@ -10,26 +10,22 @@ import {
 import { Button, Text } from "react-native-elements";
 import { Dim } from "../../Constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getDatabase, onValue, ref, set } from "firebase/database";
+import { getAuth } from "firebase/auth";
 
-const Bio = () => {
-    const [bio, setBio] = useState("Default Bio");
+const Bio = (props) => {
+    const [bio, setBio] = useState("");
     const [isEditable, setIsEditable] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
-    const bioInputRef = useRef(null);
 
     useEffect(() => {
         getBio();
-    });
+    }, []);
 
     const getBio = async () => {
-        try {
-            const value = await AsyncStorage.getItem("@bio");
-            if (value !== null) {
-                setBio(value);
-            }
-        } catch (error) {
-            console.log(error);
-        }
+        onValue(ref(getDatabase(), "users/" + (props.id || getAuth().currentUser.uid) + "/bio"), snap => {
+            setBio(snap.val());
+        })
     };
 
     const handleBlur = () => {
@@ -42,15 +38,13 @@ const Bio = () => {
     };
 
     const saveBio = () => {
-        console.log("Saving bio:", bio);
-        // Implement the logic to save the bio to your desired storage or API
+        set(ref(getDatabase(), "users/" + getAuth().currentUser.uid + "/bio"), bio);
     };
 
     const handleClick = () => {
-        setIsEditable(true);
-        setIsFocused(true);
-        if (bioInputRef.current) {
-            bioInputRef.current.focus();
+        if (!props.id || props.id === getAuth().currentUser.uid) {
+            setIsEditable(true);
+            setIsFocused(true);
         }
     };
 
@@ -63,13 +57,12 @@ const Bio = () => {
     return (
         <TouchableWithoutFeedback onPress={handleBlur}>
             <View>
-                {/* <TouchableOpacity onPress={handleClick}> */}
+                <TouchableOpacity onPress={handleClick}>
                     <View
                         style={isFocused ? styles.inputFocused : styles.input}
                     >
                         {isEditable ? (
                             <TextInput
-                                ref={bioInputRef}
                                 style={styles.inputText}
                                 multiline={true}
                                 onChangeText={(text) => setBio(text)}
@@ -83,7 +76,7 @@ const Bio = () => {
                             <Text style={styles.bioText}>{bio}</Text>
                         )}
                     </View>
-                {/* </TouchableOpacity> */}
+                </TouchableOpacity>
                 {isEditable && (
                     <Button
                         title="Save"
@@ -114,7 +107,8 @@ const styles = StyleSheet.create({
         padding: 5,
         fontSize: 18,
         backgroundColor: "rgba(51, 127, 100, 0.5)",
-        textAlignVertical: "top",
+        textAlignVertical: "center",
+        justifyContent: "center"
     },
     inputFocused: {
         marginTop: 20,
@@ -127,17 +121,22 @@ const styles = StyleSheet.create({
         padding: 5,
         fontSize: 18,
         backgroundColor: "rgba(51, 127, 100, 0.5)",
-        textAlignVertical: "top",
+        textAlignVertical: "center",
+        justifyContent: "center"
     },
     inputText: {
         color: "white",
-        marginLeft: 20,
+        paddingLeft: 20,
+        paddingRight: 20,
         fontSize: 18,
+        textAlignVertical: 'center'
     },
     bioText: {
         color: "white",
-        marginLeft: 20,
+        paddingLeft: 20,
+        paddingRight: 20,
         fontSize: 18,
+        textAlignVertical: 'center'
     },
     saveButton: {
         marginLeft: 8,

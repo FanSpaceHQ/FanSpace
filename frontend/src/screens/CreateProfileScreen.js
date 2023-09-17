@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { View, StyleSheet, Text, ScrollView, Alert, TouchableOpacity, 
         TouchableWithoutFeedback, Keyboard, ActivityIndicator} from "react-native";
 import { useState } from "react";
@@ -8,16 +8,14 @@ import {
     RegexDiscord,
     RegexInstagram,
     RegexTwitter,
-    RegexUsername,
     Dim,
 } from "../Constants";
 import Button from "../components/common/Button";
-import { RegexPassword, RegexName } from "../Constants";
-import AddProfilePhoto from "../components/common/AddProfilePhoto";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import Icon from "react-native-vector-icons/Feather";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getAuth } from "firebase/auth";
+import { set, ref, getDatabase } from "firebase/database";
 
 /*
   -- DOCUMENTATION --
@@ -26,7 +24,7 @@ const CreateProfileScreen = ({ props, navigation }) => {
     const [location, setLocation] = useState("");
     const [bio, setBio] = useState("");
     const [instagram, setInstagram] = useState("");
-    const [discord, setDiscrod] = useState("");
+    const [discord, setDiscord] = useState("");
     const [twitter, setTwitter] = useState("");
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({
@@ -38,11 +36,6 @@ const CreateProfileScreen = ({ props, navigation }) => {
     });
 
     const success = async () => {
-        await AsyncStorage.setItem("@discord", discord);
-        await AsyncStorage.setItem("@twitter", twitter);
-        await AsyncStorage.setItem("@bio", bio);
-        await AsyncStorage.setItem("@instagram", instagram);
-        await AsyncStorage.setItem("@location", location);
         setLoading(false);
         navigation.navigate("NavbarStack")
     }
@@ -51,7 +44,7 @@ const CreateProfileScreen = ({ props, navigation }) => {
         const locationError =
             location.length > 0 ? undefined : "You must enter a location";
         const bioError =
-            bio.length > 0 ? undefined : "Please enter a valid password.";
+            bio.length > 0 ? undefined : "Don't be shy! Tell us about yourself—just a couple words will do.";
         const instagramError =
             instagram.length > 0 ? undefined : "Enter a valid Instagram handle";
         const discordError =
@@ -80,28 +73,22 @@ const CreateProfileScreen = ({ props, navigation }) => {
             return;
         }
         setLoading(true);
-        let data = new FormData();
+        
+        try {
+            const db = getDatabase();
+            const uid = getAuth().currentUser.uid;
+            await set(ref(db, "users/" + uid + "/location"), location);
+            await set(ref(db, "users/" + uid + "/bio"), bio);
+            await set(ref(db, "users/" + uid + "/instagram"), instagram);
+            await set(ref(db, "users/" + uid + "/twitter"), twitter);
+            await set(ref(db, "users/" + uid + "/discord"), discord);
+        } catch (err) {
+            Alert.alert(err);
+        }
 
-        data.append("discord", discord), data.append("instagram", instagram);
-        data.append("bio", bio), data.append("twitter", twitter);
-        data.append("location", location);
-        await AsyncStorage.getItem("@uid").then((uid) => {
-            data.append("uid", uid)
-        });
-        await axios
-            .patch("http://localhost:4000/api/users/", data, {
-                "content-type": "multipart/form-data"
-            })
-            .then((response) => {
-                console.log("Patched Account");
-                success();
-            })
-            .catch((err)=>{
-                console.log(err);
-            })
+        await AsyncStorage.setItem("middleOfSignUp", "false");
+        success();
     };
-
-    // const sendProfile = async(location,bio,instagram,discord,twitter)
 
     return (
         <KeyboardAwareScrollView
@@ -156,7 +143,7 @@ const CreateProfileScreen = ({ props, navigation }) => {
                         <TextInput
                             setText={setBio}
                             value={bio}
-                            placeholder={"Tell us about yourself (optional)"}
+                            placeholder={"Tell us about yourself"}
                             isPassword={false}
                             autoCorrect={false}
                             error={errors.bio}
@@ -189,7 +176,7 @@ const CreateProfileScreen = ({ props, navigation }) => {
                             }}
                         />
                         <TextInput
-                            setText={setDiscrod}
+                            setText={setDiscord}
                             value={discord}
                             placeholder={"#discord_tag"}
                             isPassword={false}
@@ -276,7 +263,7 @@ const styles = StyleSheet.create({
     button: {
         marginTop: 30,
         alignSelf: "center",
-        backgroundColor: Colors.green.primary,
+        // backgroundColor: Colors.green.primary,
         marginBottom: 30,
     },
 });

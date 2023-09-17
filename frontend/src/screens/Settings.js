@@ -5,12 +5,11 @@ import {
     Text,
     ScrollView,
     Image,
-    Dimensions,
     TouchableOpacity,
     TouchableWithoutFeedback,
     Keyboard,
     ActivityIndicator,
-    TouchableNativeFeedback,
+    Alert
 } from "react-native";
 import { useState } from "react";
 import TextInput from "../components/common/TextInput";
@@ -30,69 +29,56 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import Icon from "react-native-vector-icons/Feather";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getAuth } from "firebase/auth";
+import { getDatabase, onValue, ref as dbRef, set } from "firebase/database";
+import { getDownloadURL, getStorage, ref, uploadBytes, uploadBytesResumable } from "firebase/storage";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 /*
   -- DOCUMENTATION --
 */
 const SettingsPage = ({ props, navigation }) => {
-    const [location, setLocation] = useState("");
-    const [bio, setBio] = useState("");
     const [instagram, setInstagram] = useState("");
-    const [discord, setDiscrod] = useState("");
+    const [discord, setDiscord] = useState("");
     const [twitter, setTwitter] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [username, setUsername] = useState("");
+    const [originalUsername, setOriginalUsername] = useState("");
     const [image, setImage] = useState("");
+    const [newImage, setNewImage] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({
-        location: undefined,
-        bio: undefined,
+        firstName: undefined,
+        lastName: undefined,
+        username: undefined,
         instagram: undefined,
         discord: undefined,
         twitter: undefined,
     });
 
-    const imageUpload = async (uri) => {
-        async function uriToBase64(uri) {
-            let response = await fetch(uri);
-            let blob = await response.blob();
-
-            return new Promise((resolve, reject) => {
-                let reader = new FileReader();
-                reader.onload = () => {
-                    resolve(reader.result);
-                };
-                reader.onerror = reject;
-
-                reader.readAsDataURL(blob);
-            });
-        }
-        let base64String = await uriToBase64(uri);
-        let imageByte = new Buffer(base64String, "base64");
-        var image = {
-            uri: uri,
-            name: "image.jpg",
-            buffer: imageByte,
-        };
-        let data = new FormData();
-        data.append("File", {
-            uri: image.uri,
-            buffer: [image.buffer.data, image.buffer.type],
-            name: image.name,
-            mimetype: "image/jpeg",
-        });
-        await axios
-            .post("http://localhost:4000/api/users/uploadImage", data, {
-                "content-type": "multipart/form-data",
+    useEffect(() => {
+        Promise.all([
+            getDownloadURL(
+                ref(
+                    getStorage(),
+                    "/images/" + getAuth().currentUser.uid + "/profile"
+                )
+            ),
+            onValue(dbRef(getDatabase(), "users/" + getAuth().currentUser.uid), (snap) => {
+                setFirstName(snap.val().firstName);
+                setLastName(snap.val().lastName);
+                setInstagram(snap.val().instagram);
+                setTwitter(snap.val().twitter);
+                setDiscord(snap.val().discord);
+                setUsername(snap.val().username);
+                setOriginalUsername(snap.val().username);
             })
-            .then((response) => {
-                setUrl(JSON.stringify(response.data).url);
-                return response;
-            })
-            .catch(function (error) {
-                console.log(error);
-                console.log(error.data);
-                return error;
-            });
-    };
+        ]).then(res => {
+            setImage(res[0]);
+        })
+        
+    }, []);
 
     const pickImage = async () => {
         // No permissions request is necessary for launching the image library
@@ -106,79 +92,99 @@ const SettingsPage = ({ props, navigation }) => {
         // console.log(result);
         if (!result.canceled) {
             let uri = result.assets[0].uri;
+            if (result.assets[0].fileSize > 5 * 1024 * 1024) {
+                Alert.alert(
+                    "Your image is too large!",
+                    "Maximum image size is 5 MB"
+                );
+                return;
+            }
             setImage(uri);
-            setUpload(true);
+            setNewImage(true);
         }
     };
 
-    const handleSave = () => {
-        console.log("Saved!");
+    const onPressRegister = async () => {
+        const firstNameError =
+            firstName.length > 0 ? undefined : "Enter a valid first name.";
+        const lastNameError =
+            lastName.length > 0 ? undefined : "Enter a valid last name.";
+        let usernameError =
+            username.length > 4 ? undefined : "Enter a valid username.";
+        if (!usernameError && username !== originalUsername) {
+            const usernameAvailable = httpsCallable(getFunctions(), 'usernameAvailable');
+        
+            let available = false;
+            try {
+                const res = await usernameAvailable({username: username});
+                available = res.data;
+            } catch (err) {
+                console.error(err);
+            }
+
+            if (!available) {
+                usernameError = "Username not available."
+            }
+        }
+        const instagramError =
+            instagram.length > 0 ? undefined : "Enter a valid Instagram handle";
+        const discordError =
+            discord.length > 0
+                ? undefined
+                : "You must enter valid Discord tag.";
+        const twitterError =
+            twitter.length > 0
+                ? undefined
+                : "You must enter valid Twitter handle.";
+
+        if (
+            firstNameError ||
+            lastNameError ||
+            usernameError ||
+            instagramError ||
+            discordError ||
+            twitterError
+        ) {
+            setErrors({
+                firstName: firstNameError,
+                lastName: lastNameError,
+                username: usernameError,
+                instagram: instagramError,
+                discord: discordError,
+                twitter: twitterError,
+            });
+            return;
+        }
+        setLoading(true);
+
+        try {
+            if (newImage) {
+                const imgResp = await fetch(image);
+                const blb = await imgResp.blob();
+
+                const sref = ref(getStorage(), '/images/' + getAuth().currentUser.uid + "/profile")
+                await uploadBytesResumable(sref, blb);
+            }
+
+            const db = getDatabase();
+            const uid = getAuth().currentUser.uid;
+            await set(dbRef(db, "users/" + uid + "/username"), username.toLowerCase());
+            await set(dbRef(db, "users/" + uid + "/firstName"), firstName);
+            await set(dbRef(db, "users/" + uid + "/lastName"), lastName);
+            await set(dbRef(db, "users/" + uid + "/instagram"), instagram);
+            await set(dbRef(db, "users/" + uid + "/twitter"), twitter);
+            await set(dbRef(db, "users/" + uid + "/discord"), discord);
+
+            navigation.goBack();
+        } catch (err) {
+            console.log(err)
+            if (err.message)
+                Alert.alert(err.message, err.details);
+            else 
+                Alert.alert(err);
+        }
+        
     };
-    // const success = async () => {
-    //     await AsyncStorage.setItem("@discord", discord);
-    //     await AsyncStorage.setItem("@twitter", twitter);
-    //     await AsyncStorage.setItem("@bio", bio);
-    //     await AsyncStorage.setItem("@instagram", instagram);
-    //     await AsyncStorage.setItem("@location", location);
-    //     setLoading(false);
-    //     navigation.navigate("NavbarStack");
-    // };
-
-    // const onPressRegister = async () => {
-    //     const locationError =
-    //         location.length > 0 ? undefined : "You must enter a location";
-    //     const bioError =
-    //         bio.length > 0 ? undefined : "Please enter a valid password.";
-    //     const instagramError =
-    //         instagram.length > 0 ? undefined : "Enter a valid Instagram handle";
-    //     const discordError =
-    //         discord.length > 0
-    //             ? undefined
-    //             : "You must enter valid Discord tag.";
-    //     const twitterError =
-    //         twitter.length > 0
-    //             ? undefined
-    //             : "You must enter valid Twitter handle.";
-
-    //     if (
-    //         locationError ||
-    //         bioError ||
-    //         instagramError ||
-    //         discordError ||
-    //         twitterError
-    //     ) {
-    //         setErrors({
-    //             location: locationError,
-    //             bio: bioError,
-    //             instagram: instagramError,
-    //             discord: discordError,
-    //             twitter: twitterError,
-    //         });
-    //         return;
-    //     }
-    //     setLoading(true);
-    //     let data = new FormData();
-
-    //     data.append("discord", discord), data.append("instagram", instagram);
-    //     data.append("bio", bio), data.append("twitter", twitter);
-    //     data.append("location", location);
-    //     await AsyncStorage.getItem("@uid").then((uid) => {
-    //         data.append("uid", uid);
-    //     });
-    //     await axios
-    //         .patch("http://localhost:4000/api/users/", data, {
-    //             "content-type": "multipart/form-data",
-    //         })
-    //         .then((response) => {
-    //             console.log("Patched Account");
-    //             success();
-    //         })
-    //         .catch((err) => {
-    //             console.log(err);
-    //         });
-    // };
-
-    // const sendProfile = async(location,bio,instagram,discord,twitter)
 
     return (
         <KeyboardAwareScrollView
@@ -197,7 +203,7 @@ const SettingsPage = ({ props, navigation }) => {
         >
             <View style={styles.topRow}>
                 <TouchableOpacity
-                    onPress={() => navigation.navigate("Profile Screen")}
+                    onPress={() => navigation.goBack()}
                 >
                     <Text style={styles.subheader}>
                         {" "}
@@ -247,33 +253,33 @@ const SettingsPage = ({ props, navigation }) => {
 
                         <View>
                             <TextInput
-                                setText={setLocation}
-                                value={location}
+                                setText={setFirstName}
+                                value={firstName}
                                 placeholder={"First Name"}
                                 isPassword={false}
                                 autoCorrect={false}
-                                error={errors.location}
+                                error={errors.firstName}
                                 errorMessage={"Enter a valid first name."}
                             />
 
                             <TextInput
-                                setText={setBio}
-                                value={bio}
+                                setText={setLastName}
+                                value={lastName}
                                 placeholder={"Last Name"}
                                 isPassword={false}
                                 autoCorrect={false}
-                                error={errors.bio}
+                                error={errors.lastName}
                                 errorMessage={"Enter a valid last name."}
                             />
 
                             <TextInput
-                                setText={setBio}
-                                value={bio}
+                                setText={setUsername}
+                                value={username}
                                 placeholder={"Username"}
                                 isPassword={false}
                                 autoCorrect={false}
-                                error={errors.bio}
-                                errorMessage={"Enter a valid last name."}
+                                error={errors.username}
+                                errorMessage={"Enter a valid username."}
                             />
 
                             <Text style={styles.subtitle}>
@@ -304,7 +310,7 @@ const SettingsPage = ({ props, navigation }) => {
                                 }}
                             />
                             <TextInput
-                                setText={setDiscrod}
+                                setText={setDiscord}
                                 value={discord}
                                 placeholder={"#discord_tag"}
                                 isPassword={false}
@@ -355,11 +361,8 @@ const SettingsPage = ({ props, navigation }) => {
                             {!loading ? (
                                 <Button
                                     title="Save"
-                                    //onPress={onPressRegister}
-                                    onPress={() =>
-                                        navigation.navigate("Profile Screen")
-                                    }
-                                    style={styles.button}
+                                    onPress={onPressRegister}
+                                    style={{width: Dim.width * 0.9, marginBottom: 10, marginTop: 20}}
                                 />
                             ) : (
                                 <ActivityIndicator
@@ -372,8 +375,10 @@ const SettingsPage = ({ props, navigation }) => {
                             <Button
                                 title="Sign Out"
                                 //onPress={onPressRegister}
-                                onPress={() => navigation.navigate("Sign In")}
-                                style={styles.button}
+                                onPress={() => {
+                                    getAuth().signOut();
+                                }}
+                                style={{width: Dim.width * 0.9, marginBottom: 30}}
                             />
                         </View>
                     </View>
@@ -406,7 +411,7 @@ const styles = StyleSheet.create({
     },
     header: {
         fontSize: 30,
-        fontFamily: "WorkSans",
+        fontFamily: "Work Sans",
     },
     title: {
         fontSize: 24,
@@ -423,12 +428,6 @@ const styles = StyleSheet.create({
         color: Colors.darkGray,
         textAlign: "left",
         paddingBottom: 10,
-    },
-    button: {
-        marginTop: Dim.height * 0.02,
-        alignSelf: "center",
-        backgroundColor: Colors.green.primary,
-        marginBottom: Dim.height * 0.01,
     },
 });
 

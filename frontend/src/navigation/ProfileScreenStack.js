@@ -28,7 +28,7 @@ export const ProfileScreenStack = (route) => {
             <Stack.Screen
                 name="Sign In"
                 component={SignIn}
-                options={{ headerShown: false }}
+                options={{ headerShown: false, navigationBarHidden: true }}
             />
 
             <Stack.Screen

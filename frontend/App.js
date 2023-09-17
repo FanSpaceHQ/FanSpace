@@ -1,8 +1,11 @@
 import * as React from "react";
-import { StyleSheet, LogBox } from "react-native";
 import { useState, useEffect } from "react";
+import { Text, StyleSheet } from "react-native";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import {} from "./firebaseConfig";
 
 // Import Screens
 import LandingScreen from "./src/screens/LandingScreen";
@@ -10,8 +13,12 @@ import LandingScreen from "./src/screens/LandingScreen";
 // Import Stacks
 import { NavbarStack } from "./src/navigation/NavbarStack";
 import { SignInStack } from "./src/navigation/SignInStack";
+import { registerRootComponent } from "expo";
+
+import { useFonts } from "expo-font";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { setCustomText } from "react-native-global-props";
 
 const MyTheme = {
     ...DefaultTheme,
@@ -22,30 +29,38 @@ const MyTheme = {
 };
 
 const Stack = createNativeStackNavigator();
-LogBox.ignoreAllLogs();
 
 const App = () => {
-    const [userID, setUserID] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [isSignedIn, setIsSignedIn] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [fontsLoaded] = useFonts({
+        "Work Sans": require("./src/assets/WorkSans-VariableFont_wght.ttf"),
+    });
 
     useEffect(() => {
-        // AsyncStorage.getItem("@uid").then((userId) => {
-        //     if (userId !== null) {
-        //         setUserID(true);
-        //         setLoading(false);
-        //     } else {
-        //         setUserID(false);
-        //         setLoading(false);
-        //     }
-        // });
-        setUserID(true); // Bootstrap before Firebase int
+        const auth = getAuth();
+        onAuthStateChanged(auth, async (user) => {
+            if ((await AsyncStorage.getItem("middleOfSignUp")) === "true")
+                return;
+            if (user) {
+                setIsLoading(false);
+                setIsSignedIn(true);
+            } else {
+                setIsLoading(false);
+                setIsSignedIn(false);
+            }
+        });
     }, []);
 
-    return(
+    if (!fontsLoaded) {
+        return null;
+    }
+
+    return (
         <NavigationContainer theme={MyTheme}>
-            {loading ? (
+            {isLoading ? (
                 <LandingScreen />
-            ) : userID ? (
+            ) : isSignedIn ? (
                 <Stack.Navigator
                     screenOptions={{
                         headerShown: false,
@@ -63,7 +78,9 @@ const App = () => {
                 </Stack.Navigator>
             )}
         </NavigationContainer>
-    )
-}
+    );
+};
+
+registerRootComponent(App);
 
 export default App;

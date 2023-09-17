@@ -16,7 +16,7 @@ const TextInput = (props) => {
                 {...props}
                 placeholder={props.placeholder}
                 onChangeText={props.setText}
-                value={props.text}
+                value={props.text || props.value}
                 secureTextEntry={props.isPassword}
                 autoComplete={props.autoComplete}
                 autoCorrect={props.autoCorrect}

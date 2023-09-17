@@ -8,7 +8,7 @@ import { Colors, Dim } from "../../Constants";
 const Button = (props) => {
     return (
         <TouchableOpacity onPress={props.onPress}>
-            <View style={styles.button}>
+            <View style={{...styles.button, ...props.style}}>
                 <Text style={styles.text}>
                     {props.title}
                 </Text>

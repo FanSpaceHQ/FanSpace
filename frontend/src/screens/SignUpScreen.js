@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
     View,
     StyleSheet,
@@ -10,7 +10,7 @@ import {
     TouchableWithoutFeedback,
     Keyboard,
     ActivityIndicator,
-    TouchableNativeFeedback,
+    Alert,
 } from "react-native";
 import { useState } from "react";
 import TextInput from "../components/common/TextInput";
@@ -21,13 +21,12 @@ import AddProfilePhoto from "../components/common/AddProfilePhoto";
 import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/Feather";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { getStorage, uploadBytes, ref } from "firebase/storage";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Buffer } from "buffer";
 
-const { width, height } = Dimensions.get("window");
-
-const axios = require("axios").default;
-const FormData = require("form-data");
+const { height } = Dimensions.get("window");
 
 /*
   -- DOCUMENTATION --
@@ -40,10 +39,8 @@ const SignUpScreen = ({ props, navigation }) => {
     const [confirm, setConfirm] = useState("");
     const [loading, setLoading] = useState(false);
     const [imagePicked, setUpload] = useState(false);
-    const [pfpUrl, setUrl] = useState("");
     const [image, setImage] = useState("");
-    const [userName, setUser] = useState("");
-    const [profileCreated, setCreate] = useState(false); // Check back and look for the purpose of this
+    const [username, setUser] = useState("");
     const [errors, setErrors] = useState({
         firstName: undefined,
         lastName: undefined,
@@ -52,55 +49,6 @@ const SignUpScreen = ({ props, navigation }) => {
         email: undefined,
         username: undefined,
     });
-
-    const imageUpload = async (uri) => {
-        AsyncStorage.setItem("@imageUrl", uri);
-        async function uriToBase64(uri) {
-            let response = await fetch(uri);
-            let blob = await response.blob();
-
-            return new Promise((resolve, reject) => {
-                let reader = new FileReader();
-                reader.onload = () => {
-                    resolve(reader.result);
-                };
-                reader.onerror = reject;
-
-                reader.readAsDataURL(blob);
-            });
-        }
-        let base64String = await uriToBase64(uri);
-        let imageByte = new Buffer(base64String, "base64");
-        var image = {
-            uri: uri,
-            name: "image.jpg",
-            buffer: imageByte,
-        };
-        let data = new FormData();
-        data.append("File", {
-            uri: image.uri,
-            buffer: [image.buffer.data, image.buffer.type],
-            name: image.name,
-            mimetype: "image/jpeg",
-        });
-        let imageUrl;
-        await axios
-            .post("http://localhost:4000/api/users/uploadImage", data, {
-                "content-type": "multipart/form-data",
-            })
-            .then((response) => {
-                // console.log(response.data.url);
-                setUrl(response.data.url);
-                imageUrl = response.data.url;
-                return response.data.url;
-            })
-            .catch(function (error) {
-                console.log(error);
-                console.log(error.data);
-                return error;
-            });
-        return imageUrl;
-    };
 
     const pickImage = async () => {
         // No permissions request is necessary for launching the image library
@@ -111,44 +59,49 @@ const SignUpScreen = ({ props, navigation }) => {
             aspect: [1, 1],
             quality: 1,
         });
-        // console.log(result);
+
         if (!result.canceled) {
             let uri = result.assets[0].uri;
+            if (result.assets[0].fileSize > 5 * 1024 * 1024) {
+                Alert.alert("Your image is too large!", "Maximum image size is 5 MB");
+                return;
+            }
             setImage(uri);
             setUpload(true);
         }
     };
 
     const checkUsername = async () => {
-        let response; 
-        await axios
-            .get(`http://localhost:4000/api/users/username/${userName}`)
-            .then((res)=>{
-                response = res.data;
-                AsyncStorage.setItem("@username", userName);
-            })
-            .catch((err)=>{
-                console.log(err);
-                const usernameError = "Username already exists";
-                setErrors({
-                    username: usernameError,
-                });
-                setLoading(false);
-                return;
-            })
-        if (response.Status){
-            const usernameError = undefined
-            setErrors({username: usernameError});
-            let imageUrl; 
-            imageUrl = await imageUpload(image);
-            // console.log(imageUrl);
-            await signUp(firstName, lastName, email, password, imageUrl, userName);
+        if (username.length < 6) {
+            setErrors({username: "Your username must be at least 6 characters"});
+            setLoading(false);
+            return;
         }
+        const usernameAvailable = httpsCallable(getFunctions(), 'usernameAvailable');
+        
+        let available = false;
+        try {
+            const res = await usernameAvailable({username: username});
+            available = res.data;
+        } catch (err) {
+            console.error(err);
+        }
+
+        if (!available) {
+            setErrors({username: "Username already exists"});
+            setLoading(false);
+            return;
+        }
+
+        setErrors({username: undefined});
+        await signUp();
     }
 
     const onPressRegister = async () => {
-        if (!imagePicked)
+        if (!imagePicked) {
+            Alert.alert("Hold on!", "Please choose an image to continue");
             return;
+        }
         const firstNameError =
             firstName.length > 0 ? undefined : "You must enter a first name.";
         const lastNameError =
@@ -187,36 +140,24 @@ const SignUpScreen = ({ props, navigation }) => {
         }
     };
 
-    const signUp = async (fname, lname, email, password, imageUrl, username) => {
-        let data = new FormData();
-        data.append("email", email), data.append("username", username);
-        data.append("password", password), data.append("firstName", fname);
-        data.append("lastName", lname), data.append("imageUrl", imageUrl);
+    const signUp = async () => {
+        const createUser = httpsCallable(getFunctions(), 'createUser');
+
         try {
-            let uid;
-            await axios
-                .post("http://localhost:4000/api/users/", data, {
-                    "content-type": "multipart/form-data",
-                })
-                .then((response) => {
-                    const uid = JSON.stringify(response.data.uid);
-                    const firstName = response.data.firstName;
-                    // console.log(JSON.stringify(response.data.uid));
-                    AsyncStorage.setItem("@uid", response.data.uid);
-                    AsyncStorage.setItem("@firstName", fname);
-                    // AsyncStorage.setItem("@imageUrl", imageUrl);
-                    setLoading(false);
-                    navigation.navigate("Create Profile");
-                })
-                .catch(function (error) {
-                    console.log(error);
-                    console.log(error.data);
-                });
-            return uid;
-        } catch (error) {
-            console.log(error);
-            console.log(error.data);
-            return error;
+            await createUser({username: username.toLowerCase(), email, password, firstName, lastName});
+            await AsyncStorage.setItem("middleOfSignUp", "true");
+            const userCred = await signInWithEmailAndPassword(getAuth(), email, password);
+            const imgResp = await fetch(image);
+            const blb = await imgResp.blob();
+            await uploadBytes(ref(getStorage(), '/images/' + userCred.user.uid + "/profile"), blb);
+
+            setLoading(false);
+            navigation.navigate("Create Profile");
+        } catch (err) {
+            if (err.message)
+                Alert.alert(err.message, err.details);
+            else 
+                Alert.alert(err);
         }
     };
 
@@ -336,7 +277,7 @@ const SignUpScreen = ({ props, navigation }) => {
 
                             <TextInput
                                 setText={setUser}
-                                value={userName}
+                                value={username}
                                 placeholder={"Username"}
                                 isPassword={false}
                                 autoCorrect={false}
@@ -408,7 +349,7 @@ const SignUpScreen = ({ props, navigation }) => {
                                     style={{
                                         marginTop: height * 0.0175,
                                         alignSelf: "center",
-                                        backgroundColor: Colors.green.primary,
+                                        // backgroundColor: Colors.green.primary,
                                         marginBottom: 30,
                                     }}
                                 />
@@ -449,7 +390,7 @@ const styles = StyleSheet.create({
     button: {
         marginTop: height * 0.0175,
         alignSelf: "center",
-        backgroundColor: Colors.green.primary,
+        // backgroundColor: Colors.green.primary,
         marginBottom: 30,
     },
     icon: {
