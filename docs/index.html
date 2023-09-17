@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>FanSpace</title>
+        <link rel="apple-touch-icon" sizes="180x180" href="logo.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="favicon.ico" />
+        <style>
+            @font-face {
+                font-family: "Work Sans";
+                src: url("WorkSans.ttf");
+            }
+
+            * {
+                font-family: "Work Sans";
+            }
+
+            body {
+                margin: 0;
+                background: #111111;
+                color: #eeeeee;
+            }
+
+            .container {
+                width: 50%;
+                margin-left: 25%;
+                margin-top: 4rem;
+            }
+            @media (max-width: 1024px) {
+                .container {
+                    width: 70%;
+                    margin-left: 15%;
+                }
+            }
+            @media (max-width: 512px) {
+                .container {
+                    width: 90%;
+                    margin-left: 5%;
+                }
+            }
+
+            .header {
+                width: 100%;
+                display: flex;
+                flex-flow: row wrap;
+                justify-content: center;
+                align-items: center;
+                row-gap: 1rem;
+            }
+            .header img {
+                height: 8rem;
+            }
+            .header h1 {
+                font-size: 3rem;
+            }
+
+            .first {
+                width: 100%;
+                display: flex;
+                flex-flow: row wrap;
+                justify-content: space-around;
+                margin-top: 3rem;
+            }
+
+            .hero {
+                width: max-content;
+                justify-content: center;
+                position: relative;
+                flex: 2 0 0;
+                min-height: max-content;
+            }
+            .hero * {
+                width: 50%;
+                position: absolute;
+            }
+            .hero *:nth-child(1) {
+                top: 0;
+                left: 0;
+            }
+            .hero *:nth-child(2) {
+                top: 10vh;
+                left: 10vw;
+            }
+            @media (max-width: 1024px) {
+                .hero * {
+                    width: 70%;
+                }
+            }
+            @media (max-width: 512px) {
+                .hero {
+                    min-width: 100%;
+                    height: 100vh
+                }
+                .hero * {
+                    width: 90%;
+                }
+            }
+            .side {
+                flex: 1 0 0;
+                margin-bottom: 16rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <img src="logo.png" alt="FanSpace logo" />
+                <h1>FanSpace</h1>
+            </div>
+            <div class="first">
+                <div class="hero">
+                    <img src="event.png" />
+                    <img src="profile.png" />
+                </div>
+                <div class="side">
+                    <h1>Expand your orbit!</h1>
+                    <p>
+                        Have you ever missed out on a concert/music festival
+                        just because you had nobody to go with you?<br><br>Have you
+                        ever spent more money on Uber fees than the cost of the
+                        concert ticket itself?<br><br>Have you ever wondered what other
+                        students like the same artists as you?<br><br>Our mobile
+                        application aims to help students connect with other
+                        students with similar interests and music taste and
+                        allows them to coordinate their concert experiences with
+                        others.
+                    </p>
+                    <h2>Coming soon for iPhone!</h2>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
