@@ -16,58 +16,54 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import { LinearGradient } from "expo-linear-gradient";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import Alex from "../assets/Alex.png";
+import { getDatabase, onValue, ref } from "firebase/database";
+import { getAuth } from "firebase/auth";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { getDownloadURL, getStorage, ref as storRef } from "firebase/storage";
 
 /*
   -- DOCUMENTATION --
 */
 
-const friends = [
-    {
-        name: "Alex Smith",
-        userName: "@username",
-        image: Alex,
-    },
-    {
-        name: "Alex Smith",
-        userName: "@username",
-        image: Alex,
-    },
-    {
-        name: "Alex Smith",
-        userName: "@username",
-        image: Alex,
-    },
-    {
-        name: "Alex Smith",
-        userName: "@username",
-        image: Alex,
-    },
-    {
-        name: "Alex Smith",
-        userName: "@username",
-        image: Alex,
-    },
-];
+export const FriendBox = (props) => {
+    const [image, setImage] = useState(null);
+    const [firstName, setFirstName] = useState(null);
+    const [lastName, setLastName] = useState(null);
+    const [username, setUsername] = useState(null);
 
-const addToProfile = async () => {};
+    useEffect(() => {
+        const db = getDatabase();
 
-const getList = async () => {};
+        onValue(ref(db, `users/${props.id}/firstName`), (snap) => {
+            setFirstName(snap.val());
+        });
 
-const FriendBox = (props) => {
+        onValue(ref(db, `users/${props.id}/lastName`), (snap) => {
+            setLastName(snap.val());
+        });
+
+        onValue(ref(db, `users/${props.id}/username`), (snap) => {
+            setUsername(snap.val());
+        });
+
+        getDownloadURL(
+            storRef(getStorage(), `/images/${props.id}/profile`)
+        ).then(setImage);
+    }, []);
+
     return (
         <TouchableOpacity onPress={props.onPress}>
             <View style={boxStyles.container}>
                 <View style={{ flexDirection: "row", paddingBottom: 20 }}>
-                    <Image source={props.image} style={boxStyles.image} />
+                    <Image source={{ uri: image }} style={boxStyles.image} />
                     <View style={{ justifyContent: "center" }}>
-                        <Text style={boxStyles.name}>{props.name}</Text>
-                        <Text style={boxStyles.username}>
-                            {" "}
-                            {props.userName}
+                        <Text style={boxStyles.name}>
+                            {firstName + " " + lastName}
                         </Text>
+                        <Text style={boxStyles.username}>@{username}</Text>
                     </View>
                 </View>
             </View>
@@ -90,6 +86,7 @@ const boxStyles = StyleSheet.create({
     image: {
         height: 50,
         width: 50,
+        borderRadius: 50,
     },
     name: {
         fontSize: 16,
@@ -102,125 +99,59 @@ const boxStyles = StyleSheet.create({
     },
 });
 
-const FirstRoute = () => {
-    return (
-        <View
-            style={{
-                alignSelf: "left",
-                marginTop: 20,
-                height: "30%",
-                width: "100%",
-            }}
-        >
-            <FlatList
-                data={friends}
-                horizontal={false}
-                renderItem={({ item: friends }) => {
-                    return (
-                        <FriendBox
-                            image={friends.image}
-                            name={friends.name}
-                            userName={friends.userName}
-                            onPress={() => {
-                                // navigation.navigate("Profile");
-                            }}
-                        />
-                    );
-                }}
-            />
-        </View>
-    );
-};
-
-const SecondRoute = () => {
-    return (
-        <View
-            style={{
-                alignSelf: "left",
-                marginTop: 20,
-                height: "30%",
-                width: "100%",
-            }}
-        >
-            <FlatList
-                data={friends}
-                horizontal={false}
-                renderItem={({ item: friends }) => {
-                    return (
-                        <FriendBox
-                            image={friends.image}
-                            name={friends.name}
-                            userName={friends.userName}
-                            onPress={() => {
-                                // navigation.navigate("Profile");
-                            }}
-                        />
-                    );
-                }}
-            />
-        </View>
-    );
-};
-
-const ThirdRoute = () => {
-    return (
-        <View
-            style={{
-                alignSelf: "left",
-                marginTop: 20,
-                height: "30%",
-                width: "100%",
-            }}
-        >
-            <FlatList
-                data={friends}
-                horizontal={false}
-                renderItem={({ item: friends }) => {
-                    return (
-                        <FriendBox
-                            image={friends.image}
-                            name={friends.name}
-                            userName={friends.userName}
-                            onPress={() => {
-                                // navigation.navigate("Profile");
-                            }}
-                        />
-                    );
-                }}
-            />
-        </View>
-    );
-};
-const renderScene = SceneMap({
-    first: FirstRoute,
-    second: SecondRoute,
-    third: ThirdRoute,
-});
-
 const ConcertScreen = ({ navigation, route }) => {
-    const { name, location, date, title, image } = route.params;
+    const { name, location, date, image, id } = route.params;
     const [index, setIndex] = useState(0);
     const [routes] = useState([
-        { key: "first", title: "Going" },
-        { key: "second", title: "Interested" },
-        { key: "third", title: "Selling", color: Colors.darkGray },
+        { key: "going", title: "Going" },
+        { key: "interested", title: "Interested" },
+        { key: "selling", title: "Selling", color: Colors.darkGray },
     ]);
     const [favorite, setFavorite] = useState(false);
     const [interested, setInterest] = useState(false);
     const [selling, setSell] = useState(false);
+    const [eventData, setEventData] = useState({});
 
-    const favoriteClick = async () =>{
+    useEffect(() => {
+        const db = getDatabase();
+        const uid = getAuth().currentUser.uid;
+        onValue(ref(db, `users/${uid}/going/${id}`), (snap) => {
+            setFavorite(snap.val() ? true : false);
+        });
+
+        onValue(ref(db, `users/${uid}/interested/${id}`), (snap) => {
+            setInterest(snap.val() ? true : false);
+        });
+
+        onValue(ref(db, `users/${uid}/selling/${id}`), (snap) => {
+            setSell(snap.val() ? true : false);
+        });
+
+        onValue(ref(db, `events/${id}`), (snap) => {
+            setEventData(snap.val());
+        });
+    }, []);
+
+    const favoriteClick = async () => {
         setFavorite(!favorite);
 
-    }
+        const addToEvent = httpsCallable(getFunctions(), "addToEvent");
+        addToEvent({ evid: id, type: "going" });
+    };
 
-    const interestClick = async () =>{
+    const interestClick = async () => {
         setInterest(!interested);
-    }
+
+        const addToEvent = httpsCallable(getFunctions(), "addToEvent");
+        addToEvent({ evid: id, type: "interested" });
+    };
 
     const sellClick = async () => {
         setSell(!selling);
-    }
+
+        const addToEvent = httpsCallable(getFunctions(), "addToEvent");
+        addToEvent({ evid: id, type: "selling" });
+    };
 
     const renderTabBar = (props) => (
         <TabBar
@@ -254,13 +185,57 @@ const ConcertScreen = ({ navigation, route }) => {
         />
     );
 
+    const renderScene = ({ route }) => {
+        return (
+            <View
+                style={{
+                    alignSelf: "left",
+                    marginTop: 20,
+                    height: "30%",
+                    width: "100%",
+                }}
+            >
+                {eventData && eventData[route.key] ? (
+                    <FlatList
+                        data={Object.keys(eventData[route.key])}
+                        horizontal={false}
+                        renderItem={({ item: friend }) => {
+                            return (
+                                <FriendBox
+                                    key={friend}
+                                    id={friend}
+                                    onPress={() =>
+                                        navigation.navigate(
+                                            "User Profile Screen",
+                                            {
+                                                screen: "Profile Screen",
+                                                params: { id: friend },
+                                            }
+                                        )
+                                    }
+                                />
+                            );
+                        }}
+                    />
+                ) : (
+                    <>
+                        <Text style={boxStyles.name}>You're early!</Text>
+                        <Text style={boxStyles.username}>
+                            Be the first to get here.
+                        </Text>
+                    </>
+                )}
+            </View>
+        );
+    };
+
     return (
         // <ScrollView bounces={false}>
         <>
             <View style={styles.topBanner}>
                 <View style={styles.topRow2}>
                     <TouchableOpacity
-                        onPress={() => navigation.navigate("Home Screen")}
+                        onPress={() => navigation.goBack()}
                     >
                         <Text style={styles.subheader2}>
                             {" "}
@@ -269,9 +244,7 @@ const ConcertScreen = ({ navigation, route }) => {
                     </TouchableOpacity>
                 </View>
                 <ImageBackground source={{ uri: image }} style={styles.image}>
-                    <Text style={styles.title}>
-                        {name}
-                    </Text>
+                    <Text style={styles.title}>{name}</Text>
                     <LinearGradient
                         colors={["rgba(0,0,0,0.8)", "transparent"]}
                         start={{ x: 0.5, y: 1 }}
@@ -302,9 +275,7 @@ const ConcertScreen = ({ navigation, route }) => {
                     </View>
                 </View>
                 <View style={styles.actionRow}>
-                    <TouchableOpacity
-                        onPress={favoriteClick}
-                    >
+                    <TouchableOpacity onPress={favoriteClick}>
                         <Icon
                             name={favorite ? "favorite" : "favorite-border"}
                             size={30}
@@ -312,9 +283,7 @@ const ConcertScreen = ({ navigation, route }) => {
                             style={styles.action}
                         />
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={interestClick}
-                    >
+                    <TouchableOpacity onPress={interestClick}>
                         <Icon
                             name={interested ? "star" : "star-outline"}
                             size={30}
@@ -322,9 +291,7 @@ const ConcertScreen = ({ navigation, route }) => {
                             style={styles.action}
                         />
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={sellClick}
-                    >
+                    <TouchableOpacity onPress={sellClick}>
                         <Icon
                             name={"add-shopping-cart"}
                             size={30}
@@ -376,7 +343,6 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     title: {
-        alignItems: "end",
         alignSelf: "flex-start",
         textAlign: "left",
         color: "white",

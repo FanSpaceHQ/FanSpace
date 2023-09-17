@@ -1,38 +1,77 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, ScrollView, Alert, TouchableOpacity, 
-	TouchableWithoutFeedback, Keyboard, ActivityIndicator, Image, FlatList, SafeAreaView,} from "react-native";
-import { Dim, Colors } from "../Constants.js"
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import {
+    View,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Image,
+    FlatList,
+    SafeAreaView,
+} from "react-native";
+import { Dim, Colors } from "../Constants.js";
 import { SearchBar } from "react-native-elements";
 
-const axios = require("axios").default;
-
-`import Galaxy from "../assets/galaxy.png"
-import Alex from "../assets/Alex.png"`
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getAuth } from "firebase/auth";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { getDatabase, onValue, ref, get } from "firebase/database";
+import { getDownloadURL, ref as storRef, getStorage } from "firebase/storage";
+import { useNavigation } from "@react-navigation/native";
+import { Close } from "@mui/icons-material";
 
 /*
   -- DOCUMENTATION --
 */
 
-const FriendBox = (props) => {
-    return(
-        <TouchableOpacity onPress={props.onPress}>
-        <View style={boxStyles.container}>
-            <View style={{flexDirection: "row", paddingBottom: 20,}}>
-                <Image source={{uri: props.image}} style={boxStyles.image}/>
-                <View style={{justifyContent:"center"}}>
-                    <Text style={boxStyles.name}>{props.name}</Text>
-                    <Text style={boxStyles.username}> {props.userName}</Text>
+export const FriendBox = (props) => {
+    const navigation = useNavigation();
+    return (
+        <TouchableOpacity
+            onPress={() =>
+                navigation.navigate("User Profile Screen", {
+                    screen: "Profile Screen",
+                    params: { id: props.id },
+                })
+            }
+        >
+            <View style={boxStyles.container}>
+                <View style={{ flexDirection: "row", paddingBottom: 20 }}>
+                    <Image
+                        source={{ uri: props.image }}
+                        style={boxStyles.image}
+                    />
+                    <View style={{ justifyContent: "center" }}>
+                        <Text style={boxStyles.name}>{props.name}</Text>
+                        <Text style={boxStyles.username}>
+                            @{props.userName}
+                        </Text>
+                    </View>
+                    {props.closeButton ? <View
+                        style={{
+                            flexGrow: 1,
+                            alignItems: "flex-end",
+                            paddingRight: 30,
+                            justifyContent: "center",
+                        }}
+                    >
+                        <TouchableOpacity
+                            onPress={props.closeButton}
+                        >
+                            <Image
+                                source={require("../assets/close.png")}
+                                style={{ width: 20, height: 20 }}
+                            ></Image>
+                        </TouchableOpacity>
+                    </View> : null}
                 </View>
             </View>
-        </View>
         </TouchableOpacity>
-    )
+    );
 };
 
 const boxStyles = StyleSheet.create({
-    container:{
+    container: {
         justifyContent: "center",
         alignItems: "left",
         alignContent: "left",
@@ -40,108 +79,118 @@ const boxStyles = StyleSheet.create({
         width: Dim.width * 0.9,
         marginLeft: Dim.width * 0.08,
     },
-    image:{
+    image: {
         marginLeft: Dim.width * 0.025,
         height: 50,
         width: 50,
         borderRadius: 1000,
     },
-    name:{
+    name: {
         fontSize: 16,
         fontWeight: "bold",
         marginLeft: 20,
         flexWrap: "wrap",
     },
-    username:{
+    username: {
         color: "#B4B3B3",
-        marginLeft: 15,
+        marginLeft: 20,
     },
-})
+});
 
-const FriendScreen = ({props, navigation}) => {
+const FriendScreen = ({ props, navigation }) => {
     const [friends, setFriends] = useState([]);
     const [friendSize, setSize] = useState(friends.length);
     const [search, setSearch] = useState("");
     const [searchBarClicked, setClicked] = useState(false);
     const [queryData, setQueryData] = useState([]);
-    const [debounce, setDebounce] = useState(false);
-    const [reload, setLoad] = useState(true);
-    const [uid, setId] = useState(null);
 
-    const querySearch = async() =>{
-        if (!debounce){
-            const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-            await delay(2000);
-            setDebounce(true);
+    const querySearch = async (text) => {
+        setQueryData([]);
+        const searchForUser = httpsCallable(getFunctions(), "searchForUser");
+        const uid = await searchForUser({ query: text.toLowerCase() });
+        if (uid.data) {
+            Promise.all([
+                get(ref(getDatabase(), `users/${uid.data}/firstName`)),
+                get(ref(getDatabase(), `users/${uid.data}/lastName`)),
+                get(ref(getDatabase(), `users/${uid.data}/username`)),
+            ]).then(async (res) => {
+                setQueryData([
+                    {
+                        name: res[0].val() + " " + res[1].val(),
+                        userName: res[2].val(),
+                        image: await getDownloadURL(
+                            storRef(getStorage(), `images/${uid.data}/profile`)
+                        ),
+                        id: uid.data,
+                    },
+                ]);
+            });
         }
-    }
-
+    };
 
     useEffect(() => {
-        if (reload){
-            if (!uid){
-                AsyncStorage.getItem("@uid").then((uid) => {
-                    setId(uid);
-                        axios
-                        .get(`http://localhost:4000/api/users/friends/${uid}`)
-                        .then((res) => {
-                            setFriends(res.data.friends);
-                            setSize(res.data.friends.length);
-                            setLoad(false);
+        onValue(
+            ref(getDatabase(), `users/${getAuth().currentUser.uid}/friends`),
+            (snap) => {
+                if (snap.val()) {
+                    Promise.all(
+                        Object.keys(snap.val()).map((friend) => {
+                            return Promise.all([
+                                get(
+                                    ref(
+                                        getDatabase(),
+                                        `users/${friend}/firstName`
+                                    )
+                                ),
+                                get(
+                                    ref(
+                                        getDatabase(),
+                                        `users/${friend}/lastName`
+                                    )
+                                ),
+                                get(
+                                    ref(
+                                        getDatabase(),
+                                        `users/${friend}/username`
+                                    )
+                                ),
+                                getDownloadURL(
+                                    storRef(
+                                        getStorage(),
+                                        `images/${friend}/profile`
+                                    )
+                                ),
+                                friend,
+                            ]);
                         })
-                        .catch((err) => {
-                            console.log(err);
-                            setLoad(false);
-                            setLoad(true);
-                        });
-                });
-            } else{
-                axios
-                    .get(`http://localhost:4000/api/users/friends/${uid}`)
-                    .then((res) => {
-                        setFriends(res.data.friends);
-                        setSize(res.data.friends.length);
-                        setLoad(false);
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                        setLoad(false);
-                        setLoad(true);
-                    });
+                    )
+                        .then((ress) => {
+                            const friendsArr = ress.map((res) => {
+                                return {
+                                    name: res[0].val() + " " + res[1].val(),
+                                    userName: res[2].val(),
+                                    image: res[3],
+                                    id: res[4],
+                                };
+                            });
+                            setSize(friendsArr.length);
+                            setFriends(friendsArr);
+                        })
+                        .catch((err) => console.log(err));
+                }
             }
-        }
-    }, [reload]);
-
-    useEffect(()=>{
-        if (debounce){
-            axios // TODO Fix the Request Path
-                .get(`http://localhost:4000/api/users/search/friends/${uid}/${search}`)
-                .then((res)=> {
-                    // console.log(res.data);
-                    setQueryData(res.data)
-                    setDebounce(false);
-                })
-                .catch((err)=>{
-                    console.log(err);
-                    setDebounce(false);
-                })
-        }
-    }, [debounce])
-
-    useEffect(()=>{
-        console.log(search);
-    },[search])
+        );
+    }, []);
 
     return (
-        <TouchableWithoutFeedback onPress={() => {
-            Keyboard.dismiss()
-            setClicked(false);
-            setQueryData([]);
-            setSearch(() => {
+        <TouchableWithoutFeedback
+            onPress={() => {
+                Keyboard.dismiss();
+                setClicked(false);
+                setQueryData([]);
                 setSearch("");
-                console.log(search);
-            });
-        }}>
+            }}
+        >
             <SafeAreaView
                 style={{
                     flex: 1,
@@ -172,15 +221,15 @@ const FriendScreen = ({props, navigation}) => {
                         placeholder="Search for friends"
                         containerStyle={styles.containerStyle}
                         inputContainerStyle={styles.inputContainerStyle}
-                        onChangeText={(text)=>{
+                        onChangeText={(text) => {
+                            querySearch(text);
                             setSearch(text);
-                            querySearch();
                         }}
                         onFocus={() => {
                             setClicked(true);
                         }}
-                        onClear={()=>{
-                            setSearch("")
+                        onClear={() => {
+                            setSearch("");
                             setQueryData([]);
                         }}
                     />
@@ -188,83 +237,105 @@ const FriendScreen = ({props, navigation}) => {
 
                 {/* Friend Number and bar */}
                 {searchBarClicked ? (
-                    <View
-                        style={{ marginTop: Dim.height * 0.05 }}
-                    >
+                    <View style={{ marginTop: Dim.height * 0.05 }}>
                         <View style={{ alignSelf: "left", marginTop: 0 }}>
-                        <FlatList
-                            data={queryData}
-                            horizontal={false}
-                            renderItem={({ item: friends }) => {
-                                return (
-                                    <FriendBox
-                                        image={ friends.imageUrl }
-                                        name={`${friends.firstName} ${friends.lastName}`}
-                                        userName={friends.username}
-                                        onPress={() =>
-                                            navigation.navigate("Profile")
-                                        }
-                                    />
-                                );
-                            }}
-                        />
-                    </View>
+                            <FlatList
+                                data={queryData}
+                                horizontal={false}
+                                renderItem={({ item: friends }) => {
+                                    return (
+                                        <FriendBox
+                                            id={friends.id}
+                                            key={friends.id}
+                                            image={friends.image}
+                                            name={friends.name}
+                                            userName={friends.userName}
+                                            onPress={() =>
+                                                navigation.navigate("Profile")
+                                            }
+                                        />
+                                    );
+                                }}
+                            />
+                        </View>
                     </View>
                 ) : (
                     <View>
-                    <View style={{ alignItems: "left", alignContent: "left" }}>
-                        <Text style={styles.subtitle}>
-                            Friends ({friendSize})
-                        </Text>
                         <View
-                            style={{
-                                width: Dim.width * 0.8,
-                                borderColor: Colors.gray,
-                                borderWidth: 1,
-                                alignSelf: "center",
-                                marginTop: Dim.height * 0.01,
-                                marginBottom: 20,
-                            }}
-                        />
-                    </View> 
-                    {friendSize == 0 ? (
-                        <View>
-                            <Text style={{fontWeight: "bold", fontSize: 20, marginTop: -(Dim.height * .01), marginLeft: Dim.width * 0.1}}>
-                                No friends yet
+                            style={{ alignItems: "left", alignContent: "left" }}
+                        >
+                            <Text style={styles.subtitle}>
+                                Friends ({friendSize})
                             </Text>
-                            <Text style={{
-                                fontSize: 16,
-                                color: "#6D6D6D",
-                                textAlign: "left",
-                                marginLeft: Dim.width * 0.1,
-                                marginTop: Dim.height * 0.01,
-                                fontWeight: "300",
-                            }}>
-                                Find people interested in going to the same concerts.
-                            </Text>
+                            <View
+                                style={{
+                                    width: Dim.width * 0.8,
+                                    borderColor: Colors.gray,
+                                    borderWidth: 1,
+                                    alignSelf: "center",
+                                    marginTop: Dim.height * 0.01,
+                                    marginBottom: 20,
+                                }}
+                            />
                         </View>
-                    ) : (
-                    <View style={{ alignSelf: "left", marginTop: 0, height: "80%" }}>
-                        <FlatList
-                            data={friends}
-                            horizontal={false}
-                            renderItem={({ item: friends }) => {
-                                return (
-                                    <FriendBox
-                                        image={
-                                            friends._fieldsProto.imageUrl.stringValue
-                                        }
-                                        name={`${friends._fieldsProto.firstName.stringValue} ${friends._fieldsProto.lastName.stringValue}`}
-                                        userName={`${friends._fieldsProto.username.stringValue}`}
-                                        onPress={() =>
-                                            navigation.navigate("Profile")
-                                        }
-                                    />
-                                );
-                            }}
-                        />
-                    </View>)}
-                </View>
+                        {friendSize == 0 ? (
+                            <View>
+                                <Text
+                                    style={{
+                                        fontWeight: "bold",
+                                        fontSize: 20,
+                                        marginTop: -(Dim.height * 0.01),
+                                        marginLeft: Dim.width * 0.1,
+                                    }}
+                                >
+                                    No friends yet
+                                </Text>
+                                <Text
+                                    style={{
+                                        fontSize: 16,
+                                        color: "#6D6D6D",
+                                        textAlign: "left",
+                                        marginLeft: Dim.width * 0.1,
+                                        marginTop: Dim.height * 0.01,
+                                        fontWeight: "300",
+                                        paddingRight: 30
+                                    }}
+                                >
+                                    Find people interested in going to the same
+                                    concerts.
+                                </Text>
+                            </View>
+                        ) : (
+                            <View
+                                style={{
+                                    alignSelf: "left",
+                                    marginTop: 0,
+                                    height: "80%",
+                                }}
+                            >
+                                <FlatList
+                                    data={friends}
+                                    horizontal={false}
+                                    renderItem={({ item: friends }) => {
+                                        return (
+                                            <FriendBox
+                                                id={friends.id}
+                                                key={friends.id}
+                                                image={friends.image}
+                                                name={friends.name}
+                                                userName={friends.userName}
+                                                onPress={() =>
+                                                    navigation.navigate(
+                                                        "Profile"
+                                                    )
+                                                }
+                                            />
+                                        );
+                                    }}
+                                />
+                            </View>
+                        )}
+                    </View>
                 )}
             </SafeAreaView>
         </TouchableWithoutFeedback>
@@ -298,9 +369,12 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     orbit: {
-        marginTop: Dim.height * 0.025 - 20,
+        // marginTop: Dim.height * 0.025 - 20,
         marginLeft: Dim.width * 0.185,
         // alignSelf: "flex-start",
+        width: 50,
+        height: 50,
+        objectFit: "contain",
     },
     containerStyle: {
         flex: 1,

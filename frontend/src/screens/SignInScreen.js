@@ -17,8 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import TextInput from "../components/common/TextInput";
 import Button from "../components/common/Button";
 import { Colors } from "../Constants";
-import { auth } from "../../backend/firebase.js";
-import { signInWithEmailAndPassword } from "@firebase/auth";
+import { signInWithEmailAndPassword, getAuth } from "@firebase/auth";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 /*
@@ -33,41 +32,7 @@ const SignInScreen = ({ props, navigation }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-    const [uid, setID] = useState("");
     const [errors, setError] = useState(false);
-    const [login, setLog] = useState(false);
-
-    useEffect(() => {
-        null;
-    });
-
-    const onClick = async (uid) => {
-        await fillAsync(uid);
-    };
-
-    const fillAsync = async (uid) => {
-        // console.log(uid);
-        let data;
-        await axios
-            .get(`http://localhost:4000/api/users/${uid}`)
-            .then((response) => {
-                data = response.data;
-                setLog(true);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-        await AsyncStorage.setItem("@uid", uid);
-        await AsyncStorage.setItem("@bio", data.data.bio);
-        await AsyncStorage.setItem("@discord", data.data.discord);
-        await AsyncStorage.setItem("@twitter", data.data.twitter);
-        await AsyncStorage.setItem("@firstName", data.data.firstName);
-        await AsyncStorage.setItem("@lastName", data.data.lastName);
-        await AsyncStorage.setItem("@imageUrl", data.data.imageUrl);
-        await AsyncStorage.setItem("@location", data.data.location);
-        setLoading(false);
-        navigation.navigate("NavbarStack");
-    };
 
     return (
         <KeyboardAwareScrollView
@@ -153,19 +118,11 @@ const SignInScreen = ({ props, navigation }) => {
                                     // console.log(password)
                                     setLoading(true);
                                     signInWithEmailAndPassword(
-                                        auth,
+                                        getAuth(),
                                         email,
                                         password
                                     )
-                                        .then((userCred) => {
-                                            const uid = userCred.user.uid;
-                                            //TODO set local state to userid
-                                            // AsyncStorage.setItem[
-                                            //     ("@uid", userCred.user.uid)
-                                            // ];
-                                            setID(uid);
-                                            onClick(uid);
-                                        })
+                                        .then(() => navigation.navigate("NavbarStack"))
                                         .catch((error) => {
                                             console.log(error);
                                             setLoading(false);
@@ -183,7 +140,7 @@ const SignInScreen = ({ props, navigation }) => {
                             style={styles.signUp}
                         >
                             Don't have an account?
-                            <Text style={{ fontWeight: "bold" }}> Sign Up</Text>
+                            <Text style={{ fontWeight: "900" }}> Sign Up</Text>
                         </Text>
                     </View>
                 </View>
@@ -203,7 +160,6 @@ const styles = StyleSheet.create({
     button: {
         marginTop: height * 0.0175,
         alignSelf: "center",
-        backgroundColor: Colors.green.primary,
     },
     signUp: {
         fontSize: 16,
