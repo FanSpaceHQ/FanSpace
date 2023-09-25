@@ -16,7 +16,7 @@ const LandingScreen = (props) => {
                 alignItems: "center",
             }}
         >
-            <Image source={require("../assets/FanspaceLogo.png")} style={{ height: 134, width: 109, marginTop: 175, marginBottom: 20}} />
+            <Image source={require("../assets/FanspaceLogo.png")} style={{ height: 134, width: 134, marginTop: 175, marginBottom: 20}} />
             <Text style={{
                 fontSize: 16,
                 marginTop: 125,
