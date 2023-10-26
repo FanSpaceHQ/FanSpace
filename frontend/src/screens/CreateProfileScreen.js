@@ -59,9 +59,9 @@ const CreateProfileScreen = ({ props, navigation }) => {
         if (
             locationError ||
             bioError ||
-            instagramError ||
-            discordError ||
-            twitterError
+            (instagramError &&
+            discordError &&
+            twitterError)
         ) {
             setErrors({
                 location: locationError,

@@ -9,7 +9,7 @@
     "splash": {
       "image": "./src/assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#333333"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -41,11 +41,6 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ]
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "76fa4bb3-4108-46d9-a29d-36a623b8f86e"
-      }
-    }
+    ]
   }
 }
